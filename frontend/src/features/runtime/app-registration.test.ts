@@ -4,30 +4,12 @@ import { AppRegistry } from './app-registry';
 import './app-registration';
 
 describe('Account app registration', () => {
-  /* Los bocetos game (2D) y game-3d (3D) se retiraron el 05-ago: la
-   * dirección visual quedó decidida y solo vive la app jugable. */
-  it('removed the 2D and 3D sketch registrations', () => {
+  /* [2026-08-18] El frente de juego quedó archivado en _archivo/juego: no
+   * quedan registros de la app jugable ni de los bocetos game/game-3d. */
+  it('removed the game registrations', () => {
+    expect(AppRegistry.get('game-playable')).toBeUndefined();
     expect(AppRegistry.get('game')).toBeUndefined();
     expect(AppRegistry.get('game-3d')).toBeUndefined();
-  });
-
-  it('keeps the playable fixture lazy until its first instantiation', () => {
-    expect(AppRegistry.isLazy('game-playable')).toBe(true);
-    const playable = AppRegistry.get('game-playable');
-    expect(playable).toBeDefined();
-    expect(playable?.singleton).toBe(true);
-    expect(playable?.requires).toBe('public');
-    expect(playable?.layout).toBe('full-bleed');
-    expect(playable?.deepLink?.stringify()).toBe('/forest-playable');
-    expect(playable?.routePatterns).toBeUndefined();
-    /* [GAME-01-VIS] El juego abre expandido y su toolbar expone el personaje
-     * del jugador (público) y la configuración (adminOnly: el shell oculta el
-     * grupo completo para no-admin). */
-    expect(playable?.openMaximized).toBe(true);
-    expect(playable?.toolbar).toEqual([
-      { label: 'Personaje', items: ['game:character'] },
-      { label: 'Configuración', items: ['game:settings'] },
-    ]);
   });
 
   it('registers a public singleton with the /login deep link', () => {

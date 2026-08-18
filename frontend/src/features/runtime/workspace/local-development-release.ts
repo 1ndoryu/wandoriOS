@@ -1,33 +1,18 @@
 /* wandori.us — Compatibilidad del release local
  * El backend sigue siendo la fuente de verdad del workspace publicado. Durante
  * el prototipo, Vite puede apuntar a un release persistido antes de registrar
- * la app del Bosque; este fallback solo aporta esa entrada visual en DEV.
+ * las apps del OS; este fallback solo aporta entradas visuales en DEV.
  * En producción no se reintroduce ninguna app que el administrador haya
- * excluido del release. [018A-92] */
+ * excluido del release. [018A-92]
+ * [2026-08-18] Se retiró el nodo del juego (frente archivado); la función
+ * queda como passthrough por compatibilidad con workspace-store. */
 
-import { DEFAULT_RELEASE } from './default-release';
 import type { WorkspaceTree } from './types';
 
-const LOCAL_PROTOTYPE_NODE_IDS = ['gamePlayable'] as const;
-
 /**
- * Añade únicamente el nodo del juego que todavía no conoce el release local.
- * No sobrescribe posiciones, etiquetas ni nodos publicados; los tombstones
- * del overlay siguen prevaleciendo en mergeWorkspace. El fixture jugable se
- * incluye solo como compatibilidad local mientras el release publicado no lo
- * conozca. [GAME-01-F3]
+ * Passthrough: ya no hay nodos de prototipo local pendientes de registrar.
+ * Se conserva la firma para no tocar workspace-store. [018A-92]
  */
 export function withLocalPrototypeNodes(tree: WorkspaceTree): WorkspaceTree {
-  if (!import.meta.env.DEV) return tree;
-
-  const missingNodes = LOCAL_PROTOTYPE_NODE_IDS.filter((id) => !tree.nodes[id]);
-  if (missingNodes.length === 0) return tree;
-
-  const nodes = { ...tree.nodes };
-  for (const id of missingNodes) {
-    const node = DEFAULT_RELEASE.nodes[id];
-    if (node) nodes[id] = node;
-  }
-
-  return { ...tree, nodes };
+  return tree;
 }

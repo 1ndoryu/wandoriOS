@@ -45,7 +45,7 @@ import {
   buildBlockPropsMeshData,
   buildBlockTerrainMeshData,
   placeBlockProps,
-} from './game-block-mesher';
+} from '../../../game-core/blocks/game-block-mesher';
 import { buildBlockHeightmapFromIsland } from './game-procedural-blocks';
 import { toGeometry, toIndexedGeometry } from './game-procedural-geometry';
 import { buildToonWaterPlane, buildToonWaterPlaneGeometry } from './game-toon-water';

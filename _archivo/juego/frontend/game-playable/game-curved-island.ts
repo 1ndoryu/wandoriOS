@@ -17,12 +17,12 @@ import {
   generateBlockHeightmap,
   levelAt,
   type BlockHeightmap,
-} from './game-block-heightmap';
+} from '../../../game-core/blocks/game-block-heightmap';
 import {
   buildBlockPropsMeshData,
   buildBlockTerrainMeshData,
   placeBlockProps,
-} from './game-block-mesher';
+} from '../../../game-core/blocks/game-block-mesher';
 
 /* 1 bloque = 1 unidad de mundo. La rejilla es 2:1 para seguir el rect jugable
  * (32×16) y dejar océano visible como límite alrededor de la isla. */

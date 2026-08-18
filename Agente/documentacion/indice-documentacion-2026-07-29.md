@@ -23,15 +23,7 @@
 | ¿Cómo se revisan SOLID y escalabilidad por fase?        | `Agente/documentacion/arquitectura/checkpoints-solid-escalabilidad-2026-07-31.md` |
 | ¿Cómo se agrega una nueva app al OS (receta canónica)?  | `Agente/documentacion/arquitectura/guia-agregar-app-2026-07-31.md`                 |
 | ¿Cómo se cargan apps pesadas y cuál es su presupuesto?   | `Agente/documentacion/arquitectura/adr-carga-apps-pesadas-2026-07-31.md`           |
-| ¿Cómo se planifica el bosque multijugador 3D? | `Agente/planes/plan-juego-bosque-multijugador-2026-08-01.md` |
-| ¿Cómo se administran GLB y se edita terreno 3D desde una vista 2D? | `Agente/planes/plan-assets-terreno-bosque-3d-2026-08-01.md` |
-| ¿Por qué Three.js, assets externos y terreno lógico 2D? | `Agente/documentacion/arquitectura/adr-bosque-3d-assets-terreno-2d-2026-08-01.md` |
-| ¿Cómo se extrae el motor agnóstico para futuros juegos? | `Agente/planes/plan-glory-render-motor-juegos-2026-08-01.md` |
-| ¿Cuál es la frontera del repositorio `glory-render`? | `Agente/documentacion/arquitectura/adr-glory-render-repositorio-agnostico-2026-08-01.md` |
-| ¿Qué decisiones de producto faltan aprobar del Bosque? | `Agente/documentacion/producto/decisiones-pendientes-bosque-2026-08-05.md` |
-| ¿Cómo migra el mundo del Bosque al publicar (decisión 8)? | `Agente/documentacion/arquitectura/adr-bosque-mundo-unico-reinicio-coordinado-2026-08-05.md` + `Agente/planes/plan-reinicio-coordinado-bosque-2026-08-05.md` |
-| ¿Cuál es el inventario y frontera de `glory-render` (Fase 0)? | `Agente/documentacion/arquitectura/auditoria-glory-render-fase0-2026-08-05.md` |
-| ¿Cómo se integra y versiona `glory-render` (submódulo, SemVer, CI)? | `Agente/documentacion/arquitectura/estrategia-integracion-glory-render-2026-08-05.md` |
+| ¿Dónde está archivado el frente de videojuego? | `_archivo/juego/` (código frontend/backend + documentación; se ocultó del front el 18-ago) |
 | ¿Cómo se ejecuta la auditoría y corrección de Sentinel y el quality gate? | `Agente/documentacion/herramientas/auditoria-sentinel-completa-2026-08-10.md` (plan: `Agente/planes/plan-ejecucion-auditoria-sentinel-2026-08-10.md`) |
 | ¿Qué decisión arquitectónica rige el producto único Sentinel? | `tools/sentinel/docs/adr/0001-producto-unico-sentinel.md` |
 | ¿Cuáles son los conceptos, configuración y operación vigentes de Sentinel? | `tools/sentinel/docs/concepts.md`, `tools/sentinel/docs/configuration.md`, `tools/sentinel/docs/operations.md` |
@@ -72,17 +64,14 @@
 - Contratos de interacción y medición: activos; se cierran dentro de las tareas dueñas 297A-9–17.
 - Quality gate Sentinel/VarSense: Sentinel 0.7.4/VarSense 2.2.1 publicados y adoptados; `gate:check` delega en `sentinel check`; rollback 0.7.1 ↔ 0.7.0 verificado; CI #45/#46 y matriz focal verdes; capa A (shims/guards duplicados) retirada tras verificar PATH, enforcement y rollback. La capa B espera SNT-10.
 - Plan móvil: activo y bloqueado por runtime/workspace; tablet conserva desktop.
-- Plan del bosque multijugador 3D: dirección Three.js aprobada; assets externos GLB y terreno finito editable en 2D quedan planificados, mientras gameplay/realtime siguen bloqueados por dependencias.
-- Plan `glory-render`: propuesto para después de GAME-01/Fase 8; `frontend/src/features/game-core/` es candidato provisional y no se extrae sin segundo consumidor real. La Fase 0 quedó cerrada el 05-ago: auditoría (`auditoria-glory-render-fase0-2026-08-05.md` — 14 módulos CORE puros + `game-realtime` de frontera, sin dependencias de Three/DOM/red) y estrategia de integración/versionado (`estrategia-integracion-glory-render-2026-08-05.md` — submódulo fijado a etiqueta SemVer + dev local, política de licencias/CI/propietarios). Pendiente: aprobar la frontera con evidencia de segundo uso y abrir la Fase 1 (crear el repo).
+- Frente de videojuego (bosque multijugador, `glory-render`/`game-core`, constructor, Curved Island/Sakura): **ARCHIVADO el 18-ago** por decisión del usuario; todo el código y la documentación viven en `_archivo/juego/` y nada de juego queda visible en el front. Este índice conserva la referencia histórica de que existió.
 - Plan visual antiguo: referencia histórica del concepto aprobado.
 - Plan wandori.us original: superado; no es especificación activa.
 - Plan Sentinel/VarSense editor-agnóstico: trabajo histórico documentado en tareas completadas.
 - Estilo Sakura Crossing (138A-13): investigación documental del pipeline
   visual del juego de referencia (cel shading con tinte violeta, luces anime
-  2+1, outlines ink+hull, color grading split-tone y cielo pintado) con
-  código real y guía de replicación sobre el constructor actual; no cambia la
-  decisión visual vigente "sin tinta" del Bosque hasta que el usuario la
-  revierta.
+  2+1, outlines ink+hull, color grading split-tone y cielo pintado).
+  **ARCHIVADA** el 18-ago en `_archivo/juego/documentacion/estilo-sakura/`.
 - Matriz Sentinel/VarSense: actualizada con contrato de findings, comando combinado `all`, commits fijados, lockfile, branch-key y límites de runtime global.
 - Migración global 028A-6/108A-6: Sentinel 0.7.4/VarSense 2.2.1, lock/doctor y gates de consumidores verificados; CI Ubuntu #45/#46 y matriz focal verdes; capa A retirada. Permanece el baseline de producto `broadcast-mutex-riesgo-rs` de glory-rs-rest (warning visible) y la evolución de capa B en SNT-10.
 - Auditoría arquitectónica frontend v1: activa; plan de refactorización parcialmente ejecutado.

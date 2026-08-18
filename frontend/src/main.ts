@@ -29,7 +29,6 @@ import {createProfile} from './components/layout/profile';
 import {createDesktopShell} from './features/desktop/desktop-shell';
 import {createMobileShell} from './features/mobile/mobile-shell';
 import './features/runtime/app-registration';
-import './features/runtime/app-registration-game-routes';
 import './features/runtime/commands';
 import {initKeyboardShortcuts} from './features/runtime/commands';
 import {CommandRegistry} from './features/runtime/command-registry';

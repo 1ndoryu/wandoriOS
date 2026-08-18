@@ -4,14 +4,6 @@ pub mod articles;
 pub mod auth;
 pub mod dev_mail;
 pub mod download_handler;
-pub mod game_asset_handler;
-pub mod game_audit_handler;
-pub mod game_character_handler;
-pub mod game_map_handler;
-pub mod game_metrics_handler;
-pub mod game_profile_handler;
-pub mod game_ticket_handler;
-pub mod game_ws_handler;
 mod health;
 pub mod media_handler;
 mod notes;
@@ -63,28 +55,6 @@ impl utoipa::Modify for SecurityAddon {
 #[openapi(
     paths(
         health::health_check,
-        game_character_handler::list_game_characters,
-        game_character_handler::create_game_character,
-        game_character_handler::update_game_character,
-        game_asset_handler::list_game_assets,
-        game_asset_handler::list_admin_game_assets,
-        game_asset_handler::create_game_asset,
-        game_asset_handler::update_game_asset,
-        game_asset_handler::import_game_asset_version,
-        game_asset_handler::list_game_asset_versions,
-        game_asset_handler::get_active_game_asset_version,
-        game_asset_handler::update_game_asset_version,
-        game_asset_handler::activate_game_asset_version,
-        game_asset_handler::read_game_asset_version_file,
-        game_audit_handler::list_game_audit_characters,
-        game_audit_handler::list_game_audit_maps,
-        game_audit_handler::list_game_audit_assets,
-        game_map_handler::get_active_map,
-        game_map_handler::publish_map,
-        game_metrics_handler::read_game_metrics,
-        game_profile_handler::get_game_profile,
-        game_profile_handler::update_game_profile,
-        game_ticket_handler::issue_game_ticket,
         auth::register,
         auth::login,
         auth::verify_email,
@@ -228,27 +198,6 @@ impl utoipa::Modify for SecurityAddon {
         crate::models::workspace::BrokenResourceRef,
         crate::models::workspace::ReleaseTreeIssue,
         crate::handlers::workspace_handler::ActivateReleaseQuery,
-        crate::models::game_character::CreateGameCharacterRequest,
-        crate::models::game_character::GameCharacterAdminResponse,
-        crate::models::game_character::GameCharacterPublicResponse,
-        crate::models::game_asset::CreateGameAssetRequest,
-        crate::models::game_asset::GameAssetAdminResponse,
-        crate::models::game_asset::GameAssetPublicResponse,
-        crate::models::game_asset::GameAssetVersionAdminResponse,
-        crate::models::game_asset::GameAssetVersionPublicResponse,
-        crate::models::game_asset::GameAssetVersionProxy,
-        crate::models::game_asset::UpdateGameAssetRequest,
-        crate::models::game_asset::UpdateGameAssetVersionRequest,
-        crate::models::game_audit::GameAuditEventResponse,
-        crate::models::game_character::UpdateGameCharacterRequest,
-        crate::models::game_map::GameMapDraftPublic,
-        crate::models::game_map::GameMapVersionPublic,
-        crate::models::game_map::PublishMapRequest,
-        crate::models::game_map::SaveDraftRequest,
-        crate::models::game_profile::GameProfile,
-        crate::models::game_profile::UpdateGameProfileRequest,
-        crate::handlers::game_ticket_handler::GameTicketResponse,
-        crate::handlers::game_metrics_handler::GameMetricsResponse,
         crate::handlers::workspace_handler::ReleaseListResponse,
         crate::models::media::MediaAdminResponse,
         crate::models::media::MediaPublicResponse,
@@ -281,9 +230,6 @@ pub fn create_router(pool: sqlx::PgPool, config: crate::config::AppConfig) -> Ro
         email_from: config.email_from,
         stripe_secret_key: config.stripe_secret_key,
         stripe_webhook_secret: config.stripe_webhook_secret,
-        game_ticket_secret: config.game_ticket_secret,
-        game_ticket_store: crate::services::game_ticket::GameTicketStore::default(),
-        game_ws_state: crate::services::game_ws::GameWsState::default(),
         site_url,
         login_rate_limit: std::sync::Arc::new(std::sync::Mutex::new(
             std::collections::HashMap::new(),
@@ -297,9 +243,6 @@ pub fn create_router(pool: sqlx::PgPool, config: crate::config::AppConfig) -> Ro
 }
 
 /// Crea el router usando un estado ya construido.
-///
-/// Esta frontera permite que pruebas y futuros adaptadores compartan el mismo
-/// store de tickets/replay que usan los handlers, sin duplicar estado oculto.
 pub fn create_router_with_state(state: AppState) -> Router {
     /* [297A-7] CORS con allowlist de orígenes */
     let allowed_origins: Vec<HeaderValue> = std::env::var("CORS_ORIGINS")
@@ -347,14 +290,6 @@ fn api_routes() -> Router<AppState> {
      * los atributos `utoipa::path` sí conservan `{id}` (formato OpenAPI). */
     Router::new()
         .merge(health::routes())
-        .merge(game_character_handler::routes())
-        .merge(game_asset_handler::routes())
-        .merge(game_audit_handler::routes())
-        .merge(game_map_handler::routes())
-        .merge(game_metrics_handler::routes())
-        .merge(game_profile_handler::routes())
-        .merge(game_ticket_handler::routes())
-        .merge(game_ws_handler::routes())
         .merge(auth::routes())
         .merge(dev_mail::routes())
         .merge(notes::routes())

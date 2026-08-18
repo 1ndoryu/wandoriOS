@@ -18,7 +18,7 @@ import {
 import {
   buildBlockPropsMeshData,
   type BlockMeshData,
-} from './game-block-mesher';
+} from '../../../game-core/blocks/game-block-mesher';
 import { toGeometry, toIndexedGeometry } from './game-procedural-geometry';
 
 export interface AssetThumbnailRequest {

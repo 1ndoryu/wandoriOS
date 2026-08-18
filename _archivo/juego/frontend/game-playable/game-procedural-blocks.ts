@@ -9,7 +9,7 @@ import {
   trimLonelyIslands,
   type IslandHeightfield,
 } from '../../../game-core';
-import type { BlockHeightmap } from './game-block-heightmap';
+import type { BlockHeightmap } from '../../../game-core/blocks/game-block-heightmap';
 
 export function buildBlockHeightmapFromIsland(
   h: IslandHeightfield,

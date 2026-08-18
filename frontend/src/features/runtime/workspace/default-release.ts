@@ -59,13 +59,6 @@ export const DEFAULT_RELEASE: WorkspaceTree = {
       id: 'downloads', parentId: 'desktop', type: 'app', label: 'Descargas', refId: 'downloads',
       position: { col: 1, row: 5 }, mobilePosition: { col: 0, row: 4 }, mobileOrder: 11, requires: 'public',
     },
-    /* [GAME-01-F3] Entrada del fixture jugable; no convierte los previews
-     * visuales en gameplay ni carga Three.js en el arranque. Los bocetos
-     * game/game-3d se retiraron el 05-ago (dirección visual decidida). */
-    gamePlayable: {
-      id: 'gamePlayable', parentId: 'desktop', type: 'app', label: 'Bosque · prueba', refId: 'game-playable',
-      position: { col: 2, row: 0 }, mobilePosition: { col: 1, row: 4 }, mobileOrder: 12, requires: 'public',
-    },
   },
 };
 

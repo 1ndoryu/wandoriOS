@@ -4,34 +4,21 @@ import { withLocalPrototypeNodes } from './local-development-release';
 import type { WorkspaceTree } from './types';
 
 describe('local development release compatibility', () => {
-  it('restores the playable forest entry when an old local release omits it', () => {
-    const oldRelease: WorkspaceTree = {
+  /* [2026-08-18] El frente de juego quedó archivado en _archivo/juego: la
+   * compatibilidad local ya no añade nodos de prototipo. La función queda
+   * como passthrough. */
+  it('passes the tree through unchanged (sin nodos de prototipo)', () => {
+    const release: WorkspaceTree = {
       version: 2,
       nodes: { about: DEFAULT_RELEASE.nodes.about },
     };
 
-    const resolved = withLocalPrototypeNodes(oldRelease);
+    const resolved = withLocalPrototypeNodes(release);
 
-    expect(resolved.nodes.gamePlayable?.refId).toBe('game-playable');
-    /* Los bocetos game/game-3d se retiraron el 05-ago. */
+    expect(resolved).toEqual(release);
+    expect(resolved.nodes.gamePlayable).toBeUndefined();
     expect(resolved.nodes.game).toBeUndefined();
     expect(resolved.nodes.game3d).toBeUndefined();
     expect(resolved.version).toBe(2);
-  });
-
-  it('does not overwrite an entry already organized by the release', () => {
-    const organized = {
-      ...DEFAULT_RELEASE.nodes.gamePlayable,
-      label: 'Bosque organizado',
-      position: { col: 7, row: 4 },
-    };
-    const release: WorkspaceTree = {
-      version: 3,
-      nodes: { gamePlayable: organized },
-    };
-
-    const resolved = withLocalPrototypeNodes(release);
-
-    expect(resolved.nodes.gamePlayable).toEqual(organized);
   });
 });

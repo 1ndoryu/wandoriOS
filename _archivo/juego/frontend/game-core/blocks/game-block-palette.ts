@@ -3,7 +3,7 @@
  * solo re-exporta los defaults y el tipo de colores que consumen los meshers.
  * Las mallas aplican jitter y AO por vértice. */
 
-import { WORLD_PALETTE_DEFAULTS, type WorldPalette } from '../../../game-core';
+import { WORLD_PALETTE_DEFAULTS, type WorldPalette } from '../world-palette';
 
 export type BlockColors = WorldPalette;
 

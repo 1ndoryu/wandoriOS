@@ -19,12 +19,12 @@ describe('workspace/AppRegistry anti-drift contract', () => {
       (appId) => AppRegistry.get(appId) !== undefined,
     );
 
+    /* [2026-08-18] gamePlayable se retiró del release (frente archivado). */
     expect(refs).toEqual([
       { nodeId: 'about', appId: 'about' },
       { nodeId: 'admin', appId: 'admin' },
       { nodeId: 'analytics', appId: 'analytics' },
       { nodeId: 'downloads', appId: 'downloads' },
-      { nodeId: 'gamePlayable', appId: 'game-playable' },
       { nodeId: 'mediaLibrary', appId: 'media-library' },
       { nodeId: 'orders', appId: 'orders' },
       { nodeId: 'projects', appId: 'projects' },

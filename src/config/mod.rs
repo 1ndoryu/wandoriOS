@@ -16,7 +16,6 @@ pub struct AppConfig {
     pub port: u16,
     pub stripe_secret_key: Option<String>,
     pub stripe_webhook_secret: Option<String>,
-    pub game_ticket_secret: Option<String>,
     pub upload_dir: String,
     pub resend_api_key: Option<String>,
     pub email_from: String,
@@ -40,7 +39,6 @@ impl AppConfig {
             stripe_webhook_secret: std::env::var("GLORY_STRIPE_WEBHOOK_SECRET")
                 .or_else(|_| std::env::var("STRIPE_WEBHOOK_SECRET"))
                 .ok(),
-            game_ticket_secret: std::env::var("GLORY_GAME_TICKET_SECRET").ok(),
             upload_dir: std::env::var("UPLOAD_DIR").unwrap_or_else(|_| "uploads".to_string()),
             resend_api_key: std::env::var("RESEND_API_KEY").ok(),
             email_from: std::env::var("EMAIL_FROM")

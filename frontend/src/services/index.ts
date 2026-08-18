@@ -13,5 +13,3 @@ export { WorkspaceService } from './workspace.service';
 export { SettingsService } from './settings.service';
 export { AnalyticsService } from './analytics.service';
 export { NotificationsService } from './notifications.service';
-export { GameCharacterService } from './game-character.service';
-export { GameProfileService } from './game-profile.service';
