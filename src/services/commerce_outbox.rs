@@ -5,7 +5,10 @@
  * Los tokens solo viven en memoria durante la llamada a Resend; PostgreSQL
  * conserva únicamente su hash. */
 
+use std::sync::Arc;
+
 use crate::errors::AppError;
+use crate::handlers::dev_mail::{DevMailMessage, DevMailbox};
 use crate::repositories::commerce_repo::{
     CommerceOutboxEvent, CommerceOutboxRepository, EntitlementRepository, ProductVersionRepository,
 };
@@ -39,6 +42,7 @@ pub fn retry_delay_seconds(attempts: i32) -> i64 {
 pub async fn process_once(
     pool: &PgPool,
     resend_api_key: Option<&str>,
+    dev_mailbox: Option<&Arc<DevMailbox>>,
     email_from: &str,
     site_url: &str,
     batch_size: i64,
@@ -50,7 +54,16 @@ pub async fn process_once(
     };
 
     for event in events {
-        match deliver_event(pool, resend_api_key, email_from, site_url, &event).await {
+        match deliver_event(
+            pool,
+            resend_api_key,
+            dev_mailbox,
+            email_from,
+            site_url,
+            &event,
+        )
+        .await
+        {
             Ok(()) => {
                 CommerceOutboxRepository::mark_processed(pool, event.id).await?;
                 summary.processed += 1;
@@ -76,6 +89,7 @@ pub async fn process_once(
 async fn deliver_event(
     pool: &PgPool,
     resend_api_key: Option<&str>,
+    dev_mailbox: Option<&Arc<DevMailbox>>,
     email_from: &str,
     site_url: &str,
     event: &CommerceOutboxEvent,
@@ -89,13 +103,13 @@ async fn deliver_event(
     let order = OrderRepository::find_by_id(pool, order_id)
         .await?
         .ok_or_else(|| AppError::NotFound(format!("Orden de outbox no encontrada: {order_id}")))?;
-    if order.delivered_at.is_some() {
+    /* [297A-15] Una orden ya entregada no se vuelve a procesar; una orden
+     * reembolsada/disputada NO reactiva el grant ni envía el enlace (el evento
+     * se descarta y se marca procesado: no hay entrega que hacer). */
+    if order.delivered_at.is_some() || matches!(order.status.as_str(), "refunded" | "disputed") {
         return Ok(());
     }
 
-    let api_key = resend_api_key.ok_or_else(|| {
-        AppError::Internal("Resend no configurado; entrega queda pendiente".into())
-    })?;
     let product = ProductRepository::find_by_id(pool, order.product_id)
         .await?
         .ok_or_else(|| {
@@ -140,14 +154,39 @@ async fn deliver_event(
         site_url.trim_end_matches('/'),
         token.raw
     );
-    EmailService::send_download_link(
-        api_key,
-        email_from,
-        &order.customer_email,
-        &product.name,
-        &download_url,
-    )
-    .await?;
+    /* [297A-15] Mismo patrón que auth: con Resend real se envía; sin proveedor
+     * (dev) el enlace se guarda en el buzón de desarrollo y a log. Solo tras
+     * éxito (real o mock) se marca la orden entregada. */
+    match resend_api_key {
+        Some(api_key) => {
+            EmailService::send_download_link(
+                api_key,
+                email_from,
+                &order.customer_email,
+                &product.name,
+                &download_url,
+            )
+            .await?;
+        }
+        None => {
+            tracing::info!(
+                to = %order.customer_email,
+                %download_url,
+                "[dev-mail] tu descarga: {}",
+                product.name
+            );
+            if let Some(mailbox) = dev_mailbox {
+                mailbox
+                    .lock()
+                    .map_err(|e| AppError::Internal(format!("Error escribiendo buzón dev: {e}")))?
+                    .push(DevMailMessage::new(
+                        &order.customer_email,
+                        &format!("tu descarga: {}", product.name),
+                        &download_url,
+                    ));
+            }
+        }
+    }
     OrderRepository::mark_delivered(pool, order.id).await?;
     tracing::info!(order_id = %order.id, "grant de descarga entregado por outbox");
     Ok(())
@@ -156,12 +195,14 @@ async fn deliver_event(
 pub async fn process_default_batch(
     pool: &PgPool,
     resend_api_key: Option<&str>,
+    dev_mailbox: Option<&Arc<DevMailbox>>,
     email_from: &str,
     site_url: &str,
 ) -> Result<OutboxRunSummary, AppError> {
     process_once(
         pool,
         resend_api_key,
+        dev_mailbox,
         email_from,
         site_url,
         DEFAULT_BATCH_SIZE,

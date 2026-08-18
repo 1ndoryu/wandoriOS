@@ -136,6 +136,41 @@ impl EntitlementRepository {
         Ok(())
     }
 
+    /// [297A-15] Revoca el grant de una orden (reembolso o chargeback).
+    /// Idempotente: un intento ya revocado no toca la fila y conserva el
+    /// `revoked_at` original. El `refresh_token_for_order` posterior (reintento
+    /// del outbox) no puede reactivar un grant de una orden refundada porque
+    /// el worker ahora corta por estado de la orden.
+    pub async fn revoke_for_order(pool: &PgPool, order_id: Uuid) -> Result<(), sqlx::Error> {
+        sqlx::query(
+            "UPDATE entitlements \
+             SET status = 'revoked', revoked_at = COALESCE(revoked_at, NOW()) \
+             WHERE order_id = $1 AND status IN ('active', 'expired')",
+        )
+        .bind(order_id)
+        .execute(pool)
+        .await?;
+        Ok(())
+    }
+
+    /// [297A-15] Historial de grants de una cuenta. Nunca devuelve `token_hash`:
+    /// el enlace de descarga solo viaja por correo y el hash es secreto.
+    pub async fn list_for_account(
+        pool: &PgPool,
+        customer_email: &str,
+    ) -> Result<Vec<crate::models::product::DownloadHistoryItem>, sqlx::Error> {
+        sqlx::query_as::<_, crate::models::product::DownloadHistoryItem>(
+            "SELECT p.name AS product_name, e.status, e.expires_at, e.created_at \
+             FROM entitlements e \
+             INNER JOIN products p ON p.id = e.product_id \
+             WHERE e.customer_email = $1 \
+             ORDER BY e.created_at DESC",
+        )
+        .bind(customer_email)
+        .fetch_all(pool)
+        .await
+    }
+
     /// Rota el secreto de un grant existente sin guardar nunca el token en
     /// claro. La restricción única por orden conserva una sola concesión
     /// activa y hace idempotente el reintento de entrega.
@@ -146,9 +181,7 @@ impl EntitlementRepository {
         expires_at: DateTime<Utc>,
     ) -> Result<bool, sqlx::Error> {
         let updated = sqlx::query(
-            "UPDATE entitlements\
-             SET token_hash = $2, expires_at = $3, status = 'active', revoked_at = NULL\
-             WHERE order_id = $1",
+            "UPDATE entitlements SET token_hash = $2, expires_at = $3, status = 'active', revoked_at = NULL WHERE order_id = $1",
         )
         .bind(order_id)
         .bind(token_hash)
@@ -199,20 +232,12 @@ impl CommerceOutboxRepository {
         pool: &PgPool,
         limit: i64,
     ) -> Result<Vec<CommerceOutboxEvent>, sqlx::Error> {
+        /* [297A-15] SQL en una sola línea: la continuación `\` de Rust en
+         * strings multilínea elimina los espacios y rompía la consulta
+         * (`commerce_outboxWHERE`). El claim con SKIP LOCKED sigue siendo el
+         * guard de concurrencia del worker. */
         sqlx::query_as::<_, CommerceOutboxEvent>(
-            "WITH claimed AS (\
-                 SELECT id FROM commerce_outbox\
-                 WHERE processed_at IS NULL AND available_at <= NOW()\
-                 ORDER BY available_at, id\
-                 FOR UPDATE SKIP LOCKED\
-                 LIMIT $1\
-             )\
-             UPDATE commerce_outbox AS item\
-             SET attempts = item.attempts + 1,\
-                 available_at = NOW() + INTERVAL '5 minutes'\
-             FROM claimed\
-             WHERE item.id = claimed.id\
-             RETURNING item.id, item.event_type, item.aggregate_id, item.payload, item.attempts",
+            "WITH claimed AS (SELECT id FROM commerce_outbox WHERE processed_at IS NULL AND available_at <= NOW() ORDER BY available_at, id FOR UPDATE SKIP LOCKED LIMIT $1) UPDATE commerce_outbox AS item SET attempts = item.attempts + 1, available_at = NOW() + INTERVAL '5 minutes' FROM claimed WHERE item.id = claimed.id RETURNING item.id, item.event_type, item.aggregate_id, item.payload, item.attempts",
         )
         .bind(limit.clamp(1, 100))
         .fetch_all(pool)
@@ -233,9 +258,7 @@ impl CommerceOutboxRepository {
         delay_seconds: i64,
     ) -> Result<(), sqlx::Error> {
         sqlx::query(
-            "UPDATE commerce_outbox\
-             SET available_at = NOW() + ($2 * INTERVAL '1 second')\
-             WHERE id = $1 AND processed_at IS NULL",
+            "UPDATE commerce_outbox SET available_at = NOW() + ($2 * INTERVAL '1 second') WHERE id = $1 AND processed_at IS NULL",
         )
         .bind(id)
         .bind(delay_seconds.max(1))

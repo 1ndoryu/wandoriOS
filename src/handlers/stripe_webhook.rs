@@ -161,6 +161,62 @@ async fn handle_expired(state: &AppState, session: &serde_json::Value) -> Result
     Ok(())
 }
 
+/// [297A-15] Resuelve la orden de un evento de reembolso/chargeback. Los
+/// eventos del proveedor referencian el `payment_intent`; el `metadata.order_id`
+/// sirve de respaldo cuando el proveedor copia la metadata del checkout.
+async fn resolve_order_for_money_event(
+    state: &AppState,
+    object: &serde_json::Value,
+) -> Result<Option<uuid::Uuid>, AppError> {
+    if let Some(order_id_raw) = object["metadata"]["order_id"].as_str() {
+        if let Ok(order_id) = uuid::Uuid::parse_str(order_id_raw) {
+            return Ok(Some(order_id));
+        }
+    }
+    if let Some(payment_intent) = object["payment_intent"].as_str() {
+        let order = OrderRepository::find_by_payment_intent(&state.pool, payment_intent).await?;
+        if let Some(order) = order {
+            return Ok(Some(order.id));
+        }
+    }
+    Ok(None)
+}
+
+/// [297A-15] Reembolso: revoca el grant y marca la orden como refundada.
+/// Idempotente por partida doble — `stripe_events` deduplica el evento y
+/// `mark_refunded`/`revoke_for_order` son no-ops sobre un estado ya cerrado.
+async fn handle_refunded(state: &AppState, object: &serde_json::Value) -> Result<(), AppError> {
+    let Some(order_id) = resolve_order_for_money_event(state, object).await? else {
+        tracing::warn!("Refund sin orden resoluble (payment_intent/metadata)");
+        return Ok(());
+    };
+    crate::repositories::commerce_repo::EntitlementRepository::revoke_for_order(
+        &state.pool,
+        order_id,
+    )
+    .await?;
+    OrderRepository::mark_refunded(&state.pool, order_id).await?;
+    tracing::info!(order_id = %order_id, "orden reembolsada: grant revocado");
+    Ok(())
+}
+
+/// [297A-15] Chargeback: misma revocación que el reembolso pero con estado
+/// `disputed` para que el panel distinga la causa del dinero perdido.
+async fn handle_dispute(state: &AppState, object: &serde_json::Value) -> Result<(), AppError> {
+    let Some(order_id) = resolve_order_for_money_event(state, object).await? else {
+        tracing::warn!("Disputa sin orden resoluble (payment_intent/metadata)");
+        return Ok(());
+    };
+    crate::repositories::commerce_repo::EntitlementRepository::revoke_for_order(
+        &state.pool,
+        order_id,
+    )
+    .await?;
+    OrderRepository::mark_disputed(&state.pool, order_id).await?;
+    tracing::info!(order_id = %order_id, "chargeback: grant revocado");
+    Ok(())
+}
+
 /// Endpoint del webhook de Stripe.
 /// Recibe eventos y procesa `checkout.session.completed`.
 /* [018A-27] El webhook se documenta como integración externa: firma en header,
@@ -182,18 +238,31 @@ pub async fn stripe_webhook(
     headers: HeaderMap,
     body: String,
 ) -> Result<StatusCode, AppError> {
-    let webhook_secret = state
-        .stripe_webhook_secret
-        .as_ref()
-        .ok_or_else(|| AppError::Internal("Webhook secret no configurado".into()))?;
-    let signature_header = headers
-        .get("stripe-signature")
-        .and_then(|value| value.to_str().ok())
-        .ok_or_else(|| AppError::BadRequest("Missing stripe-signature header".into()))?;
-    verify_stripe_signature(&body, signature_header, webhook_secret)?;
-
     let event: serde_json::Value = serde_json::from_str(&body)
         .map_err(|error| AppError::BadRequest(format!("JSON invalido: {error}")))?;
+
+    /* [297A-15] Firma: con secreto real (producción) el HMAC es obligatorio;
+     * sin secreto (dev/mock) solo se aceptan eventos de prueba (`livemode:
+     * false`) para que el ciclo E2E funcione sin credenciales. Fail-closed:
+     * un evento `livemode: true` sin secreto es rechazado. */
+    match state.stripe_webhook_secret.as_deref() {
+        Some(webhook_secret) => {
+            let signature_header = headers
+                .get("stripe-signature")
+                .and_then(|value| value.to_str().ok())
+                .ok_or_else(|| AppError::BadRequest("Missing stripe-signature header".into()))?;
+            verify_stripe_signature(&body, signature_header, webhook_secret)?;
+        }
+        None => {
+            if event["livemode"].as_bool().unwrap_or(true) {
+                return Err(AppError::BadRequest(
+                    "Webhook sin secreto solo acepta eventos de prueba (livemode=false)".into(),
+                ));
+            }
+            tracing::warn!("[mock-stripe] webhook sin firma aceptado (modo dev, evento de prueba)");
+        }
+    }
+
     let event_id = event["id"]
         .as_str()
         .ok_or_else(|| AppError::BadRequest("Evento Stripe sin id".into()))?;
@@ -206,6 +275,8 @@ pub async fn stripe_webhook(
     match event_type {
         "checkout.session.completed" => handle_completed(&state, session).await?,
         "checkout.session.expired" => handle_expired(&state, session).await?,
+        "charge.refunded" => handle_refunded(&state, session).await?,
+        "charge.dispute.created" => handle_dispute(&state, session).await?,
         event_type => tracing::debug!("Evento Stripe no manejado: {event_type}"),
     }
     StripeEventRepository::mark_processed(&state.pool, event_id).await?;

@@ -139,6 +139,8 @@ pub struct Order {
     pub status: String,
     pub paid_at: Option<DateTime<Utc>>,
     pub delivered_at: Option<DateTime<Utc>>,
+    /// [297A-15] Momento en que el dinero salió (reembolso o chargeback).
+    pub refunded_at: Option<DateTime<Utc>>,
     pub created_at: DateTime<Utc>,
 }
 
@@ -156,6 +158,44 @@ pub struct CheckoutRequest {
     #[serde(default)]
     #[validate(length(max = 128, message = "La clave de idempotencia es demasiado larga"))]
     pub idempotency_key: Option<String>,
+}
+
+/// Historial de órdenes por cuenta. [297A-15] Nunca expone `stripe_session_id`,
+/// `stripe_payment_intent` ni `idempotency_key` — son identificadores internos
+/// del proveedor y del cliente, no datos de la cuenta.
+#[derive(Debug, Clone, FromRow, Serialize, ToSchema)]
+pub struct OrderHistoryItem {
+    pub id: Uuid,
+    pub product_id: Uuid,
+    pub product_name: String,
+    pub price_cents: i32,
+    pub currency: String,
+    pub status: String,
+    pub paid_at: Option<DateTime<Utc>>,
+    pub delivered_at: Option<DateTime<Utc>>,
+    pub refunded_at: Option<DateTime<Utc>>,
+    pub created_at: DateTime<Utc>,
+}
+
+/// Estado de un grant de descarga visible por la cuenta. [297A-15] El `token`
+/// nunca se devuelve por API (solo se envía por correo); aquí solo se informa
+/// del estado del entitlement para que el usuario sepa si su descarga sigue
+/// disponible o fue revocada/expirada.
+#[derive(Debug, Clone, FromRow, Serialize, ToSchema)]
+pub struct DownloadHistoryItem {
+    pub product_name: String,
+    pub status: String,
+    pub expires_at: DateTime<Utc>,
+    pub created_at: DateTime<Utc>,
+}
+
+/// Resultado de un reembolso (admin). La operación es idempotente: reintentar
+/// devuelve el mismo estado sin volver a tocar al proveedor.
+#[derive(Debug, Clone, Serialize, ToSchema)]
+pub struct RefundResponse {
+    pub order_id: Uuid,
+    pub status: String,
+    pub refunded_at: Option<DateTime<Utc>>,
 }
 
 #[cfg(test)]

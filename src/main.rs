@@ -41,9 +41,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     sqlx::migrate!().run(&pool).await?;
 
     if command.as_deref() == Some("--process-commerce-outbox") {
+        /* [297A-15] El buzón dev es local al proceso: el modo sin Resend solo
+         * existe en desarrollo, y el worker no retiene el estado entre runs. */
+        let dev_mailbox: std::sync::Arc<glory_backend::handlers::dev_mail::DevMailbox> =
+            std::sync::Arc::new(std::sync::Mutex::new(Vec::new()));
         let summary = glory_backend::services::commerce_outbox::process_default_batch(
             &pool,
             config.resend_api_key.as_deref(),
+            Some(&dev_mailbox),
             &config.email_from,
             &std::env::var("SITE_URL").unwrap_or_else(|_| "https://wandori.us".to_string()),
         )

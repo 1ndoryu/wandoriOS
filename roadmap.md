@@ -334,13 +334,16 @@ primer icono real (1086px) con RTL+space-between, `getCellAt` inverso exacto, y
 
 ### 297A-15 — Comercio seguro
 
-**Depende de:** 297A-7/10/14.
+**Depende de:** 297A-7/10/14. **Cerrado 18-ago** (mock fail-closed + E2E; sin credenciales reales).
 
-- [ ] Implementar y probar reembolsos y chargeback con autoridad server-side e idempotencia.
-- [ ] Integrar scheduler/proveedor real y confirmar el worker de outbox con backoff, observabilidad y recuperación.
-- [ ] Ejecutar E2E con Stripe/Resend o proveedores autorizados: checkout invitado, pago, webhook, entitlement, grant y descarga privada.
+- [x] Reembolsos y chargeback con autoridad server-side e idempotencia (`charge.refunded`/`charge.dispute.created` + `POST /api/admin/orders/:id/refund`; revocación de grant idempotente).
+- [x] Worker de outbox verificado con backoff (30s–32m), SKIP LOCKED y recuperación; fix de SQL roto por continuación `\` de Rust (nunca corrió contra BD real).
+- [x] E2E con proveedor mock (real solo en producción, patrón Resend/DevMailbox): checkout invitado → webhook → entitlement → outbox → descarga privada → reembolso/chargeback; idempotencia en cada paso.
+- [x] Historial por cuenta: `GET /api/me/orders` y `GET /api/me/downloads` (sin tokens ni ids de proveedor); Pedidos/Descargas del frontend ya consumen los endpoints.
 
-**Gate/salida:** el comprador recibe solo la versión adquirida; fallos de pago/webhook no conceden acceso ni duplican órdenes.
+**Gate/salida:** el comprador recibe solo la versión adquirida; fallos de pago/webhook no conceden acceso ni duplican órdenes (verificado: replay de webhook y reembolso idempotentes, evento `livemode:true` sin secreto rechazado).
+
+**Pendiente con credenciales reales (documentado, requiere intervención humana):** checkout/refund contra Stripe live y webhook firmado en staging; migración de `/uploads` legacy a storage privado (fuera de alcance).
 
 ### 297A-16 — Analytics, estadísticas y retiro legado
 

@@ -125,9 +125,9 @@ AppRegistry.register({
 
 /* === Comercio === */
 for (const commerceApp of [
-  { id: 'store', title: 'Tienda', icon: Store, route: '/store', render: () => createStoreView() },
-  { id: 'orders', title: 'Pedidos', icon: ClipboardList, route: '/orders', render: () => ({ element: createOrdersView(), destroy: () => {} }) },
-  { id: 'downloads', title: 'Descargas', icon: Download, route: '/downloads', render: () => ({ element: createDownloadsView(), destroy: () => {} }) },
+  { id: 'store', title: 'Tienda', icon: Store, route: '/store', render: (ctx: RenderContext) => createStoreView(ctx.signal) },
+  { id: 'orders', title: 'Pedidos', icon: ClipboardList, route: '/orders', render: (ctx: RenderContext) => ({ element: createOrdersView(ctx.signal), destroy: () => {} }) },
+  { id: 'downloads', title: 'Descargas', icon: Download, route: '/downloads', render: (ctx: RenderContext) => ({ element: createDownloadsView(ctx.signal), destroy: () => {} }) },
 ] as const) {
   AppRegistry.register({
     id: commerceApp.id,
@@ -139,9 +139,9 @@ for (const commerceApp of [
     routePatterns: [commerceApp.route],
     deepLink: createPathDeepLink(commerceApp.route),
     layout: 'padded',
-    render: (): MountedView => {
+    render: (ctx: RenderContext): MountedView => {
       dispatchEvent({ type: 'app_opened', appId: commerceApp.id });
-      const view = commerceApp.render();
+      const view = commerceApp.render(ctx);
       return { element: view.element, destroy: () => { view.destroy(); dispatchEvent({ type: 'app_closed', appId: commerceApp.id }); } };
     },
   });

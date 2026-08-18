@@ -8,6 +8,7 @@ mod health;
 pub mod media_handler;
 mod notes;
 pub mod notifications;
+pub mod orders_handler;
 pub mod preferences_handler;
 pub mod products_handler;
 pub mod projects_handler;
@@ -126,6 +127,9 @@ impl utoipa::Modify for SecurityAddon {
         media_handler::preview_admin_media,
         download_handler::download,
         stripe_webhook::stripe_webhook,
+        orders_handler::my_orders,
+        orders_handler::my_downloads,
+        orders_handler::refund_order,
         notes::create_note,
         notes::get_note,
         notes::list_notes,
@@ -170,6 +174,9 @@ impl utoipa::Modify for SecurityAddon {
         crate::models::product::UpdateProductRequest,
         crate::models::product::CheckoutRequest,
         crate::handlers::products_handler::CheckoutResponse,
+        crate::models::product::OrderHistoryItem,
+        crate::models::product::DownloadHistoryItem,
+        crate::models::product::RefundResponse,
         crate::models::notification::NotificationAccountList,
         crate::models::notification::NotificationAccountResponse,
         crate::models::notification::NotificationAdminList,
@@ -300,6 +307,7 @@ fn api_routes() -> Router<AppState> {
         .merge(preferences_handler::routes())
         .merge(settings_handler::routes())
         .merge(products_handler::routes())
+        .merge(orders_handler::routes())
         .merge(projects_handler::routes())
         .merge(seo::routes())
         .merge(stripe_webhook::routes())

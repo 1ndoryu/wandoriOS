@@ -172,6 +172,38 @@ pub async fn delete_product(
     Ok(StatusCode::NO_CONTENT)
 }
 
+/// [297A-15] Checkout simulado (dev fail-closed): solo se usa cuando NO hay
+/// claves reales de Stripe. Genera una sesión `cs_test_*` y una URL local que
+/// en producción nunca existiría. El E2E cubre el ciclo completo contra este
+/// modo; con claves reales la ruta mock nunca se alcanza.
+async fn create_mock_checkout(
+    state: &AppState,
+    order: &Order,
+) -> Result<Json<CheckoutResponse>, AppError> {
+    let session_id = format!("cs_test_{}", Uuid::new_v4().simple());
+    let checkout_url = format!(
+        "{}/checkout/mock?session_id={}&order={}",
+        state.site_url.trim_end_matches('/'),
+        session_id,
+        order.id
+    );
+    crate::repositories::product_repo::OrderRepository::update_stripe_session(
+        &state.pool,
+        order.id,
+        &session_id,
+    )
+    .await?;
+    tracing::info!(
+        "[mock-stripe] checkout creado: session={session_id}, order={}",
+        order.id
+    );
+    Ok(Json(CheckoutResponse {
+        checkout_url,
+        order_id: order.id,
+        session_id,
+    }))
+}
+
 async fn create_stripe_checkout(
     state: &AppState,
     stripe_key: &str,
@@ -287,12 +319,6 @@ pub async fn checkout(
         .map_err(|error| AppError::Validation(error.to_string()))?;
     let product = ProductService::get_public(&state.pool, product_id).await?;
 
-    /* [297A-7] Modo demo deshabilitado — requiere Stripe configurado */
-    let stripe_key = state
-        .stripe_secret_key
-        .as_ref()
-        .ok_or_else(|| AppError::Internal("Pasarela de pago no configurada".into()))?;
-
     /* [297A-15] El header tiene precedencia; el body permite clientes que no
      * puedan añadir headers. Si falta, se genera una clave única para no
      * romper clientes legacy, pero los reintentos seguros deben reutilizarla. */
@@ -311,6 +337,15 @@ pub async fn checkout(
     )
     .await?;
 
+    /* [297A-15] Sin claves reales → mock (dev); con claves → proveedor real. */
+    if state.stripe_mock_enabled() {
+        return create_mock_checkout(&state, &order).await;
+    }
+
+    let stripe_key = state
+        .stripe_secret_key
+        .as_ref()
+        .ok_or_else(|| AppError::Internal("Pasarela de pago no configurada".into()))?;
     create_stripe_checkout(&state, stripe_key, &product, &order, &req.email).await
 }
 

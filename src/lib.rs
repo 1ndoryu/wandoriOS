@@ -35,3 +35,13 @@ pub struct AppState {
     /// [297A-13] Buzón de correo mockeado en desarrollo (fail-closed en prod)
     pub dev_mailbox: Arc<DevMailbox>,
 }
+
+impl AppState {
+    /// [297A-15] Modo mock de pagos: SOLO cuando no hay secretos reales de
+    /// Stripe configurados. Fail-closed: con claves reales (producción), el
+    /// mock nunca se activa; el checkout llama al proveedor y el webhook exige
+    /// firma HMAC. El mismo patrón que Resend/DevMailbox: real solo en prod.
+    pub fn stripe_mock_enabled(&self) -> bool {
+        self.stripe_secret_key.is_none() && self.stripe_webhook_secret.is_none()
+    }
+}

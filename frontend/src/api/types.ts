@@ -93,6 +93,29 @@ export interface CreateProductRequest {
   is_active?: boolean;
 }
 
+/* [297A-15] Historial de compras y descargas. El contrato backend nunca
+ * expone session/intent del proveedor, idempotency_key ni el token: el
+ * cliente solo ve el estado de la entrega. */
+export interface OrderHistoryItem {
+  id: string;
+  product_id: string;
+  product_name: string;
+  price_cents: number;
+  currency: string;
+  status: string;
+  paid_at: string | null;
+  delivered_at: string | null;
+  refunded_at: string | null;
+  created_at: string;
+}
+
+export interface DownloadHistoryItem {
+  product_name: string;
+  status: string;
+  expires_at: string;
+  created_at: string;
+}
+
 export interface UpdateProductRequest {
   name?: string;
   description?: string;

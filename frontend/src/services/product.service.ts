@@ -4,7 +4,7 @@
  * público por artículo y checkout en rutas públicas reales.
  * [018A-33] CRUD y checkout comparten el mutator generado con auth/CSRF. */
 
-import { unwrapGeneratedResponse } from '../api/client';
+import { generatedFetcher, unwrapGeneratedResponse, type GeneratedResponse } from '../api/client';
 import {
   checkout,
   createProduct,
@@ -15,7 +15,13 @@ import {
   listPublicProducts,
   updateProduct,
 } from '../api/generated/products-handler/products-handler';
-import type { CreateProductRequest, Product, UpdateProductRequest } from '../api/types';
+import type {
+  CreateProductRequest,
+  DownloadHistoryItem,
+  OrderHistoryItem,
+  Product,
+  UpdateProductRequest,
+} from '../api/types';
 
 export const ProductService = {
   /** Catálogo público de la app Tienda. */
@@ -70,5 +76,19 @@ export const ProductService = {
       { headers: { 'Idempotency-Key': idempotencyKey } },
     );
     return unwrapGeneratedResponse<{ checkout_url: string }>(response, [200]);
+  },
+
+  /** [297A-15] Historial de órdenes de la cuenta (sesión). Nunca expone
+   * identificadores del proveedor ni claves de idempotencia. */
+  async listMyOrders(options?: { signal?: AbortSignal }): Promise<OrderHistoryItem[]> {
+    const response = await generatedFetcher<GeneratedResponse<OrderHistoryItem[]>>('/api/me/orders', { signal: options?.signal });
+    return unwrapGeneratedResponse<OrderHistoryItem[]>(response, [200]);
+  },
+
+  /** [297A-15] Estado de las descargas de la cuenta (sesión). El token de
+   * descarga nunca viaja por API: solo el estado del grant. */
+  async listMyDownloads(options?: { signal?: AbortSignal }): Promise<DownloadHistoryItem[]> {
+    const response = await generatedFetcher<GeneratedResponse<DownloadHistoryItem[]>>('/api/me/downloads', { signal: options?.signal });
+    return unwrapGeneratedResponse<DownloadHistoryItem[]>(response, [200]);
   },
 };

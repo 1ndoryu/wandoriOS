@@ -139,7 +139,7 @@ impl ArticleRepository {
         .bind(id)
         .fetch_optional(&mut *conn)
         .await?;
-        let Some((current_status, current_published_at)) = current_row else {
+        let Some((current_status, _current_published_at)) = current_row else {
             return Ok(None);
         };
 
