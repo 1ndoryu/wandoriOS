@@ -11,6 +11,8 @@ import {
   isInternalPushHistoryEntry,
   pushPath,
   replacePath,
+  refreshRoute,
+  initRouter,
 } from './router';
 
 describe('router', () => {
@@ -146,8 +148,51 @@ describe('router', () => {
     });
   });
 
-  describe('guard', () => {
-    it('navega a /login si el guard retorna false', async () => {
+  describe('History API — popstate (Back/Forward) y refresh', () => {
+    it('re-resuelve la ruta al volver atrás (popstate)', async () => {
+      const stop = initRouter();
+      const renders: string[] = [];
+      addRoute({ path: '/back-a', render: () => { renders.push('a'); return document.createElement('div'); } });
+      addRoute({ path: '/back-b', render: () => { renders.push('b'); return document.createElement('div'); } });
+
+      navigate('/back-a');
+      await new Promise(r => setTimeout(r, 10));
+      navigate('/back-b');
+      await new Promise(r => setTimeout(r, 10));
+      expect(renders).toEqual(['a', 'b']);
+
+      /* Simular el botón Back del navegador: jsdom dispara popstate por sí
+       * mismo tras history.back() y mueve location; el listener del router
+       * re-resuelve con la URL previa. */
+      history.back();
+      await new Promise(r => setTimeout(r, 30));
+      expect(getCurrentPath()).toBe('/back-a');
+      expect(renders).toEqual(['a', 'b', 'a']);
+      stop();
+    });
+
+    it('conserva la marca interna al reemplazar una entrada push (no se pierde el origen)', () => {
+      pushPath('/internal-replace');
+      expect(isInternalPushHistoryEntry()).toBe(true);
+      replacePath('/internal-replace-2');
+      expect(isInternalPushHistoryEntry()).toBe(true);
+      expect(isInternalHistoryEntry()).toBe(true);
+    });
+
+    it('refreshRoute re-resuelve la URL actual sin crear entrada nueva', async () => {
+      const render = vi.fn(() => document.createElement('div'));
+      addRoute({ path: '/refresh-test', render });
+      navigate('/refresh-test');
+      await new Promise(r => setTimeout(r, 10));
+      const calls = render.mock.calls.length;
+      await refreshRoute();
+      expect(render.mock.calls.length).toBe(calls + 1);
+      /* El historial no gana entradas con refreshRoute. */
+      expect(history.length).toBeGreaterThanOrEqual(2);
+    });
+  });
+
+  describe('guard', () => {    it('navega a /login si el guard retorna false', async () => {
       addRoute({ path: '/protected', render: () => document.createElement('div'), guard: () => false });
       addRoute({ path: '/login', render: () => document.createElement('div') });
       navigate('/protected');

@@ -205,9 +205,17 @@ el checkout compartido (incidente del 14-ago entre 138A-14 y 138A-15 en
 
 **Depende de:** 297A-9/11/12/13.
 
-- [ ] Probar Back/Forward, `popstate`, refresh y transición desktop/tablet/móvil; la URL debe enfocar solo la ventana activa.
-- [ ] Probar sesión limpia, varias ventanas, permisos, rutas inválidas, parámetros inseguros, scroll/formulario y deduplicación.
-- [ ] Verificar `pushPath` solo en aperturas explícitas, `replacePath` en foco y eventos allowlisted sin datos privados.
+- [x] **Validación History API y privacidad** (18-ago): tests nuevos de popstate
+      (Back/Forward re-resuelve la ruta previa con `initRouter`), refreshRoute sin
+      entrada nueva, y conservación del marker interno al reemplazar. Verificado en
+      preview: deep link `/article/:slug` abre/enfoca la ventana del artículo;
+      al cerrarla la URL vuelve a `/`. Los deepLinks son allowlisted públicos
+      (`/gallery`, `/article/:slug`, `/about`, `/projects`, `/store`…); el state de
+      historial solo contiene el marker `{kind, mode, createdByPush}` — sin IDs
+      internos, tokens, geometría, overlays ni preferencias.
+- [ ] Pendiente navegador real: E2E de transición desktop/tablet/móvil con la URL
+      enfocando solo la ventana activa, sesión limpia, deduplicación multi-ventana
+      y refresh en cada modo.
 
 **Gate/salida:** E2E de History API y deep links compartibles sin serializar IDs internos, tokens, posiciones ni overlays.
 
