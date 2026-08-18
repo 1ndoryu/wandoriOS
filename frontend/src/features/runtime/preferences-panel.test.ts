@@ -15,7 +15,7 @@ import {
 import { createPreferencesPanel } from './preferences-panel';
 
 function remote(theme: 'system' | 'claro' | 'oscuro', revision = 0) {
-  return { theme, revision, updated_at: '2026-07-31T00:00:00.000Z' };
+  return { theme, wallpaper: null, font: null, scale: null, revision, updated_at: '2026-07-31T00:00:00.000Z' };
 }
 
 let stopSync: (() => void) | null = null;

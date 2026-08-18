@@ -10,20 +10,24 @@ import { createPathDeepLink } from './deep-links';
 import { dispatchEvent } from '../analytics/dispatcher';
 import type { MountedView, RenderContext } from '../../core/lifecycle';
 
-/* === Settings === */
+/* === Settings ===
+ * [297A-29] Panel de control: cada usuario autenticado personaliza su OS
+ * (fondo/fuente/escala) y hereda el default del admin; el botón de guardar
+ * default global solo aparece con capacidad admin. */
 AppRegistry.registerLazy({
   id: 'settings',
   title: 'Configuración',
   icon: Settings,
   iconType: 'application',
   singleton: true,
-  requires: 'admin',
+  requires: 'authenticated',
   load: () => import('../settings/settings-panel').then(m => ({
     render: (_ctx: RenderContext): MountedView => {
       dispatchEvent({ type: 'app_opened', appId: 'settings' });
+      const view = m.createSettingsPanel();
       return {
-        element: m.createSettingsPanel(),
-        destroy: () => { dispatchEvent({ type: 'app_closed', appId: 'settings' }); },
+        element: view.element,
+        destroy: () => { view.destroy?.(); dispatchEvent({ type: 'app_closed', appId: 'settings' }); },
       };
     },
   })),

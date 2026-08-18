@@ -134,4 +134,40 @@
   gap: var(--espacio-md);
 }
 
+/* === [297A-29] PANEL DE CONTROL (Configuración) ===
+ * Apariencia del OS por usuario: fondo, fuente, escala + cuenta + defaults
+ * del admin. Reutiliza la receta de preferences-panel (secciones con borde
+ * superior y títulos del sistema). */
+.control-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-lg);
+  padding: var(--espacio-lg);
+}
+
+.control-panel__seccion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-md);
+  border-top: var(--borde);
+  padding-top: var(--espacio-lg);
+}
+
+.control-panel__wallpaper,
+.control-panel__escala {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-md);
+}
+
+.control-panel__wallpaper-vista {
+  width: 100%;
+  min-height: 72px;
+  border: var(--borde);
+  background-image: var(--sistema-trama-escritorio);
+  background-size: var(--sistema-trama-tamano) var(--sistema-trama-tamano);
+  background-color: var(--sistema-fondo);
+}
+
 } /* @layer components */

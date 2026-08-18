@@ -24,6 +24,7 @@ import {
 import { authStore, type AuthCapability } from '../store';
 import { showToast } from '../components/ui/toast';
 import { clearPreferencesSync, syncPreferencesForUser } from '../features/runtime/preferences-sync';
+import { clearAppearanceSync, syncAppearanceForUser } from '../features/runtime/appearance-sync';
 import { clearClipboard } from '../features/runtime/workspace/workspace-store';
 
 export interface MeResult {
@@ -133,6 +134,7 @@ export const AuthService = {
       showToast('no se pudo cerrar la sesión remota; se limpió la sesión local');
     }
     clearPreferencesSync();
+    clearAppearanceSync();
     clearClipboard();
     authStore.set({ isAuthenticated: false, userId: null, userEmail: null, capability: 'public' });
   },
@@ -144,10 +146,11 @@ export const AuthService = {
       const res = unwrapGeneratedResponse<MeResponse>(response, [200]);
       const capability = capabilityFromRole(res.role);
       authStore.set({ isAuthenticated: true, userId: res.id, userEmail: res.email ?? null, capability });
-      await syncPreferencesForUser(res.id);
+      await Promise.all([syncPreferencesForUser(res.id), syncAppearanceForUser(res.id)]);
       return { isAuthenticated: true, userId: res.id, capability };
     } catch {
       clearPreferencesSync();
+      clearAppearanceSync();
       authStore.set({ isAuthenticated: false, userId: null, capability: 'public' });
       return { isAuthenticated: false, userId: null, capability: 'public' };
     }

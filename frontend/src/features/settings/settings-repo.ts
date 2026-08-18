@@ -8,6 +8,7 @@
 import { safeRun } from '../../utils/safe-async';
 import { profileStore, profileImage, siteConfig, socialLinksStore, redesLayoutStore } from '../../store';
 import { SettingsService } from '../../services';
+import { initAppearanceFromSettings } from '../runtime/appearance-sync';
 
 let saveTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -53,6 +54,10 @@ export async function loadProfileSettings(): Promise<void> {
     if (settings.redes_layout === 'stacked' || settings.redes_layout === 'inline') {
       redesLayoutStore.set(settings.redes_layout as 'inline' | 'stacked');
     }
+    /* [297A-29] Defaults globales de apariencia (los fija el admin). Si luego
+     * hay sesión, syncAppearanceForUser los sobreescribe con los valores
+     * efectivos de la cuenta. */
+    initAppearanceFromSettings(settings);
   } catch { /* Backend no disponible */ }
 
   profileStore.set(config);

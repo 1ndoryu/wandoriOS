@@ -20,6 +20,10 @@ const PUBLIC_SETTING_KEYS: &[&str] = &[
     "redes_size",
     "redes_gap",
     "show_entries_on_home",
+    /* [297A-29] Defaults globales de apariencia (los fija el admin). */
+    "appearance_wallpaper",
+    "appearance_font",
+    "appearance_scale",
 ];
 
 impl SettingsRepository {

@@ -121,6 +121,14 @@ export function createEl<K extends keyof HTMLElementTagNameMap>(
     if (attrs.name) el.setAttribute('name', attrs.name);
     if (attrs.disabled) el.setAttribute('disabled', attrs.disabled);
     if (attrs.download) el.setAttribute('download', attrs.download);
+    /* [297A-29] min/max/step/rows/accept estaban declarados en FormAttrs pero
+     * nunca se aplicaban: los sliders quedaban clampados a 0–100 (el perfil
+     * y la nueva escala del panel de control). */
+    if (attrs.min !== undefined) el.setAttribute('min', attrs.min);
+    if (attrs.max !== undefined) el.setAttribute('max', attrs.max);
+    if (attrs.step !== undefined) el.setAttribute('step', attrs.step);
+    if (attrs.rows !== undefined) el.setAttribute('rows', attrs.rows);
+    if (attrs.accept !== undefined) el.setAttribute('accept', attrs.accept);
 
     /* Soportar kebab-case y camelCase para aria-* */
     setAttr(el, 'aria-label', attrs['aria-label'] ?? attrs.ariaLabel);

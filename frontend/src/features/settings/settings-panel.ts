@@ -1,11 +1,12 @@
 /* wandori.us — Settings Panel
- * [018A-44] La configuración de fuentes/tamaños fue retirada; el nombre del
- * módulo refleja ahora que la app conserva un panel de perfil delegable.
- * La app Configuración sigue registrada y puede evolucionar sin reintroducir
- * un boundary específico de tipografía. */
+ * [297A-29 F4/F5] La app Configuración es el panel de control del OS:
+ * apariencia (fondo/fuente/escala), default del admin y ajustes de cuenta.
+ * El nombre del módulo se conserva por compatibilidad con el registro; el
+ * contenido real vive en control-panel. */
 
-import { createProfileSettingsPanel } from './profile-settings';
+import { createControlPanel } from './control-panel';
+import type { MountedView } from '../../core/lifecycle';
 
-export function createSettingsPanel(): HTMLElement {
-  return createProfileSettingsPanel();
+export function createSettingsPanel(): MountedView {
+  return createControlPanel();
 }

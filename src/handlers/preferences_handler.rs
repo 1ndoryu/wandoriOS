@@ -12,6 +12,12 @@ use crate::AppState;
 #[derive(Debug, serde::Serialize, ToSchema)]
 pub struct UserPreferencesResponse {
     pub theme: String,
+    /// Fondo de pantalla efectivo (default del admin si el usuario no lo fijó).
+    pub wallpaper: Option<String>,
+    /// Fuente efectiva (`system`, `pixel`, `mono`, `sans`).
+    pub font: Option<String>,
+    /// Escala efectiva (factor, 0.5–2.0).
+    pub scale: Option<f64>,
     pub revision: i32,
     pub updated_at: chrono::DateTime<chrono::Utc>,
 }
@@ -20,6 +26,9 @@ impl From<UserPreferences> for UserPreferencesResponse {
     fn from(preferences: UserPreferences) -> Self {
         Self {
             theme: preferences.theme,
+            wallpaper: preferences.wallpaper,
+            font: preferences.font,
+            scale: preferences.scale,
             revision: preferences.revision,
             updated_at: preferences.updated_at,
         }

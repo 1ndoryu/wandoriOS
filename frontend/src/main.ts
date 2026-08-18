@@ -45,6 +45,7 @@ import {initTracking, trackPageView} from './features/analytics/tracker';
 import {createAnalyticsConsentBanner} from './features/analytics/consent-banner';
 import {initThemeStore} from './features/runtime/theme-store';
 import {initPreferencesSync} from './features/runtime/preferences-sync';
+import {initAppearanceSync} from './features/runtime/appearance-sync';
 import {authStore, showProfile, showSidebar, siteConfig} from './store';
 import {AuthService} from './services';
 import {fetchWorkspaceRelease} from './features/runtime/workspace/workspace-store';
@@ -86,6 +87,7 @@ async function initApp(): Promise<void> {
      * (el anti-flash de index.html ya puso data-tema en la primera pintura). */
     initThemeStore();
     const stopPreferencesSync = initPreferencesSync();
+    const stopAppearanceSync = initAppearanceSync();
     const stopOverlaySync = initOverlaySync();
     /* [018A-76] Puente artículo → escritorio: al publicar, garantiza la carpeta
      * real "Notas" y coloca el artículo dentro. Idempotente. */
@@ -355,6 +357,7 @@ async function initApp(): Promise<void> {
         mediaQuery.removeEventListener('change', onPresentationChange);
         stopTracking();
         stopPreferencesSync();
+        stopAppearanceSync();
         stopOverlaySync();
         stopArticleNotasSync();
         stopRouter();
