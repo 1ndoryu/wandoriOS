@@ -116,8 +116,10 @@ profileStore.subscribe((config) => {
   root.style.setProperty('--redes-gap', `${config.redesGap}px`);
 });
 
-/* Imagen de perfil */
-export const profileImage = createStore<string>('/uploads/profile.jpg');
+/* Imagen de perfil. [297A-9] El default es el asset bundled (`/profile.jpg`):
+ * `/uploads/*` solo existe como file_path interno del backend y nunca se sirve
+ * estático, así que apuntar ahí generaba un 404 en cada sesión sin foto. */
+export const profileImage = createStore<string>('/profile.jpg');
 
 /* Configuración del sitio */
 export interface SiteConfig {

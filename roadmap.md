@@ -170,8 +170,17 @@ el checkout compartido (incidente del 14-ago entre 138A-14 y 138A-15 en
 
 **Depende de:** runtime y recetas visuales implementadas.
 
-- [ ] Revisar shell, ventanas, taskbar, menú contextual, foco y estados en 1440×900, 1024×768, 390×844 y 320px.
-- [ ] Repetir con zoom 200%, teclado y claro/oscuro; registrar cualquier overflow, foco perdido o contraste incorrecto.
+- [x] **Validación base del chrome** (18-ago): shell, menú sistema, grid de iconos,
+      taskbar, ventanas (abrir/minimizar/restaurar/cerrar), menú contextual (7 items,
+      disabled correctos), navegación, temas claro/oscuro (contraste 15:1 y 21:1),
+      sin overflows en 907×907 ni en zoom 200% aproximado. Documento:
+      `Agente/documentacion/visual-shell/validacion-2026-08-18.md`.
+- [x] **Fix 404 foto de perfil** (18-ago): el default del store apuntaba a
+      `/uploads/profile.jpg` que el backend nunca sirve estático; cambiado al asset
+      bundled `/profile.jpg`. Verificado en preview (desaparece el 404).
+- [ ] Pendiente navegador redimensionable: capturas reales en 1440×900, 1024×768,
+      390×844 y 320px (el preview embebido no redimensiona); 390/320 también en
+      297A-12. Tabulación real y zoom nativo del navegador.
 
 **Gate/salida:** capturas y observaciones documentadas; no quedan regresiones visuales del chrome base.
 
