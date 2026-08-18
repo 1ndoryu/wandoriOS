@@ -8,6 +8,7 @@
 import { Bell, createElement, RefreshCw } from 'lucide';
 import { createEl } from '../../utils/dom';
 import { createVacio } from '../../components/ui/empty-state';
+import { track } from '../analytics/tracker';
 import { getViewport } from '../../utils/viewport';
 import {
   loadNotifications,
@@ -161,6 +162,9 @@ export function createNotificationsPopover(anchor: HTMLElement): NotificationsPo
   function open(): void {
     if (abierto) return;
     abierto = true;
+    /* [297A-16] Métrica de releases: abrir el panel de novedades es la señal
+     * de que el usuario vio la versión activa. Sin contenido ni versiones. */
+    track({ event_type: 'release', target_type: 'release' });
     document.body.appendChild(root);
     anchor.setAttribute('aria-expanded', 'true');
     position();

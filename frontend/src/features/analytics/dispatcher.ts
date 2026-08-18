@@ -4,7 +4,7 @@
  * presentationMode. Wrapper sobre el tracker existente.
  * No emite por cada pointermove; eventos críticos reservados al backend. */
 
-import { trackPageView } from './tracker';
+import { track, trackPageView } from './tracker';
 import { getPresentationMode } from '../../utils/viewport';
 
 /* === Schema version del catálogo de eventos === */
@@ -157,14 +157,56 @@ export function dispatchEvent(event: TrackEvent): void {
 
   queue.push(envelope);
 
-  /* Delegar al tracker existente según tipo */
+  /* [297A-16] El catálogo tipado se conecta al pipeline batch real (con
+   * consentimiento). Reglas de privacidad: NUNCA se envía user_id, email,
+   * tokens, orderId, contenido de overlays ni mensajes de error crudos — los
+   * identificadores internos se descartan y el texto de error se reduce a la
+   * categoría de la operación. */
   switch (event.type) {
     case 'page_view':
       trackPageView(event.path);
       break;
+    case 'route_viewed':
+      track({ event_type: 'page_view', target_type: 'page', metadata: { page: event.path } });
+      break;
+    case 'app_opened':
+    case 'app_closed':
+      track({ event_type: 'app', target_type: 'app', target_id: event.appId });
+      break;
+    case 'app_failed':
+      /* Sin el texto de error (puede contener rutas/URLs); solo el appId. */
+      track({ event_type: 'error', target_type: 'app', target_id: event.appId });
+      break;
+    case 'window_focus_changed':
+    case 'window_minimized':
+    case 'window_restored':
+    case 'window_maximized':
+    case 'window_closed':
+      track({ event_type: 'window', target_type: 'window', target_id: event.appId });
+      break;
+    case 'operation_failed':
+      track({ event_type: 'error', target_type: 'operation', metadata: { operation: event.operation } });
+      break;
+    case 'retry_outcome':
+      track({ event_type: 'error', target_type: 'retry', metadata: { operation: event.operation, success: event.success } });
+      break;
+    case 'resource_published':
+    case 'resource_privated':
+    case 'resource_trashed':
+    case 'resource_restored':
+      track({ event_type: 'publish', target_type: 'resource', metadata: { kind: event.resourceKind } });
+      break;
+    case 'product_viewed':
+    case 'checkout_started':
+      track({ event_type: 'purchase', target_type: 'product', target_id: event.productId });
+      break;
+    case 'theme_changed':
+      track({ event_type: 'theme', target_type: 'preference', metadata: { mode: event.mode, resolved: event.resolved } });
+      break;
+    /* Silenciados por diseño: session_started/ended (identidad del cliente),
+     * consent_updated (el propio consentimiento no se mide) y los eventos de
+     * comercio con orderId (identificador interno). */
     default:
-      /* Placeholder: en 297A-16 se conectará al pipeline batch.
-       * Por ahora solo acumula en cola para no perder eventos. */
       break;
   }
 }

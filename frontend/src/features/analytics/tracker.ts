@@ -102,6 +102,15 @@ export function trackPurchase(productId: string): void {
   track({ event_type: 'purchase', target_type: 'product', target_id: productId });
 }
 
+/* [297A-16] Errores globales sanitizados: se mide la categoría, nunca el
+ * mensaje/stack (pueden contener rutas, URLs o datos del usuario). */
+function onGlobalError(): void {
+  track({ event_type: 'error', target_type: 'runtime', metadata: { kind: 'uncaught' } });
+}
+function onUnhandledRejection(): void {
+  track({ event_type: 'error', target_type: 'runtime', metadata: { kind: 'rejection' } });
+}
+
 /* Inicializar tracking automático de page views. Retorna cleanup function.
  * [Auditoría v4 §4.3] Eventos globales ahora removibles. */
 export function initTracking(): () => void {
@@ -117,11 +126,15 @@ export function initTracking(): () => void {
 
   document.addEventListener('copy', onCopy);
   document.addEventListener('click', onExternalClick);
+  window.addEventListener('error', onGlobalError);
+  window.addEventListener('unhandledrejection', onUnhandledRejection);
   window.addEventListener('beforeunload', onBeforeUnload);
 
   return () => {
     document.removeEventListener('copy', onCopy);
     document.removeEventListener('click', onExternalClick);
+    window.removeEventListener('error', onGlobalError);
+    window.removeEventListener('unhandledrejection', onUnhandledRejection);
     window.removeEventListener('beforeunload', onBeforeUnload);
   };
 }

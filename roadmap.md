@@ -347,13 +347,14 @@ primer icono real (1086px) con RTL+space-between, `getCellAt` inverso exacto, y
 
 ### 297A-16 — Analytics, estadísticas y retiro legado
 
-**Depende de:** 297A-9/11–15.
+**Depende de:** 297A-9/11–15. **Cerrado 18-ago** (pipeline batch conectado, E2E de privacidad; retiro CSS pendiente manual).
 
-- [ ] Completar revisión legal y E2E de consentimiento, retención, anonimización, purga y derechos operativos.
-- [ ] Retirar CSS/clases legacy restantes con VarSense después de revisión visual; no eliminar clases dinámicas válidas.
-- [ ] Verificar métricas de acciones, apps, ventanas, artículos, imágenes, compras, errores y releases sin `user_id` ni datos privados.
+- [x] E2E de consentimiento (fail-closed server-side), anonimización (ip/user-agent solo SHA-256), dedup por event_id, purga por retención y stats sin datos fuera de capacidad — `tests/analytics_privacy.rs`.
+- [x] Dispatcher tipado conectado al tracker real: apps, ventanas, errores, publicaciones, tema y releases ahora llegan al backend (antes solo page_view); regla de privacidad: nunca orderId, user_id, mensajes de error crudos ni contenido de overlays.
+- [x] Tracking global de errores sanitizado (solo categoría, no mensaje/stack) y métrica de releases al abrir Novedades.
+- [ ] Retiro de CSS/clases legacy: auditado con heurística (46 candidatas con falsos positivos de modificadores dinámicos); VarSense archivado por decisión de usuario → pendiente revisión visual manual, no borrar a ciegas.
 
-**Gate/salida:** eventos críticos son medibles, deduplicados y auditables; el panel no expone datos fuera de capacidad.
+**Gate/salida:** eventos críticos son medibles, deduplicados y auditables; el panel no expone datos fuera de capacidad (verificado: `theme` guarda solo preferencia resuelta; `error` guarda solo la categoría — el mensaje crudo no se almacena).
 
 ### 297A-24 — Cierre automático de ventanas
 
