@@ -293,8 +293,16 @@ primer icono real (1086px) con RTL+space-between, `getCellAt` inverso exacto, y
 
 **Depende de:** 297A-13 y releases versionados.
 
-- [ ] E2E con overlay personalizado, deduplicación anti-spam, marcar leída, logout/login y dos dispositivos.
-- [ ] Confirmar que campana, contador y panel admin respeten capacidades y no filtren eventos privados.
+- [x] **Ciclo E2E verificado** (18-ago): tests de integración nuevos
+      (`tests/notifications.rs`, 3): una release publicada produce UNA notificación
+      idempotente (ON CONFLICT del índice único parcial, también con reintento
+      manual); la creación manual con la misma release_version se rechaza (dedupe
+      anti-spam por fuente); la lectura queda aislada por cuenta (flag `read` por
+      usuario vía `notification_reads`, mark_read idempotente). Preview: campana
+      con badge real (3 sin leer), popover con lista/hora/recargar/marcar todo,
+      marcar leída por API 204 con CSRF correcto, sin duplicados de versión.
+- [ ] Pendiente: E2E de logout/login y dos dispositivos, y admin de novedades con
+      capacidades en navegador real.
 
 **Gate/salida:** una release pública produce una notificación idempotente y la lectura queda aislada por cuenta.
 
