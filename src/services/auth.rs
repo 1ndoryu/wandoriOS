@@ -120,11 +120,15 @@ impl AuthService {
         email: &str,
     ) -> Result<TotpSetupResponse, AppError> {
         if UserRepository::is_totp_enabled(pool, user_id).await? {
-            return Err(AppError::Conflict("El segundo factor ya está activo".into()));
+            return Err(AppError::Conflict(
+                "El segundo factor ya está activo".into(),
+            ));
         }
         let secret = totp::generate_secret();
         if !UserRepository::set_totp_secret(pool, user_id, &secret).await? {
-            return Err(AppError::Conflict("El segundo factor ya está activo".into()));
+            return Err(AppError::Conflict(
+                "El segundo factor ya está activo".into(),
+            ));
         }
         Ok(TotpSetupResponse {
             otpauth_uri: totp::otpauth_uri(&secret, email, "wandori.us"),
@@ -137,13 +141,17 @@ impl AuthService {
             return Err(AppError::Unauthorized);
         };
         let Some(secret) = state.secret else {
-            return Err(AppError::BadRequest("Configura el segundo factor primero".into()));
+            return Err(AppError::BadRequest(
+                "Configura el segundo factor primero".into(),
+            ));
         };
         if !totp::verify(&secret, code) {
             return Err(AppError::BadRequest("Código inválido".into()));
         }
         if !UserRepository::enable_totp(pool, user_id).await? {
-            return Err(AppError::Conflict("El segundo factor ya está activo".into()));
+            return Err(AppError::Conflict(
+                "El segundo factor ya está activo".into(),
+            ));
         }
         Ok(())
     }
@@ -153,7 +161,9 @@ impl AuthService {
             return Err(AppError::Unauthorized);
         };
         let Some(secret) = state.secret else {
-            return Err(AppError::BadRequest("El segundo factor no está configurado".into()));
+            return Err(AppError::BadRequest(
+                "El segundo factor no está configurado".into(),
+            ));
         };
         if !totp::verify(&secret, code) {
             return Err(AppError::BadRequest("Código inválido".into()));

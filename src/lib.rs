@@ -16,6 +16,7 @@ use sqlx::PgPool;
 use std::sync::Arc;
 
 use crate::handlers::auth::{AuthActionRateLimit, LoginRateLimit};
+use crate::handlers::dev_mail::DevMailbox;
 use crate::services::game_ticket::GameTicketStore;
 use crate::services::game_ws::GameWsState;
 
@@ -36,4 +37,6 @@ pub struct AppState {
     pub login_rate_limit: Arc<LoginRateLimit>,
     /// Rate limit independiente para registro y recuperación por IP
     pub auth_action_rate_limit: Arc<AuthActionRateLimit>,
+    /// [297A-13] Buzón de correo mockeado en desarrollo (fail-closed en prod)
+    pub dev_mailbox: Arc<DevMailbox>,
 }

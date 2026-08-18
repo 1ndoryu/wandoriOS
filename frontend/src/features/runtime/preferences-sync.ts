@@ -1,14 +1,17 @@
 /* wandori.us — Account Preferences Sync
  * Adaptador entre Auth/PreferencesService y el themeStore.
  * El tema local sigue siendo la fuente inmediata; la red nunca bloquea el OS.
- * [297A-13] Un conflicto conserva la decisión local y no sobrescribe en silencio. */
+ * [297A-13] Política aprobada: merge por campo + LWW en la colisión real del
+ * mismo campo (el remoto, con revisión más alta, gana) y aviso no bloqueante
+ * cuando se descarta un cambio local — sin modal de fricción. */
 
 import { ApiError } from '../../api/client';
 import { PreferencesService, type UserPreferences } from '../../services/preferences.service';
 import { authStore, createStore } from '../../store';
 import { themeStore, type ThemeMode } from './theme-store';
+import { showToast } from '../../components/ui/toast';
 
-export type PreferencesSyncStatus = 'idle' | 'loading' | 'ready' | 'offline' | 'conflict';
+export type PreferencesSyncStatus = 'idle' | 'loading' | 'ready' | 'offline';
 
 export interface PreferencesSyncState {
   readonly userId: string | null;
@@ -46,6 +49,18 @@ function setState(status: PreferencesSyncStatus): void {
   }, 'sync');
 }
 
+/* [297A-13] LWW por campo: el remoto (revisión más alta) gana la colisión del
+ * mismo campo y el descarte se avisa sin bloquear. */
+function applyRemoteTheme(): void {
+  if (remoteTheme === null) return;
+  const localMode = themeStore.get();
+  if (localMode !== 'system' && localMode !== remoteTheme) {
+    showToast('se descartó un cambio en tu preferencia (tema) por una actualización más reciente en tu cuenta');
+  }
+  themeStore.set(remoteTheme, 'sync');
+  setState('ready');
+}
+
 function queueLocalUpdate(mode: ThemeMode): void {
   if (!activeUserId || remoteRevision === null) return;
 
@@ -62,27 +77,25 @@ function queueLocalUpdate(mode: ThemeMode): void {
       });
       if (generation !== syncGeneration || activeUserId !== userId) return;
       remoteRevision = updated.revision;
-      remoteTheme = updated.theme;
+      remoteTheme = isThemeMode(updated.theme) ? updated.theme : 'system';
       setState('ready');
     } catch (error) {
       if (generation !== syncGeneration || activeUserId !== userId) return;
       if (error instanceof ApiError && error.status === 409) {
-        /* Releer la revisión antes de mostrar el conflicto. Sin esta lectura,
-         * "conservar local" repetiría el mismo expected_revision para siempre. */
+        /* Colisión real: releer el remoto y aplicar LWW con aviso. */
         try {
           const latest = await PreferencesService.get();
           if (generation !== syncGeneration || activeUserId !== userId) return;
           remoteRevision = latest.revision;
           remoteTheme = isThemeMode(latest.theme) ? latest.theme : 'system';
+          applyRemoteTheme();
         } catch {
           /* Invalidar la revisión para impedir un reenvío obsoleto si la red
            * vuelve mientras la cuenta sigue activa. */
           remoteRevision = null;
           remoteTheme = null;
           setState('offline');
-          return;
         }
-        setState('conflict');
         return;
       }
       setState('offline');
@@ -110,27 +123,9 @@ export async function syncPreferencesForUser(userId: string): Promise<void> {
 
   remoteRevision = remote.revision;
   remoteTheme = isThemeMode(remote.theme) ? remote.theme : 'system';
-  const localMode = themeStore.get();
-  if (localMode === 'system') {
-    themeStore.set(remoteTheme, 'sync');
-    setState('ready');
-  } else if (localMode === remoteTheme) {
-    setState('ready');
-  } else {
-    /* No sobrescribir la cuenta sin una decisión explícita del usuario. */
-    setState('conflict');
-  }
-}
-
-/** Resolver un conflicto sin sobrescribir silenciosamente la decisión local. */
-export function resolvePreferencesConflict(choice: 'remote' | 'local'): void {
-  if (!activeUserId || remoteRevision === null || remoteTheme === null) return;
-  if (choice === 'remote') {
-    themeStore.set(remoteTheme, 'sync');
-    setState('ready');
-    return;
-  }
-  queueLocalUpdate(themeStore.get());
+  /* [297A-13] Sin elección local explícita (system) se adopta el remoto en
+   * silencio; con elección local distinta se aplica LWW y se avisa. */
+  applyRemoteTheme();
 }
 
 /** Desactivar la cuenta actual sin borrar la preferencia anónima local. */

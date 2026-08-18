@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { AuthService } from '../../services';
+import { AuthService, DevMailService } from '../../services';
 import { authStore } from '../../store';
 import { createAccountView } from './account-view';
 
@@ -36,7 +36,7 @@ describe('account-view', () => {
   });
 
   it('invoca AuthService.login con los valores del formulario', async () => {
-    const login = vi.spyOn(AuthService, 'login').mockResolvedValue(undefined);
+    const login = vi.spyOn(AuthService, 'login').mockResolvedValue({ mfaRequired: false, challenge: null });
     const { element } = mount();
     const email = element.querySelector<HTMLInputElement>('input[type="email"]');
     const password = element.querySelector<HTMLInputElement>('input[type="password"]');
@@ -52,6 +52,7 @@ describe('account-view', () => {
 
   it('muestra y envía el formulario de registro desde Cuenta', async () => {
     const register = vi.spyOn(AuthService, 'register').mockResolvedValue({ message: 'ok' });
+    vi.spyOn(DevMailService, 'latestVerificationLink').mockResolvedValue(null);
     const { element } = mount();
     element.querySelector<HTMLButtonElement>('[aria-label="Crear cuenta"]')?.click();
 
@@ -63,6 +64,29 @@ describe('account-view', () => {
 
     await vi.waitFor(() => expect(register).toHaveBeenCalledWith('new@example.com', 'secret'));
     await vi.waitFor(() => expect(element.textContent).toContain('solicitud recibida'));
+  });
+
+  it('pide el código de segundo factor cuando el login responde 202', async () => {
+    const login = vi.spyOn(AuthService, 'login').mockResolvedValue({ mfaRequired: true, challenge: 'reto-abc' });
+    const verify = vi.spyOn(AuthService, 'verifyMfa').mockResolvedValue(undefined);
+    const { element } = mount();
+    const email = element.querySelector<HTMLInputElement>('input[type="email"]');
+    const password = element.querySelector<HTMLInputElement>('input[type="password"]');
+    if (!email || !password) throw new Error('formulario no montado');
+    email.value = 'user@example.com';
+    password.value = 'secret';
+    element.querySelector<HTMLButtonElement>('.account-app__submit')?.click();
+
+    await vi.waitFor(() => expect(login).toHaveBeenCalledWith('user@example.com', 'secret'));
+    await vi.waitFor(() => expect(element.textContent).toContain('código de verificación'));
+
+    const code = element.querySelector<HTMLInputElement>('input');
+    if (!code) throw new Error('campo de código no montado');
+    code.value = '123456';
+    element.querySelector<HTMLButtonElement>('.account-app__submit')?.click();
+
+    await vi.waitFor(() => expect(verify).toHaveBeenCalledWith('reto-abc', '123456'));
+    await vi.waitFor(() => expect(element.textContent).toContain('sesión iniciada'));
   });
 
   it('muestra recuperación con respuesta no enumerable', async () => {

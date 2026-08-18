@@ -2,6 +2,7 @@
 
 pub mod articles;
 pub mod auth;
+pub mod dev_mail;
 pub mod download_handler;
 pub mod game_asset_handler;
 pub mod game_audit_handler;
@@ -93,6 +94,12 @@ impl utoipa::Modify for SecurityAddon {
         auth::logout,
         auth::list_sessions,
         auth::revoke_session,
+        auth::totp_status,
+        auth::totp_setup,
+        auth::totp_confirm,
+        auth::totp_disable,
+        auth::mfa_verify,
+        dev_mail::list_dev_mail,
         preferences_handler::get_preferences,
         preferences_handler::update_preferences,
         workspace_overlay_handler::get_overlay,
@@ -163,6 +170,12 @@ impl utoipa::Modify for SecurityAddon {
         crate::models::VerifyEmailRequest,
         crate::models::PasswordResetRequest,
         crate::models::ConfirmPasswordResetRequest,
+        crate::models::LoginMfaRequired,
+        crate::models::MfaVerifyRequest,
+        crate::models::TotpCodeRequest,
+        crate::models::TotpSetupResponse,
+        crate::models::TotpStatusResponse,
+        crate::handlers::dev_mail::DevMailMessage,
         crate::models::preferences::UserPreferences,
         crate::models::preferences::UpdateUserPreferencesRequest,
         crate::handlers::preferences_handler::UserPreferencesResponse,
@@ -278,6 +291,7 @@ pub fn create_router(pool: sqlx::PgPool, config: crate::config::AppConfig) -> Ro
         auth_action_rate_limit: std::sync::Arc::new(std::sync::Mutex::new(
             std::collections::HashMap::new(),
         )),
+        dev_mailbox: std::sync::Arc::new(std::sync::Mutex::new(Vec::new())),
     };
     create_router_with_state(state)
 }
@@ -342,6 +356,7 @@ fn api_routes() -> Router<AppState> {
         .merge(game_ticket_handler::routes())
         .merge(game_ws_handler::routes())
         .merge(auth::routes())
+        .merge(dev_mail::routes())
         .merge(notes::routes())
         .merge(articles::routes())
         .merge(media_handler::routes())

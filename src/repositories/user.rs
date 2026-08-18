@@ -102,10 +102,7 @@ impl UserRepository {
     /* [297A-13] MFA TOTP: el secreto nunca se expone en respuestas públicas;
      * solo viaja en el setup de un solo uso y en la URI de aprovisionamiento. */
 
-    pub async fn totp_state(
-        pool: &PgPool,
-        id: Uuid,
-    ) -> Result<Option<TotpState>, sqlx::Error> {
+    pub async fn totp_state(pool: &PgPool, id: Uuid) -> Result<Option<TotpState>, sqlx::Error> {
         let row: Option<(Option<String>, bool)> = sqlx::query_as(
             "SELECT totp_secret, totp_enabled FROM users WHERE id = $1 AND status = 'active'",
         )

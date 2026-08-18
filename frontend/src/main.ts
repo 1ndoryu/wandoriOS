@@ -49,7 +49,6 @@ import {authStore, showProfile, showSidebar, siteConfig} from './store';
 import {AuthService} from './services';
 import {fetchWorkspaceRelease} from './features/runtime/workspace/workspace-store';
 import {initOverlaySync} from './features/runtime/workspace/overlay-sync';
-import {initOverlayConflictUI} from './features/runtime/workspace/overlay-conflict-ui';
 import {initArticleNotasSync} from './features/runtime/workspace/article-notas-sync';
 import {createAccountView} from './features/runtime/account-view';
 import {getTopMobileApp} from './features/mobile/mobile-stack';
@@ -65,6 +64,7 @@ import {renderAbout} from './pages/about';
 import {renderGallery} from './pages/gallery';
 import {renderProjects} from './pages/projects';
 import {renderCheckoutSuccess, renderCheckoutCancel} from './pages/checkout';
+import {renderVerifyEmail} from './pages/verify-email';
 
 /* === Registrar rutas === */
 addRoute({path: '/', render: () => renderHome()});
@@ -75,6 +75,8 @@ addRoute({path: '/projects', render: () => renderProjects()});
 /* `/login` es el deep link canónico de Cuenta; si el adapter aún no está
  * montado, el router conserva el mismo contenido como fallback. */
 addRoute({path: '/login', render: (_params, ctx) => createAccountView(ctx)});
+/* [297A-13] Destino del enlace de verificación por correo (token de un solo uso). */
+addRoute({path: '/verify-email', render: (_params, ctx) => renderVerifyEmail(ctx)});
 addRoute({path: '/checkout/success', render: () => renderCheckoutSuccess()});
 addRoute({path: '/checkout/cancel', render: () => renderCheckoutCancel()});
 
@@ -85,7 +87,6 @@ async function initApp(): Promise<void> {
     initThemeStore();
     const stopPreferencesSync = initPreferencesSync();
     const stopOverlaySync = initOverlaySync();
-    const stopOverlayConflictUI = initOverlayConflictUI();
     /* [018A-76] Puente artículo → escritorio: al publicar, garantiza la carpeta
      * real "Notas" y coloca el artículo dentro. Idempotente. */
     const stopArticleNotasSync = initArticleNotasSync();
@@ -355,7 +356,6 @@ async function initApp(): Promise<void> {
         stopTracking();
         stopPreferencesSync();
         stopOverlaySync();
-        stopOverlayConflictUI();
         stopArticleNotasSync();
         stopRouter();
         stopRouteAdapter();

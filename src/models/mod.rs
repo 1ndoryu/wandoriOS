@@ -30,6 +30,7 @@ pub use notification::{
 };
 pub use resource::{EditorialState, LifecycleState, Resource, ResourceKind, VisibilityState};
 pub use user::{
-    ConfirmPasswordResetRequest, LoginRequest, PasswordResetRequest, RegisterRequest,
-    RegistrationResponse, User, UserResponse, VerifyEmailRequest,
+    ConfirmPasswordResetRequest, LoginMfaRequired, LoginRequest, MfaVerifyRequest,
+    PasswordResetRequest, RegisterRequest, RegistrationResponse, TotpCodeRequest,
+    TotpSetupResponse, TotpStatusResponse, User, UserResponse, VerifyEmailRequest,
 };

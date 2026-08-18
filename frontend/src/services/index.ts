@@ -4,6 +4,7 @@
 
 export { ArticleService } from './article.service';
 export { AuthService } from './auth.service';
+export { DevMailService } from './dev-mail.service';
 export { PreferencesService } from './preferences.service';
 export { ProjectService } from './project.service';
 export { ProductService } from './product.service';

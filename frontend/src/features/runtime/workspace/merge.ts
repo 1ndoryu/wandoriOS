@@ -1,5 +1,6 @@
 /* wandori.us — Workspace Merge
- * Algoritmo puro: merge release + overlay → resolved workspace. */
+ * Algoritmo puro: merge release + overlay → resolved workspace, y merge por
+ * campo + LWW del overlay local contra el remoto ([297A-13]). */
 
 import { hasCapability, type Capability } from '../capability';
 import { ADMIN_NODES } from './default-release';
@@ -20,6 +21,100 @@ import type {
  * 4. Add overlay items
  * 5. Filter by auth capability
  */
+/** Comparación estructural insensible al orden de claves (arrays en orden).
+ * [297A-27] El backend Rust serializa con BTreeMap; el frontend en orden de
+ * inserción JS. JSON.stringify estricto produciría falsos conflictos. */
+export function equalValue(left: unknown, right: unknown): boolean {
+  if (left === right) return true;
+  if (typeof left !== typeof right) return false;
+  if (left === null || right === null) return left === right;
+  if (typeof left !== 'object') return false;
+  if (Array.isArray(left) || Array.isArray(right)) {
+    if (!Array.isArray(left) || !Array.isArray(right) || left.length !== right.length) return false;
+    return left.every((value, index) => equalValue(value, right[index]));
+  }
+  const leftKeys = Object.keys(left as Record<string, unknown>);
+  const rightKeys = Object.keys(right as Record<string, unknown>);
+  if (leftKeys.length !== rightKeys.length) return false;
+  for (const key of leftKeys) {
+    if (!Object.prototype.hasOwnProperty.call(right, key)) return false;
+    if (!equalValue((left as Record<string, unknown>)[key], (right as Record<string, unknown>)[key])) return false;
+  }
+  return true;
+}
+
+/** Resultado del merge por campo + LWW del overlay. */
+export interface OverlayMergeResult {
+  readonly merged: WorkspaceOverlay;
+  /** Cambios locales descartados (colisión real del mismo campo/id). */
+  readonly discarded: string[];
+}
+
+/* [297A-13] Política de conflictos de overlay aprobada por el usuario:
+ * merge por campo — cambios en campos/ids distintos se combinan; y LWW por
+ * campo — si AMBOS lados tocaron el mismo campo/id con distinto valor, gana
+ * el remoto (revisión más alta, determinista). Los descartes se notifican de
+ * forma no bloqueante (toast), nunca con modal de fricción. */
+export function mergeOverlayLww(
+  local: WorkspaceOverlay,
+  remote: WorkspaceOverlay,
+): OverlayMergeResult {
+  const discarded: string[] = [];
+
+  /* Tombstones: unión (una eliminación remota también aplica localmente). */
+  const tombstones = [...new Set([...local.tombstones, ...remote.tombstones])];
+
+  /* addedItems: LWW por id en colisión real (mismo id, contenido distinto). */
+  const addedItems: WorkspaceOverlay['addedItems'] = {};
+  const addedIds = new Set([
+    ...Object.keys(local.addedItems),
+    ...Object.keys(remote.addedItems),
+  ]);
+  for (const id of addedIds) {
+    const localItem = local.addedItems[id];
+    const remoteItem = remote.addedItems[id];
+    if (remoteItem && localItem && !equalValue(localItem, remoteItem)) {
+      discarded.push(`el icono añadido “${id}”`);
+    }
+    addedItems[id] = remoteItem ?? localItem as WorkspaceNode;
+  }
+
+  /* fieldOverrides: merge por campo; solo colisión del MISMO campo → LWW. */
+  const fieldOverrides: WorkspaceOverlay['fieldOverrides'] = {};
+  const overrideIds = new Set([
+    ...Object.keys(local.fieldOverrides),
+    ...Object.keys(remote.fieldOverrides),
+  ]);
+  for (const id of overrideIds) {
+    const localFields = local.fieldOverrides[id];
+    const remoteFields = remote.fieldOverrides[id];
+    if (!localFields) {
+      fieldOverrides[id] = remoteFields;
+      continue;
+    }
+    if (!remoteFields) {
+      fieldOverrides[id] = localFields;
+      continue;
+    }
+    const merged: Record<string, unknown> = {};
+    const allKeys = new Set([...Object.keys(localFields), ...Object.keys(remoteFields)]);
+    for (const key of allKeys) {
+      const localValue = localFields[key as keyof typeof localFields];
+      const remoteValue = remoteFields[key as keyof typeof remoteFields];
+      if (remoteValue !== undefined && localValue !== undefined && !equalValue(localValue, remoteValue)) {
+        discarded.push(`el campo “${key}” de “${id}”`);
+      }
+      merged[key] = remoteValue ?? localValue;
+    }
+    fieldOverrides[id] = merged as typeof localFields;
+  }
+
+  return {
+    merged: { version: remote.version, addedItems, fieldOverrides, tombstones },
+    discarded,
+  };
+}
+
 export function mergeWorkspace(
   release: WorkspaceTree,
   overlay: WorkspaceOverlay,

@@ -1,6 +1,6 @@
 /* [297A-26] Tests del panel de preferencias embebido en la ventana Cuenta.
- * Verifica que las preferencias (tema) siempre se muestran y que el bloque de
- * conflicto solo aparece cuando el sync está en estado conflict. */
+ * [297A-13] El conflicto se resuelve por LWW con aviso en preferences-sync;
+ * el panel solo muestra el selector y nunca un bloque de resolución. */
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { PreferencesService } from '../../services/preferences.service';
@@ -10,7 +10,6 @@ import {
   clearPreferencesSync,
   initPreferencesSync,
   preferencesSyncStore,
-  resolvePreferencesConflict,
   syncPreferencesForUser,
 } from './preferences-sync';
 import { createPreferencesPanel } from './preferences-panel';
@@ -49,7 +48,7 @@ describe('preferences panel', () => {
     const temas = element.querySelectorAll('.preferences-panel__tema');
     expect(temas.length).toBe(3);
     expect(Array.from(temas).map((t) => t.textContent)).toEqual(['sistema', 'claro', 'oscuro']);
-    /* Sin conflicto: no se muestra el bloque de resolución. */
+    /* Nunca hay bloque de resolución: el conflicto se resuelve por LWW. */
     expect(element.querySelector('.preferences-conflict')).toBeNull();
   });
 
@@ -80,71 +79,24 @@ describe('preferences panel', () => {
     expect(activo?.textContent).toBe('claro');
   });
 
-  it('muestra el bloque de conflicto cuando el sync está en conflict', async () => {
+  it('aplica LWW sin mostrar bloque de conflicto cuando el remoto difiere', async () => {
     themeStore.set('claro', 'user');
     vi.spyOn(PreferencesService, 'get').mockResolvedValue(remote('oscuro', 2));
 
     await syncPreferencesForUser('user-a');
-    expect(preferencesSyncStore.get().status).toBe('conflict');
-
-    const element = mountPanel();
-
-    const conflicto = element.querySelector('.preferences-conflict');
-    expect(conflicto).not.toBeNull();
-    expect(conflicto?.querySelector('.preferences-conflict__title')?.textContent)
-      .toBe('preferencia actualizada');
-    expect(conflicto?.querySelectorAll('.preferences-conflict__action').length).toBe(2);
-  });
-
-  it('permite conservar el dispositivo y oculta el conflicto tras resolver', async () => {
-    themeStore.set('claro', 'user');
-    vi.spyOn(PreferencesService, 'get').mockResolvedValue(remote('oscuro', 2));
-    vi.spyOn(PreferencesService, 'update').mockResolvedValue(remote('claro', 3));
-
-    await syncPreferencesForUser('user-a');
-    const element = mountPanel();
-    expect(element.querySelector('.preferences-conflict')).not.toBeNull();
-
-    const conservar = Array.from(element.querySelectorAll('.preferences-conflict__action'))
-      .find((b) => b.textContent === 'conservar lo de este dispositivo') as HTMLButtonElement;
-    conservar.click();
-
-    await vi.waitFor(() => expect(preferencesSyncStore.get().status).toBe('ready'));
-    expect(element.querySelector('.preferences-conflict')).toBeNull();
-    /* La sección de preferencias sigue visible tras resolver. */
-    expect(element.querySelector('.preferences-conflict__title')?.textContent).toBe('preferencias');
-
-    /* Limpieza: resolver remoto en el test para no dejar estado pendiente. */
-    resolvePreferencesConflict('remote');
-  });
-
-  it('permite usar la preferencia de la cuenta', async () => {
-    themeStore.set('claro', 'user');
-    vi.spyOn(PreferencesService, 'get').mockResolvedValue(remote('oscuro', 2));
-
-    await syncPreferencesForUser('user-a');
-    const element = mountPanel();
-
-    const usarCuenta = Array.from(element.querySelectorAll('.preferences-conflict__action'))
-      .find((b) => b.textContent === 'usar lo de mi cuenta') as HTMLButtonElement;
-    usarCuenta.click();
-
     expect(themeStore.get()).toBe('oscuro');
     expect(preferencesSyncStore.get().status).toBe('ready');
-    expect(element.querySelector('.preferences-conflict')).toBeNull();
-  });
-
-  it('no muestra el bloque de conflicto al limpiar la cuenta', () => {
-    themeStore.set('claro', 'user');
-    preferencesSyncStore.set({
-      userId: 'user-a',
-      revision: 2,
-      remoteTheme: 'oscuro',
-      status: 'conflict',
-    }, 'sync');
 
     const element = mountPanel();
-    expect(element.querySelector('.preferences-conflict')).not.toBeNull();
+    expect(element.querySelector('.preferences-conflict')).toBeNull();
+    expect(element.querySelectorAll('.preferences-panel__tema').length).toBe(3);
+  });
+
+  it('no muestra bloque de conflicto al limpiar la cuenta', () => {
+    themeStore.set('claro', 'user');
+
+    const element = mountPanel();
+    expect(element.querySelector('.preferences-conflict')).toBeNull();
 
     clearPreferencesSync();
     expect(element.querySelector('.preferences-conflict')).toBeNull();

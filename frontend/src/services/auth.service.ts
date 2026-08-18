@@ -1,18 +1,24 @@
 /* wandori.us — Auth Service
  * Capa de servicio para autenticación.
  * [Auditoría v4 §4.1] — Rompe acoplamiento a api.post en pages/login.ts.
- * API consistente con otros servicios: errores se propagan como ApiError.
- * [018A-34] El servicio usa el contrato generado; conserva la sincronización
- * de stores como responsabilidad de dominio. */
+ * [297A-13] El login puede requerir segundo factor: si la cuenta tiene TOTP
+ * activo, el backend responde 202 con un reto de un solo uso y la sesión solo
+ * se emite tras verificar el código en /mfa/totp/verify.
+ */
 
 import { unwrapGeneratedResponse } from '../api/client';
 import {
   login,
   logout,
+  mfaVerify,
   me,
   register,
   requestPasswordReset,
   resetPassword,
+  totpConfirm,
+  totpDisable,
+  totpSetup,
+  totpStatus,
   verifyEmail,
 } from '../api/generated/auth/auth';
 import { authStore, type AuthCapability } from '../store';
@@ -30,6 +36,17 @@ interface MeResponse {
   id: string;
   email: string;
   role?: 'user' | 'admin';
+}
+
+/** Resultado del login: sesión iniciada o segundo factor pendiente. */
+export interface LoginResult {
+  readonly mfaRequired: boolean;
+  readonly challenge: string | null;
+}
+
+export interface TotpSetupResult {
+  readonly secret: string;
+  readonly otpauth_uri: string;
 }
 
 function capabilityFromRole(role?: MeResponse['role']): AuthCapability {
@@ -58,18 +75,51 @@ export const AuthService = {
     unwrapGeneratedResponse<void>(response, [204]);
   },
 
-  /** Iniciar sesión con email y contraseña.
-   *  Lanza ApiError si las credenciales son inválidas (consistente con otros servicios). */
-  async login(email: string, password: string): Promise<void> {
-    /* [018A-63] El backend responde 204 (cookie en Set-Cookie, sin cuerpo),
-     * consistente con logout/resetPassword; la capacidad se confirma en /me.
-     * El contrato utoipa se corrigió a 204; regenerar cliente tras restart. */
+  /** Primer paso del login. Si la cuenta exige TOTP, NO emite sesión todavía:
+   *  devuelve un reto para verificar con `verifyMfa`. */
+  async login(email: string, password: string): Promise<LoginResult> {
     const response = await login({ email, password });
-    unwrapGeneratedResponse<void>(response, [204]);
+    const data = unwrapGeneratedResponse<{ mfa: string; challenge: string } | null>(response, [202, 204]);
+    if (data && data.mfa === 'totp') {
+      return { mfaRequired: true, challenge: data.challenge };
+    }
     const session = await this.me();
     if (!session.isAuthenticated) {
       throw new Error('La sesión no pudo confirmarse');
     }
+    return { mfaRequired: false, challenge: null };
+  },
+
+  /** Segundo paso del login: verifica el reto TOTP y emite la sesión. */
+  async verifyMfa(challenge: string, code: string): Promise<void> {
+    const response = await mfaVerify({ challenge, code });
+    unwrapGeneratedResponse<void>(response, [204]);
+    await this.me();
+  },
+
+  /* [297A-13] MFA TOTP de la cuenta autenticada. */
+
+  async totpStatus(): Promise<{ enabled: boolean }> {
+    const response = await totpStatus();
+    return unwrapGeneratedResponse<{ enabled: boolean }>(response, [200]);
+  },
+
+  /** Inicia el alta: secreto base32 + URI otpauth (un solo uso). */
+  async beginTotpSetup(): Promise<TotpSetupResult> {
+    const response = await totpSetup();
+    return unwrapGeneratedResponse<TotpSetupResult>(response, [200]);
+  },
+
+  /** Confirma el alta con un código TOTP y activa el segundo factor. */
+  async confirmTotp(code: string): Promise<void> {
+    const response = await totpConfirm({ code });
+    unwrapGeneratedResponse<void>(response, [204]);
+  },
+
+  /** Desactiva TOTP verificando un código válido. */
+  async disableTotp(code: string): Promise<void> {
+    const response = await totpDisable({ code });
+    unwrapGeneratedResponse<void>(response, [204]);
   },
 
   /** Cerrar sesión. */

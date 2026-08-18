@@ -2,16 +2,18 @@
  * Vista reactiva de Cuenta para el runtime del OS.
  * AuthService es la única frontera HTTP; authStore es la única fuente de
  * verdad de sesión. La vista no crea router ni estado paralelo.
- * [297A-13] */
+ * [297A-13] Incluye login en dos pasos (TOTP), registro verificado con
+ * verificación "dev" (buzón mockeado) y el panel de seguridad de MFA. */
 
 import { ArrowLeft, createElement, KeyRound, LogIn, LogOut, Mail, ShieldCheck, UserPlus, UserRound, type IconNode } from 'lucide';
-import { AuthService } from '../../services';
+import { AuthService, DevMailService } from '../../services';
 import { authStore, type AuthState } from '../../store';
 import { createInput } from '../../components/ui/input';
 import { showToast } from '../../components/ui/toast';
 import { safeClick, safeRun } from '../../utils/safe-async';
 import { createEl } from '../../utils/dom';
 import { createPreferencesPanel } from './preferences-panel';
+import { createSecurityPanel } from './security-panel';
 import type { MountedView, RenderContext } from '../../core/lifecycle';
 
 function icon(iconNode: IconNode): HTMLElement {
@@ -35,10 +37,26 @@ function createActionButton(
   return button;
 }
 
-type GuestMode = 'login' | 'register' | 'recover';
+type GuestMode = 'login' | 'register' | 'recover' | 'totp';
+
+/** [297A-13] En desarrollo el enlace de verificación llega al buzón mockeado
+ *  (GET /api/dev/mail); en producción solo existe el correo real. */
+async function devVerificationFor(email: string): Promise<string | null> {
+  const link = await DevMailService.latestVerificationLink(email);
+  if (!link) return null;
+  try {
+    return new URL(link).searchParams.get('token');
+  } catch {
+    return null;
+  }
+}
 
 function renderGuest(container: HTMLElement): void {
   let mode: GuestMode = 'login';
+  let mfaChallenge: string | null = null;
+  /* [297A-13] La verificación dev es asíncrona tras el registro; si la ventana
+   * se cierra a mitad, no se sigue escribiendo en el DOM. */
+  let stopped = false;
 
   const renderMode = (): void => {
     container.replaceChildren();
@@ -64,15 +82,28 @@ function renderGuest(container: HTMLElement): void {
         aria: 'Solicitar recuperación',
         icon: Mail,
       },
+      totp: {
+        title: 'código de verificación',
+        message: 'esta cuenta usa segundo factor. introduce el código de 6 dígitos de tu app autenticadora.',
+        submit: 'verificar',
+        aria: 'Verificar código de segundo factor',
+        icon: KeyRound,
+      },
     }[mode];
     const title = createEl('h1', { className: 'account-app__title', textContent: copy.title });
     const message = createEl('p', { className: 'account-app__message', textContent: copy.message });
     const emailField = createInput({ label: 'email', type: 'email', placeholder: 'email', required: true });
     const emailInput = emailField.querySelector<HTMLInputElement>('input');
-    const fields: HTMLElement[] = [emailField];
+    const fields: HTMLElement[] = mode === 'totp' ? [] : [emailField];
     let passwordInput: HTMLInputElement | null = null;
     let confirmationInput: HTMLInputElement | null = null;
+    let codeInput: HTMLInputElement | null = null;
 
+    if (mode === 'totp') {
+      const codeField = createInput({ label: 'código', type: 'text', placeholder: '000000', required: true });
+      codeInput = codeField.querySelector<HTMLInputElement>('input');
+      fields.push(codeField);
+    }
     if (mode === 'login' || mode === 'register') {
       const passwordField = createInput({ label: 'password', type: 'password', placeholder: 'password', required: true });
       passwordInput = passwordField.querySelector<HTMLInputElement>('input');
@@ -92,9 +123,6 @@ function renderGuest(container: HTMLElement): void {
     feedback.hidden = true;
     const submit = createEl('button', {
       type: 'button',
-      /* [028A-4] Sin boton-grande: dentro de la ventana el tamaño lo gobierna
-       * el chrome (receta .boton OS), no el contenido. El envío debe medir lo
-       * mismo que las acciones secundarias (crear cuenta/recuperar acceso). */
       className: 'boton boton-con-icono account-app__submit',
       ariaLabel: copy.aria,
     }, icon(copy.icon), createEl('span', { textContent: copy.submit }));
@@ -103,8 +131,15 @@ function renderGuest(container: HTMLElement): void {
       const email = emailInput?.value.trim() ?? '';
       const password = passwordInput?.value ?? '';
       const confirmation = confirmationInput?.value ?? '';
+      const code = codeInput?.value.trim() ?? '';
       feedback.hidden = true;
-      if (!email || ((mode !== 'recover') && !password) || (mode === 'register' && !confirmation)) {
+      if (mode === 'totp') {
+        if (code.length !== 6) {
+          feedback.textContent = 'el código tiene 6 dígitos';
+          feedback.hidden = false;
+          return;
+        }
+      } else if (!email || ((mode !== 'recover') && !password) || (mode === 'register' && !confirmation)) {
         feedback.textContent = 'completa todos los campos';
         feedback.hidden = false;
         return;
@@ -118,6 +153,25 @@ function renderGuest(container: HTMLElement): void {
       submit.disabled = true;
       const label = submit.querySelector('span:last-child');
       if (label) label.textContent = 'procesando…';
+
+      if (mode === 'totp') {
+        const result = mfaChallenge
+          ? await safeRun(AuthService.verifyMfa(mfaChallenge, code), 'código inválido')
+          : { ok: false as const, error: new Error('reto de sesión expirado') };
+        submit.disabled = false;
+        if (label) label.textContent = copy.submit;
+        if (!result.ok) {
+          feedback.textContent = 'código inválido o reto expirado; vuelve a entrar';
+          feedback.hidden = false;
+          mfaChallenge = null;
+          return;
+        }
+        feedback.textContent = 'sesión iniciada';
+        feedback.hidden = false;
+        showToast('sesión iniciada');
+        return;
+      }
+
       const result = mode === 'login'
         ? await safeRun(AuthService.login(email, password), 'credenciales incorrectas')
         : mode === 'register'
@@ -130,13 +184,39 @@ function renderGuest(container: HTMLElement): void {
         feedback.hidden = false;
         return;
       }
-      feedback.textContent = mode === 'login'
-        ? 'sesión iniciada'
-        : mode === 'register'
-          ? 'solicitud recibida; revisa tu correo cuando el registro esté habilitado'
-          : 'si el correo existe, recibirás instrucciones';
+      if (mode === 'login') {
+        /* [297A-13] Segundo factor: el login no emite sesión; pasamos al paso
+         * de código con el reto devuelto por el backend. */
+        const loginResult = result.value as { mfaRequired: boolean; challenge: string | null };
+        if (loginResult.mfaRequired && loginResult.challenge) {
+          mfaChallenge = loginResult.challenge;
+          mode = 'totp';
+          renderMode();
+          return;
+        }
+        feedback.textContent = 'sesión iniciada';
+        feedback.hidden = false;
+        showToast('sesión iniciada');
+        return;
+      }
+      if (mode === 'register') {
+        feedback.textContent = 'solicitud recibida; revisa tu correo para activar la cuenta';
+        feedback.hidden = false;
+        /* [297A-13] En desarrollo, la verificación se puede completar desde el
+         * buzón mockeado sin depender de un proveedor real. */
+        const token = await devVerificationFor(email);
+        if (stopped) return;
+        if (token) {
+          const verify = await safeRun(AuthService.verifyEmail(token), 'no se pudo verificar el correo');
+          if (!stopped && verify.ok) {
+            feedback.textContent = 'cuenta verificada en modo desarrollo; ya puedes entrar';
+            feedback.hidden = false;
+          }
+        }
+        return;
+      }
+      feedback.textContent = 'si el correo existe, recibirás instrucciones';
       feedback.hidden = false;
-      if (mode === 'login') showToast('sesión iniciada');
     }));
 
     const form = createEl('div', {
@@ -149,7 +229,9 @@ function renderGuest(container: HTMLElement): void {
     });
 
     const actions = createEl('div', { className: 'account-app__actions' });
-    if (mode !== 'login') {
+    if (mode === 'totp') {
+      actions.appendChild(createActionButton('volver a entrar', ArrowLeft, () => { mode = 'login'; mfaChallenge = null; renderMode(); }, 'Volver a iniciar sesión'));
+    } else if (mode !== 'login') {
       actions.appendChild(createActionButton('volver a entrar', ArrowLeft, () => { mode = 'login'; renderMode(); }, 'Volver a iniciar sesión'));
     } else {
       actions.append(
@@ -196,7 +278,7 @@ interface AccountMount {
   readonly destroy: () => void;
 }
 
-interface PreferencesPanel {
+interface Panel {
   readonly element: HTMLElement;
   readonly destroy: () => void;
 }
@@ -207,20 +289,26 @@ function mount(ctx: RenderContext): AccountMount {
     ariaLabel: 'Cuenta',
   });
   let stopped = false;
-  let panel: PreferencesPanel | null = null;
+  let preferencesPanel: Panel | null = null;
+  let securityPanel: Panel | null = null;
 
   const render = (state: AuthState): void => {
     if (stopped) return;
-    panel?.destroy();
-    panel = null;
+    preferencesPanel?.destroy();
+    securityPanel?.destroy();
+    preferencesPanel = null;
+    securityPanel = null;
     renderView(container, state);
     /* [297A-26] Las preferencias (tema + resolución de conflicto) viven dentro
      * de la ventana Cuenta como panel embebido, no como modal global del
      * sistema. El panel siempre muestra la preferencia; si el conflicto sigue
      * pendiente al reabrir la ventana, reaparece. */
     if (state.isAuthenticated) {
-      panel = createPreferencesPanel();
-      container.append(panel.element);
+      preferencesPanel = createPreferencesPanel();
+      container.append(preferencesPanel.element);
+      /* [297A-13] MFA TOTP: alta/verificación desde la propia app Cuenta. */
+      securityPanel = createSecurityPanel();
+      container.append(securityPanel.element);
     }
   };
 
@@ -229,8 +317,10 @@ function mount(ctx: RenderContext): AccountMount {
     if (stopped) return;
     stopped = true;
     stop();
-    panel?.destroy();
-    panel = null;
+    preferencesPanel?.destroy();
+    securityPanel?.destroy();
+    preferencesPanel = null;
+    securityPanel = null;
   };
   ctx.signal.addEventListener('abort', cleanup, { once: true });
   return { element: container, destroy: cleanup };

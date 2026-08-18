@@ -2,17 +2,20 @@
  * Adaptador entre el overlay local y el contrato remoto por cuenta.
  * localStorage/overlayStore sigue siendo la fuente inmediata; la red solo
  * confirma o presenta conflictos. Nunca persiste ResolvedWorkspace ni ventanas.
- * [297A-13] */
+ * [297A-13] Política aprobada: merge por campo + LWW en la colisión real del
+ * mismo campo, con aviso no bloqueante (toast) cuando se descarta un cambio
+ * local — sin modal de fricción. */
 
 import { ApiError } from '../../../api/client';
 import { WorkspaceService, type WorkspaceOverlayResponse } from '../../../services/workspace.service';
 import { authStore, createStore } from '../../../store';
+import { showToast } from '../../../components/ui/toast';
 import { overlayStore } from './stores';
 import { releaseStore } from './stores';
-import { rebaseOverlay } from './merge';
+import { equalValue, mergeOverlayLww, rebaseOverlay } from './merge';
 import type { WorkspaceOverlay } from './types';
 
-export type OverlaySyncStatus = 'idle' | 'loading' | 'ready' | 'offline' | 'conflict';
+export type OverlaySyncStatus = 'idle' | 'loading' | 'ready' | 'offline';
 
 export interface OverlaySyncState {
   readonly userId: string | null;
@@ -37,35 +40,6 @@ let updateQueue: Promise<void> = Promise.resolve();
 let stopOverlaySubscription: (() => void) | null = null;
 let stopAuthSubscription: (() => void) | null = null;
 let sharedCleanup: (() => void) | null = null;
-let conflictPending = false;
-
-/* [297A-27] Comparación estructural insensible al orden de claves de objetos.
- * El backend Rust serializa con BTreeMap (claves alfabéticas) mientras el
- * frontend construye el overlay en orden de inserción JS; JSON.stringify
- * estricto producía falsos conflictos con contenido idéntico. Los arrays
- * (tombstones) sí comparan en orden porque el orden es significativo. */
-function equalValue(left: unknown, right: unknown): boolean {
-  if (left === right) return true;
-  if (typeof left !== typeof right) return false;
-  if (left === null || right === null) return left === right;
-  if (typeof left !== 'object') return false;
-  if (Array.isArray(left) || Array.isArray(right)) {
-    if (!Array.isArray(left) || !Array.isArray(right) || left.length !== right.length) return false;
-    return left.every((value, index) => equalValue(value, right[index]));
-  }
-  const leftKeys = Object.keys(left as Record<string, unknown>);
-  const rightKeys = Object.keys(right as Record<string, unknown>);
-  if (leftKeys.length !== rightKeys.length) return false;
-  for (const key of leftKeys) {
-    if (!Object.prototype.hasOwnProperty.call(right, key)) return false;
-    if (!equalValue((left as Record<string, unknown>)[key], (right as Record<string, unknown>)[key])) return false;
-  }
-  return true;
-}
-
-function equalOverlay(left: WorkspaceOverlay, right: WorkspaceOverlay): boolean {
-  return equalValue(left, right);
-}
 
 function isEmptyOverlay(overlay: WorkspaceOverlay): boolean {
   return Object.keys(overlay.addedItems).length === 0
@@ -87,12 +61,23 @@ function responseOverlay(response: WorkspaceOverlayResponse): void {
   remoteOverlay = rebaseOverlay(releaseStore.get(), response.overlay);
 }
 
+/* [297A-13] Aplica el merge por campo + LWW: si hubo descartes, los notifica
+ * de forma no bloqueante en lugar de abrir un modal de conflicto. */
+function applyMergedOverlay(local: WorkspaceOverlay): void {
+  if (!remoteOverlay || remoteRevision === null) return;
+  const { merged, discarded } = mergeOverlayLww(local, remoteOverlay);
+  overlayStore.set(merged, 'sync');
+  localSnapshot = merged;
+  if (discarded.length > 0) {
+    showToast(`se descartó un cambio en ${discarded.join(', ')} por una actualización más reciente en tu cuenta`);
+  }
+  setState('ready');
+}
+
 function queueLocalUpdate(overlay: WorkspaceOverlay): void {
-  /* Capturar siempre la última intención local, incluso durante conflicto;
-   * la decisión explícita "conservar dispositivo" debe enviar este snapshot
-   * y nunca una mutación anterior. */
+  /* Capturar siempre la última intención local; el merge LWW usa este snapshot. */
   localSnapshot = overlay;
-  if (!activeUserId || remoteRevision === null || conflictPending) return;
+  if (!activeUserId || remoteRevision === null) return;
   const generation = syncGeneration;
   const userId = activeUserId;
   updateQueue = updateQueue.then(async () => {
@@ -109,12 +94,12 @@ function queueLocalUpdate(overlay: WorkspaceOverlay): void {
     } catch (error) {
       if (generation !== syncGeneration || activeUserId !== userId) return;
       if (error instanceof ApiError && error.status === 409) {
+        /* Colisión: releer el remoto y resolver por campo + LWW con aviso. */
         try {
           const latest = await WorkspaceService.getOverlay();
           if (generation !== syncGeneration || activeUserId !== userId) return;
           responseOverlay(latest);
-          conflictPending = true;
-          setState('conflict');
+          applyMergedOverlay(localSnapshot ?? overlay);
         } catch {
           remoteRevision = null;
           remoteOverlay = null;
@@ -142,7 +127,6 @@ export async function syncOverlayForUser(userId: string): Promise<void> {
   remoteRevision = null;
   remoteOverlay = null;
   localSnapshot = overlayStore.get();
-  conflictPending = false;
   setState('loading');
 
   let remote: WorkspaceOverlayResponse;
@@ -157,31 +141,17 @@ export async function syncOverlayForUser(userId: string): Promise<void> {
   responseOverlay(remote);
   const resolvedRemote = remoteOverlay ?? remote.overlay;
   const local = overlayStore.get();
-  if (equalOverlay(local, resolvedRemote)) {
+  if (equalValue(local, resolvedRemote)) {
     setState('ready');
   } else if (isEmptyOverlay(local)) {
     overlayStore.set(resolvedRemote, 'sync');
     localSnapshot = resolvedRemote;
     setState('ready');
   } else {
-    localSnapshot = local;
-    conflictPending = true;
-    setState('conflict');
+    /* [297A-13] Mismatch inicial: merge por campo + LWW con aviso no
+     * bloqueante en lugar del modal de conflicto. */
+    applyMergedOverlay(local);
   }
-}
-
-/** Resolver un conflicto sin sobrescritura silenciosa. */
-export function resolveOverlayConflict(choice: 'remote' | 'local'): void {
-  if (!activeUserId || remoteRevision === null || remoteOverlay === null) return;
-  if (choice === 'remote') {
-    conflictPending = false;
-    overlayStore.set(remoteOverlay, 'sync');
-    localSnapshot = remoteOverlay;
-    setState('ready');
-    return;
-  }
-  conflictPending = false;
-  queueLocalUpdate(localSnapshot ?? overlayStore.get());
 }
 
 /** Desactiva la cuenta sin borrar el overlay anónimo local. */
@@ -191,7 +161,6 @@ export function clearOverlaySync(): void {
   remoteRevision = null;
   remoteOverlay = null;
   localSnapshot = null;
-  conflictPending = false;
   updateQueue = Promise.resolve();
   overlaySyncStore.set({
     userId: null,

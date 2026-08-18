@@ -7,7 +7,6 @@ import {
   clearPreferencesSync,
   initPreferencesSync,
   preferencesSyncStore,
-  resolvePreferencesConflict,
   syncPreferencesForUser,
 } from './preferences-sync';
 
@@ -40,37 +39,19 @@ describe('preferences sync', () => {
     });
   });
 
-  it('marca conflicto y no sobrescribe una elección local explícita', async () => {
+  it('aplica LWW (remoto gana) y avisa sin bloquear ante una elección local distinta', async () => {
     themeStore.set('claro', 'user');
     vi.spyOn(PreferencesService, 'get').mockResolvedValue(remote('oscuro', 2));
 
     await syncPreferencesForUser('user-a');
 
-    expect(themeStore.get()).toBe('claro');
-    expect(preferencesSyncStore.get().status).toBe('conflict');
-  });
-
-  it('permite elegir remoto o conservar local después del conflicto', async () => {
-    themeStore.set('claro', 'user');
-    vi.spyOn(PreferencesService, 'get').mockResolvedValue(remote('oscuro', 2));
-    const update = vi.spyOn(PreferencesService, 'update').mockResolvedValue(remote('claro', 3));
-
-    await syncPreferencesForUser('user-a');
-    resolvePreferencesConflict('local');
-    await vi.waitFor(() => expect(update).toHaveBeenCalledWith({
-      theme: 'claro',
-      expected_revision: 2,
-    }));
-
-    expect(update).toHaveBeenCalledWith({ theme: 'claro', expected_revision: 2 });
-    expect(preferencesSyncStore.get().status).toBe('ready');
-    expect(preferencesSyncStore.get().revision).toBe(3);
-
-    themeStore.set('claro', 'user');
-    vi.spyOn(PreferencesService, 'get').mockResolvedValue(remote('oscuro', 5));
-    await syncPreferencesForUser('user-a');
-    resolvePreferencesConflict('remote');
+    /* [297A-13] Colisión del mismo campo: gana la revisión más alta (remota). */
     expect(themeStore.get()).toBe('oscuro');
+    expect(preferencesSyncStore.get()).toMatchObject({
+      revision: 2,
+      remoteTheme: 'oscuro',
+      status: 'ready',
+    });
   });
 
   it('conserva el fallback local si la API no está disponible', async () => {
@@ -100,7 +81,7 @@ describe('preferences sync', () => {
     });
   });
 
-  it('refresca revisión y tema después de un 409 antes de mostrar el conflicto', async () => {
+  it('resuelve por LWW un 409: relee el remoto y aplica la revisión más alta', async () => {
     const get = vi.spyOn(PreferencesService, 'get')
       .mockResolvedValueOnce(remote('system', 1))
       .mockResolvedValueOnce(remote('oscuro', 2));
@@ -108,13 +89,14 @@ describe('preferences sync', () => {
 
     await syncPreferencesForUser('user-a');
     themeStore.set('claro', 'user');
-    await vi.waitFor(() => expect(preferencesSyncStore.get().status).toBe('conflict'));
+    /* El tema remoto solo se aplica tras procesar el 409 (relectura + LWW). */
+    await vi.waitFor(() => expect(themeStore.get()).toBe('oscuro'));
 
     expect(get).toHaveBeenCalledTimes(2);
     expect(preferencesSyncStore.get()).toMatchObject({
       revision: 2,
       remoteTheme: 'oscuro',
-      status: 'conflict',
+      status: 'ready',
     });
   });
 

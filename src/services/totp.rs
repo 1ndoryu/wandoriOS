@@ -35,7 +35,9 @@ fn encode_base32(input: &[u8]) -> String {
         bits += 8;
         while bits >= 5 {
             bits -= 5;
-            out.push(char::from(BASE32_ALPHABET[((buffer >> bits) & 0x1F) as usize]));
+            out.push(char::from(
+                BASE32_ALPHABET[((buffer >> bits) & 0x1F) as usize],
+            ));
         }
     }
     if bits > 0 {
@@ -92,7 +94,7 @@ fn current_counter() -> u64 {
 
 /// Código actual para el secreto (referencia / tests).
 pub fn current_code(secret_base32: &str) -> String {
-    let Ok(bytes) = decode_base32(secret_base32) else {
+    let Some(bytes) = decode_base32(secret_base32) else {
         return String::new();
     };
     code_at(&bytes, current_counter())
@@ -100,7 +102,7 @@ pub fn current_code(secret_base32: &str) -> String {
 
 /// Verifica un código de 6 dígitos contra el secreto con ventana de ±1 paso.
 pub fn verify(secret_base32: &str, code: &str) -> bool {
-    let Ok(bytes) = decode_base32(secret_base32) else {
+    let Some(bytes) = decode_base32(secret_base32) else {
         return false;
     };
     let code = code.trim();

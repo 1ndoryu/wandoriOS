@@ -6,7 +6,6 @@ import {
   clearOverlaySync,
   initOverlaySync,
   overlaySyncStore,
-  resolveOverlayConflict,
   syncOverlayForUser,
 } from './overlay-sync';
 import { EMPTY_OVERLAY, overlayStore } from './stores';
@@ -89,7 +88,7 @@ describe('workspace overlay sync', () => {
     expect(save).not.toHaveBeenCalled();
   });
 
-  it('presenta conflicto en una respuesta 409 sin sobrescribir el overlay local', async () => {
+  it('resuelve un 409 con merge por campo: combina local y remoto sin perder nada', async () => {
     vi.spyOn(WorkspaceService, 'getOverlay').mockResolvedValueOnce({
       overlay: EMPTY_OVERLAY,
       revision: 1,
@@ -111,72 +110,40 @@ describe('workspace overlay sync', () => {
     };
     overlayStore.set(localOverlay, 'user');
 
-    await vi.waitFor(() => expect(overlaySyncStore.get().status).toBe('conflict'));
+    /* El merge (item remoto + override local) solo se aplica tras el 409. */
+    await vi.waitFor(() => expect(overlayStore.get().addedItems['remote-folder']).toBeDefined());
 
-    expect(overlayStore.get()).toEqual(localOverlay);
-    expect(overlaySyncStore.get()).toMatchObject({ revision: 2, remoteOverlay, status: 'conflict' });
+    const merged = overlayStore.get();
+    expect(merged.fieldOverrides['local-folder']).toEqual({ label: 'Local' });
+    expect(overlaySyncStore.get()).toMatchObject({ revision: 2, status: 'ready' });
   });
 
-  it('conservar lo de este dispositivo usa la última mutación hecha durante el conflicto', async () => {
-    vi.spyOn(WorkspaceService, 'getOverlay').mockResolvedValueOnce({
-      overlay: EMPTY_OVERLAY,
-      revision: 1,
-      updated_at: '2026-07-31T00:00:00.000Z',
-    }).mockResolvedValueOnce({
-      overlay: remoteOverlay,
-      revision: 2,
-      updated_at: '2026-07-31T00:00:00.000Z',
-    });
-    const save = vi.spyOn(WorkspaceService, 'saveOverlay')
-      .mockRejectedValueOnce(new ApiError(409, { error: 'conflict' }, 'API Error: 409'))
-      .mockResolvedValueOnce({
-        overlay: { ...EMPTY_OVERLAY, fieldOverrides: { latest: { label: 'Última' } } },
-        revision: 3,
-        updated_at: '2026-07-31T00:00:00.000Z',
-      });
-    stop = initOverlaySync();
-
-    await syncOverlayForUser('user-a');
-    overlayStore.set({
+  it('aplica LWW en la colisión real del mismo id (remoto gana) y queda ready', async () => {
+    const remoteCollision: WorkspaceOverlay = {
       ...EMPTY_OVERLAY,
-      fieldOverrides: { first: { label: 'Primera' } },
-    }, 'user');
-    await vi.waitFor(() => expect(overlaySyncStore.get().status).toBe('conflict'));
-
-    const latestLocal: WorkspaceOverlay = {
-      ...EMPTY_OVERLAY,
-      fieldOverrides: { latest: { label: 'Última mutación local' } },
+      addedItems: {
+        'shared-folder': { id: 'shared-folder', parentId: 'desktop', type: 'folder', label: 'Remoto', requires: 'public' },
+      },
     };
-    overlayStore.set(latestLocal, 'user');
-    resolveOverlayConflict('local');
-
-    await vi.waitFor(() => expect(overlaySyncStore.get().status).toBe('ready'));
-    expect(save).toHaveBeenLastCalledWith({
-      overlay: latestLocal,
-      expected_revision: 2,
-    });
-  });
-
-  it('permite elegir el overlay remoto explícitamente', async () => {
     vi.spyOn(WorkspaceService, 'getOverlay').mockResolvedValue({
-      overlay: remoteOverlay,
+      overlay: remoteCollision,
       revision: 4,
       updated_at: '2026-07-31T00:00:00.000Z',
     });
     stop = initOverlaySync();
     const localOverlay: WorkspaceOverlay = {
       ...EMPTY_OVERLAY,
-      fieldOverrides: { 'local-folder': { label: 'Local' } },
+      addedItems: {
+        'shared-folder': { id: 'shared-folder', parentId: 'desktop', type: 'folder', label: 'Local', requires: 'public' },
+      },
     };
     overlayStore.set(localOverlay, 'sync');
 
     await syncOverlayForUser('user-a');
-    expect(overlaySyncStore.get().status).toBe('conflict');
 
-    resolveOverlayConflict('remote');
-
-    expect(overlayStore.get()).toEqual(remoteOverlay);
     expect(overlaySyncStore.get().status).toBe('ready');
+    /* Mismo id tocado por ambos lados: gana el remoto (LWW). */
+    expect(overlayStore.get().addedItems['shared-folder'].label).toBe('Remoto');
   });
 
   /* [297A-27] Falso conflicto por orden de claves: el backend Rust serializa
@@ -222,7 +189,7 @@ describe('workspace overlay sync', () => {
     expect(overlayStore.get()).toEqual(localOverlay);
   });
 
-  it('sí marca conflicto cuando el contenido realmente difiere pese al orden de claves', async () => {
+  it('combina campos distintos por campo (sin colisión) y queda ready', async () => {
     const localOverlay: WorkspaceOverlay = {
       ...EMPTY_OVERLAY,
       fieldOverrides: {
@@ -239,10 +206,14 @@ describe('workspace overlay sync', () => {
 
     await syncOverlayForUser('user-a');
 
-    expect(overlaySyncStore.get().status).toBe('conflict');
+    /* Ids distintos: no hay colisión real → ambos se conservan. */
+    expect(overlaySyncStore.get().status).toBe('ready');
+    const merged = overlayStore.get();
+    expect(merged.fieldOverrides['local-folder']).toEqual({ label: 'Local' });
+    expect(merged.addedItems['remote-folder']).toBeDefined();
   });
 
-  it('respeta el orden de tombstones (los arrays comparan en orden)', async () => {
+  it('une tombstones de ambos lados sin orden ni duplicados', async () => {
     const localOverlay: WorkspaceOverlay = {
       ...EMPTY_OVERLAY,
       tombstones: ['a', 'b'],
@@ -261,6 +232,7 @@ describe('workspace overlay sync', () => {
 
     await syncOverlayForUser('user-a');
 
-    expect(overlaySyncStore.get().status).toBe('conflict');
+    expect(overlaySyncStore.get().status).toBe('ready');
+    expect(overlayStore.get().tombstones).toEqual(['a', 'b']);
   });
 });
