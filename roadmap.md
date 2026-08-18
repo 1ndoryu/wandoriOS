@@ -321,8 +321,14 @@ primer icono real (1086px) con RTL+space-between, `getCellAt` inverso exacto, y
 
 **Depende de:** 297A-9/10/11. Plan: `Agente/planes/plan-programas-editoriales-2026-07-31.md`.
 
+- [x] **Trazabilidad del ciclo editorial** (18-ago): fix en `article_repo.update` —
+      `published_at` se limpia al despublicar (un draft no arrastra fecha vieja) y
+      se reescribe al publicar/republicar (fecha de la publicación vigente). Test de
+      integración `tests/editorial_cycle.rs`: borrador → published (ready/public +
+      fecha) → despublicar (draft/private + fecha NULL) → republicar (fecha
+      actualizada). Envelope `resources` sincronizado en cada transición.
 - [ ] Ejecutar E2E visual desktop/tablet/móvil del vertical editorial completo: artículos/About, proyectos, productos, media, papelera, publicación, rollback y autosave.
-- [ ] Cubrir permisos admin, estados draft/private/public, errores de red, teardown de apps lazy y acciones de toolbar.
+- [ ] Cubrir permisos admin, estados draft/private/public, errores de red, teardown de apps lazy y acciones de toolbar (permisos verificados por API: editor requiere admin).
 
 **Gate/salida:** editores reutilizables y programas de contenido funcionan en las tres presentaciones sin carreras ni referencias rotas.
 

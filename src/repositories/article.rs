@@ -144,10 +144,14 @@ impl ArticleRepository {
         };
 
         let new_status = params.status.unwrap_or(&current_status);
-        let published_at = if new_status == "published" && current_published_at.is_none() {
+        /* [297A-14] Trazabilidad editorial: published_at refleja el momento de
+         * la publicación ACTUAL. Al publicar se fija NOW() (sea la primera o
+         * una republicación), al despublicar se limpia — un draft nunca
+         * arrastra una fecha de publicación vieja ni la muestra como viva. */
+        let published_at = if new_status == "published" {
             Some(chrono::Utc::now())
         } else {
-            current_published_at
+            None
         };
 
         sqlx::query_as::<_, Article>(
