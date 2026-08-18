@@ -16,10 +16,12 @@ export function getViewport(): Viewport {
 }
 
 /** Obtener el modo de presentación según el ancho del viewport.
+ * [297A-12] El launcher móvil es solo pantallas ≤480px; tablet (481–1023)
+ * conserva el escritorio con su layout responsive (desktop-responsive.css).
  * Usado por analytics dispatcher y por el OS para elegir layout. */
 export function getPresentationMode(): 'desktop' | 'tablet' | 'mobile' {
   const w = window.innerWidth;
-  if (w < 768) return 'mobile';
+  if (w < 481) return 'mobile';
   if (w < 1024) return 'tablet';
   return 'desktop';
 }

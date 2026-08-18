@@ -31,13 +31,23 @@ describe('getPresentationMode', () => {
     Object.defineProperty(window, 'innerWidth', { value: origInnerWidth, writable: true, configurable: true });
   });
 
-  it('devuelve mobile para width < 768', () => {
+  it('devuelve mobile para width < 481 (≤480px)', () => {
     Object.defineProperty(window, 'innerWidth', { value: 375, configurable: true });
     expect(getPresentationMode()).toBe('mobile');
   });
 
-  it('devuelve tablet para 768 <= width < 1024', () => {
+  it('devuelve mobile en el límite exacto (480)', () => {
+    Object.defineProperty(window, 'innerWidth', { value: 480, configurable: true });
+    expect(getPresentationMode()).toBe('mobile');
+  });
+
+  it('devuelve tablet para 481 <= width < 1024 (conserva escritorio)', () => {
     Object.defineProperty(window, 'innerWidth', { value: 900, configurable: true });
+    expect(getPresentationMode()).toBe('tablet');
+  });
+
+  it('devuelve tablet en el límite inferior (481)', () => {
+    Object.defineProperty(window, 'innerWidth', { value: 481, configurable: true });
     expect(getPresentationMode()).toBe('tablet');
   });
 
@@ -49,11 +59,6 @@ describe('getPresentationMode', () => {
   it('devuelve desktop en el límite exacto (1024)', () => {
     Object.defineProperty(window, 'innerWidth', { value: 1024, configurable: true });
     expect(getPresentationMode()).toBe('desktop');
-  });
-
-  it('devuelve mobile en el límite exacto (767)', () => {
-    Object.defineProperty(window, 'innerWidth', { value: 767, configurable: true });
-    expect(getPresentationMode()).toBe('mobile');
   });
 });
 

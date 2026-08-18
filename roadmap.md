@@ -188,9 +188,16 @@ el checkout compartido (incidente del 14-ago entre 138A-14 y 138A-15 en
 
 **Depende de:** 297A-9/11. Tablet conserva el escritorio.
 
-- [ ] Ejecutar E2E visual/táctil en 320/360/390px y tablet 768px.
-- [ ] Verificar long press/drag estable, orientación, safe areas, teclado virtual, foco, scroll y apps críticas.
-- [ ] Confirmar refresh, transición móvil↔tablet y sincronización de URL sin duplicar el stack.
+- [x] **Umbral de presentación** (18-ago): el launcher móvil (ya implementado en
+      `features/mobile/*` con long press/drag, notificaciones, tema y cuenta)
+      se monta solo en ≤480px; tablet (481–1023) conserva el escritorio con su
+      layout responsive. Cambios: `getPresentationMode` (<481 móvil, 481–1023
+      tablet), matchMedia de transición en main.ts (480) y tests de límites
+      (480 móvil, 481 tablet, 1024 desktop).
+- [ ] Pendiente navegador real: E2E visual/táctil en 320/360/390px (el webview
+      del preview no baja de ~900px); validar long press/drag, orientación,
+      safe areas (ya en CSS), teclado virtual, foco, scroll y apps críticas.
+- [ ] Confirmar refresh, transición móvil↔tablet y sincronización de URL sin duplicar el stack (E2E navegador).
 
 **Gate/salida:** launcher móvil funciona a los viewports definidos y conserva estado sin crear lógica paralela.
 

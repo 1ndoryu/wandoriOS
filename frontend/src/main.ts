@@ -259,8 +259,10 @@ async function initApp(): Promise<void> {
     const stopRouter = initRouter();
 
     /* La URL conserva la app/recurso; al cambiar de breakpoint se reinstancia
-     * en el shell nuevo en lugar de transferir MountedView entre stores. */
-    const mediaQuery = window.matchMedia('(max-width: 767px)');
+     * en el shell nuevo en lugar de transferir MountedView entre stores.
+     * [297A-12] El launcher móvil vive solo en ≤480px; tablet (481–1023)
+     * conserva el escritorio, así que el límite del matchMedia es 480. */
+    const mediaQuery = window.matchMedia('(max-width: 480px)');
     let transitionRequest = 0;
     let transitionQueue: Promise<void> = Promise.resolve();
     const onPresentationChange = (event: MediaQueryListEvent): void => {
