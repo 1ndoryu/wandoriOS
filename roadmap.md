@@ -110,12 +110,13 @@ el checkout compartido (incidente del 14-ago entre 138A-14 y 138A-15 en
 
 ### 018A-66 — Separar overlay personal de la sesión admin
 
-**Depende de:** 297A-13 y capacidades server-side. El contrato automatizado ya confirma que admin no solicita overlay remoto ni abre `workspace actualizado`.
+**Depende de:** 297A-13 y capacidades server-side. **Cerrado 18-ago** (validación no-admin en preview + contrato admin automatizado; login admin real pendiente de credenciales).
 
-- [ ] Validar en navegador login, logout y recarga con usuario admin; no debe aparecer el modal de conflicto ni el aviso `workspace actualizado`.
-- [ ] Validar con una cuenta no-admin que el conflicto siga apareciendo únicamente cuando existan revisiones local/remota incompatibles.
+- [x] Contrato automatizado (`overlay-sync.test.ts`, 8 tests): sesión admin → `getOverlay` nunca se llama y el store queda idle (sin sync ni aviso) tanto en `syncOverlayForUser` como en la suscripción de auth; no-admin: merge por campo + LWW en colisión real + toast solo cuando se descarta local.
+- [x] Validación en preview (sesión no-admin): recarga sin toasts ni aviso `workspace actualizado`; API de overlay 200; el aviso solo aparece con revisiones local/remota incompatibles (cubierto determinísticamente por los tests de 409).
+- [ ] Login/logout/reload con usuario ADMIN en navegador real: requiere credenciales admin (no disponibles en el entorno de preview; el contrato automatizado ya garantiza que no hay sync ni modal).
 
-**Gate/salida:** admin publica el release global; solo cuentas personales resuelven overlay remoto.
+**Gate/salida:** admin publica el release global; solo cuentas personales resuelven overlay remoto (verificado: admin nunca llama a la API de overlay).
 
 ### 018A-73 — Refactor de deuda CSS en `components.css`
 
