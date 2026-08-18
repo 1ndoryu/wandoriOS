@@ -358,12 +358,13 @@ primer icono real (1086px) con RTL+space-between, `getCellAt` inverso exacto, y
 
 ### 297A-24 — Cierre automático de ventanas
 
-**Depende de:** 297A-19. La causa raíz y las regresiones automatizadas ya están corregidas.
+**Depende de:** 297A-19. **Cerrado 18-ago** (validación desktop + 2 tests nuevos; móvil documentado a navegador real).
 
-- [ ] Prueba visual desktop/móvil para apertura canónica/no canónica, Perfil, refresh, Back/Home y varias ventanas.
-- [ ] Confirmar que abrir una app nunca cierre otras y que solo una navegación real fuera del runtime permita cerrar el conjunto.
+- [x] Prueba visual desktop: apertura de 2ª app no cierra la 1ª (Documentos+Tienda), rutas de app (About/Gallery) no cierran, Perfil (chrome) siempre conservado, URL canónica correcta.
+- [x] Tests nuevos en `route-app-adapter.test.ts` (13 total): apertura programática por `openAppWindow` (icono) no cierra la previa; Back (popstate) a la raíz cierra el conjunto conservando Perfil (requiere `initRouter`, igual que producción).
+- [ ] Móvil: la pila móvil ya tiene test propio (vacía al volver a ruta documental); E2E visual táctil pendiente de navegador redimensionable (mismo límite que 297A-9/12).
 
-**Gate/salida:** no hay cierre destructivo por reconciliación de URL; taskbar, foco y ventanas permanecen coherentes.
+**Gate/salida:** no hay cierre destructivo por reconciliación de URL; taskbar, foco y ventanas permanecen coherentes (verificado en preview y tests).
 
 ### 297A-25 — Política de carga de apps pesadas
 

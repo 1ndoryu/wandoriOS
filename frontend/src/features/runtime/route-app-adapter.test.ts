@@ -13,7 +13,7 @@ import {
 } from './window-manager';
 import { initRouteAppAdapter, openAppWindow } from './route-app-adapter';
 import { initWindowUrlSync } from './window-url-sync';
-import { addRoute, navigate, replacePath, setOutlet } from '../../router';
+import { addRoute, initRouter, navigate, replacePath, setOutlet } from '../../router';
 import { authStore } from '../../store';
 import { clearMobileStack, mobileStackStore, openMobileView } from '../mobile/mobile-stack';
 import type { MountedView } from '../../core/lifecycle';
@@ -221,6 +221,48 @@ describe('RouteAppAdapter runtime reconciliation', () => {
 
     expect(windowStore.get().map((window) => window.appId)).toEqual([routedAppId, localAppId]);
     expect(window.location.pathname).toBe('/runtime-test');
+    stopUrlSync.stop();
+  });
+
+  /* [297A-24] La apertura programática (icono del escritorio, comandos) no
+   * pasa por el router: abrir una segunda app nunca puede reconciliar ni
+   * cerrar la primera. */
+  it('abrir una segunda app por openAppWindow no cierra la primera', async () => {
+    stopAdapter = initRouteAppAdapter();
+    const stopUrlSync = initWindowUrlSync();
+    openWindow(routedApp, createTestView(), new AbortController());
+    replacePath('/runtime-test');
+
+    await openAppWindow(localAppId);
+
+    expect(windowStore.get().map((window) => window.appId)).toEqual([routedAppId, localAppId]);
+    expect(window.location.pathname).toBe('/runtime-test');
+    stopUrlSync.stop();
+  });
+
+  /* [297A-24] Back (popstate) desde una ruta de app a la raíz es una
+   * navegación fuera del runtime: cierra el conjunto y conserva Perfil. */
+  it('Back a la raíz cierra el conjunto y conserva Perfil', async () => {
+    stopAdapter = initRouteAppAdapter();
+    const stopRouter = initRouter();
+    const stopUrlSync = initWindowUrlSync();
+    registerShellWindow({
+      instanceId: 'shell-profile',
+      title: 'Perfil',
+      icon: [],
+      content: document.createElement('div'),
+      focused: true,
+    });
+    openWindow(routedApp, createTestView(), new AbortController());
+    replacePath('/runtime-test');
+    expect(windowStore.get().filter((w) => w.appId === routedAppId)).toHaveLength(1);
+
+    history.back();
+    await new Promise((resolve) => setTimeout(resolve, 20));
+
+    expect(window.location.pathname).toBe('/');
+    expect(windowStore.get().map((window) => window.instanceId)).toEqual(['shell-profile']);
+    stopRouter();
     stopUrlSync.stop();
   });
 
