@@ -173,6 +173,16 @@ describe('getCellAt — inverso de cellOriginAt', () => {
     expect(getCellAt(GRID_LEFT - GAP - 1, GRID_TOP + 10, metrics)).toBeNull();
     expect(getCellAt(GRID_LEFT + 4 * CELL + 3 * GAP + GAP + 1, GRID_TOP + 10, metrics)).toBeNull();
   });
+
+  it('RTL: devuelve null fuera del borde izquierdo (lado creciente) y del derecho', () => {
+    const grid = mountGrid(4 * CELL + 3 * GAP, 3 * CELL_H + 2 * ROW_GAP, { direction: 'rtl' });
+    const metrics = getGridMetrics(grid);
+    const width = 4 * CELL + 3 * GAP;
+    /* En RTL la col 0 está a la derecha; superar el borde izquierdo (local 0)
+     * o el derecho (local width) debe devolver null. */
+    expect(getCellAt(GRID_LEFT - GAP - 1, GRID_TOP + 10, metrics)).toBeNull();
+    expect(getCellAt(GRID_LEFT + width + GAP + 1, GRID_TOP + 10, metrics)).toBeNull();
+  });
 });
 
 describe('positionCellHighlight — highlight alineado con la celda real', () => {
@@ -191,5 +201,42 @@ describe('positionCellHighlight — highlight alineado con la celda real', () =>
     expect(hl.style.left).toBe(`${CELL + GAP + 8}px`);
     expect(hl.style.top).toBe('0px');
     expect(hl.style.width).toBe(`${CELL}px`);
+  });
+
+  it('RTL: col 0 queda a la derecha y crece hacia la izquierda con gap efectivo', () => {
+    const grid = mountGrid(4 * CELL + 3 * GAP + 24, 3 * CELL_H + 2 * ROW_GAP, { direction: 'rtl' });
+    const metrics = getGridMetrics(grid);
+    const session: HighlightSession = {
+      gridEl: grid,
+      itemSelector: '.desktop-icon--interactive',
+      placement: true,
+      highlightEl: null,
+      currentTarget: null,
+    };
+    const width = 4 * CELL + 3 * GAP + 24;
+    const gapEff = GAP + 8;
+    positionCellHighlight({ col: 0, row: 0 }, metrics, session);
+    expect(session.highlightEl!.style.left).toBe(`${width - CELL}px`);
+    positionCellHighlight({ col: 2, row: 1 }, metrics, session);
+    expect(session.highlightEl!.style.left).toBe(`${width - 3 * CELL - 2 * gapEff}px`);
+    expect(session.highlightEl!.style.top).toBe(`${CELL_H + ROW_GAP}px`);
+  });
+
+  it('RTL: el highlight de col 0 coincide con el rect del icono posicionado a la derecha', () => {
+    const grid = mountGrid(4 * CELL + 3 * GAP, 3 * CELL_H + 2 * ROW_GAP, { direction: 'rtl' });
+    const metrics = getGridMetrics(grid);
+    const session: HighlightSession = {
+      gridEl: grid,
+      itemSelector: '.desktop-icon--interactive',
+      placement: true,
+      highlightEl: null,
+      currentTarget: null,
+    };
+    const width = 4 * CELL + 3 * GAP;
+    positionCellHighlight({ col: 0, row: 0 }, metrics, session);
+    /* El icono en col 0 (RTL) ocupa el extremo derecho del grid: su rect
+     * local empieza en width - CELL, igual que el highlight. */
+    expect(session.highlightEl!.style.left).toBe(`${width - CELL}px`);
+    expect(parseFloat(session.highlightEl!.style.left) + CELL).toBe(width);
   });
 });

@@ -283,6 +283,12 @@ real (verificado por el usuario — acta de 05-ago: falla); el drag de grupo no 
 implicados (ni se superpone ni sale del grid); sin rejillas rojas en producción; tests
 DOM fijan la geometría frente a `space-between`+RTL. **Estado 12-ago: cerrado (user confirmó resuelto).**
 
+**Refuerzo 18-ago (018A-97 + 297A-22):** casos límite añadidos en `icon-grid-dom.test.ts`
+(highlight RTL col 0/2 con gap efectivo y coincidencia con el rect del icono real, bordes
+LTR/RTL con null); verificado en vivo a 907px (tablet ≥769): `cellOriginAt(0,0)` == rect del
+primer icono real (1086px) con RTL+space-between, `getCellAt` inverso exacto, y
+`positionCellHighlight(col 2,row 1)` == origen calculado (868px, ancho 88px). Suite 496 ✅.
+
 ### 297A-21 — Notificaciones de novedades
 
 **Depende de:** 297A-13 y releases versionados.
