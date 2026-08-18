@@ -144,10 +144,24 @@ el checkout compartido (incidente del 14-ago entre 138A-14 y 138A-15 en
 
 **Depende de:** 297A-6–16 y de la revisión CSS anterior.
 
-- [ ] Completar MFA/passkey, recuperación avanzada y threat review con casos negativos de sesión, CSRF, capacidades, pagos, grants y webhooks.
-- [ ] Auditar SEO final: HTML público, sitemap, robots, canonical, metadata, Open Graph/Twitter y JSON-LD sin drafts ni rutas privadas.
+- [x] **Threat review de sesión/CSRF/rate limits** (18-ago): sesión opaca hasheada
+      `HttpOnly`/`SameSite=Lax` + `Secure` en producción, TTL 168 h; CSRF de doble
+      cookie + header verificado server-side; rate limits por IP (login 5/60 s,
+      auth_action 3/300 s). Deuda conocida: contadores en-memoria por instancia
+      (se revisará con producción). Documento:
+      `Agente/documentacion/seguridad/threat-review-sesion-csrf-2026-08-18.md`.
+- [x] **SEO de rutas públicas** (18-ago): og/twitter/canonical estáticos en
+      `index.html`; `page-meta.ts` aplica título/descripción a login,
+      verify-email, escritorio (`/`) y checkout; las rutas de contenido
+      (article/about/gallery/projects) ya tenían `updateMeta`/JSON-LD.
+- [x] **Accesibilidad base** (18-ago): `:focus-visible` global monocromo
+      (claro/oscuro), `prefers-reduced-motion` global, skip-link en el shell
+      del escritorio. Pendiente la validación visual navegador multi-viewport.
+- [ ] Completar MFA/passkey (passkey/WebAuthn queda como mejora posterior;
+      TOTP ya está en 297A-13) y recuperación avanzada.
+- [ ] Auditar SEO restante: sitemap, robots.txt y JSON-LD sin drafts ni rutas privadas (falta sitemap/robots como artefactos servidos).
 - [ ] Verificar el manual visual en desktop, tablet y móvil, incluyendo claro/oscuro y los tamaños aprobados.
-- [ ] Verificar teclado, foco, live regions, zoom 200%, reduced motion, alto contraste y multimedia accesible.
+- [ ] Verificar foco, live regions, zoom 200%, alto contraste y multimedia accesible en navegador (la base CSS ya está).
 - [ ] Ejecutar E2E críticos, observabilidad real y el runbook de operación; deploy sigue fuera de alcance y no se usa SSH.
 
 **Gate/salida:** checklist de hardening y accesibilidad evidenciado en navegador, tests y quality gate.

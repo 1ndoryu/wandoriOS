@@ -41,6 +41,7 @@ import {initResourceTypeRegistry} from './features/runtime/resource-type-registr
 import {setActorCategory} from './features/analytics/dispatcher';
 import {loadProfileSettings} from './features/settings/settings-repo';
 import {initTracking, trackPageView} from './features/analytics/tracker';
+import {initPageMeta} from './features/seo/page-meta';
 import {createAnalyticsConsentBanner} from './features/analytics/consent-banner';
 import {initThemeStore} from './features/runtime/theme-store';
 import {initPreferencesSync} from './features/runtime/preferences-sync';
@@ -233,6 +234,10 @@ async function initApp(): Promise<void> {
     /* Tracking de page views — cleanup almacenado para posible teardown */
     const stopTracking = initTracking();
 
+    /* [297A-17] Meta por ruta pública (login, verify-email, escritorio, 404).
+     * Se registra antes de initRouter para cubrir la primera navegación. */
+    const stopPageMeta = initPageMeta();
+
     /* Registrar primero el destino móvil y después el interceptor: una navegación
      * inicial nunca puede caer accidentalmente en una ventana desktop. */
     const stopMobileAdapter = (): void => {
@@ -355,6 +360,7 @@ async function initApp(): Promise<void> {
         cleanedUp = true;
         mediaQuery.removeEventListener('change', onPresentationChange);
         stopTracking();
+        stopPageMeta();
         stopPreferencesSync();
         stopAppearanceSync();
         stopOverlaySync();

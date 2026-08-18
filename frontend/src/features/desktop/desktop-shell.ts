@@ -36,6 +36,15 @@ export function createDesktopShell(
 ): DesktopShell {
   let destroyed = false;
   const shell = createEl('section', { className: 'desktop-shell', ariaLabel: 'Escritorio' });
+  /* [297A-17] Skip-link: primer elemento tabulable del shell, visible solo al
+   * recibir foco por teclado. `content` es el main con el outlet del router. */
+  const skipLink = createEl('a', {
+    className: 'skip-link',
+    href: '#contenido-principal',
+    textContent: 'saltar al contenido',
+    'aria-label': 'Saltar al contenido principal',
+  });
+  content.id = content.id || 'contenido-principal';
   const workspace = createEl('div', { className: 'desktop-workspace' });
 
   /* Profile como shell window.
@@ -146,7 +155,7 @@ export function createDesktopShell(
   });
 
   const menuBar = createDesktopMenuBar();
-  shell.append(menuBar.element, workspace, taskbar.element);
+  shell.append(skipLink, menuBar.element, workspace, taskbar.element);
 
   /* Window container */
   const windowContainer = createEl('div', { className: 'desktop-windows-container' });

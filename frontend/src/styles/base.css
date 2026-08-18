@@ -81,4 +81,50 @@ hr {
   text-decoration: none;
 }
 
+/* [297A-17] Foco visible global para teclado. El reset elimina el anillo por
+ * defecto; este :focus-visible restaura un indicador monocromo legible en
+ * claro y oscuro (--color-texto se invierte con el tema). Los componentes
+ * que definen su propio :focus-visible (p. ej. .boton-icono) lo sobrescriben
+ * por especificidad, sin conflicto. */
+:focus-visible {
+  outline: 2px solid var(--color-texto);
+  outline-offset: 2px;
+}
+
+/* [297A-17] Skip-link: solo visible al enfocarse con teclado (primer
+ * elemento del shell); al perder el foco vuelve a ocultarse. */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  z-index: 9999;
+}
+
+.skip-link:focus-visible {
+  position: fixed;
+  left: 8px;
+  top: 8px;
+  width: auto;
+  height: auto;
+  padding: 8px 12px;
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  border: var(--borde);
+  outline-offset: 2px;
+}
+
+/* [297A-17] Reduced motion: si el SO pide menos movimiento, se recortan
+ * transiciones y animaciones del shell sin cambiar estados funcionales. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 } /* @layer base */
