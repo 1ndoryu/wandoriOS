@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "adapter": {
+    "id": "wandorius-quality",
+    "version": "0.2.0",
+    "protocolVersion": 1,
+    "capabilities": [
+      "structured-stage-process",
+      "argv-only",
+      "fail-closed",
+      "manifest-owned-stages"
+    ],
+    "environment": {
+      "mode": "runner-default",
+      "allowlisted": ["CARGO_TARGET_DIR_BASE"]
+    },
+    "output": {
+      "schemaVersion": "1",
+      "exitCodes": {
+        "pass": 0,
+        "findings": 1,
+        "toolError": 2,
+        "cancelled": 130
+      }
+    }
+  },
+  "transport": {
+    "executable": "node",
+    "entrypoint": "scripts/quality/stage-process.mjs",
+    "arguments": [
+      "--stage",
+      "{stage}",
+      "--report",
+      "{reportPath}",
+      "--task-id",
+      "{taskId}"
+    ]
+  },
+  "stages": {
+    "sentinel": { "timeoutMs": 180000 },
+    "varsense": { "timeoutMs": 300000 },
+    "rust": { "timeoutMs": 1800000 },
+    "frontend": { "timeoutMs": 600000 },
+    "docs": { "timeoutMs": 60000 }
+  },
+  "profiles": {
+    "css": ["varsense"],
+    "frontend": ["varsense", "frontend"],
+    "rust": ["rust"],
+    "docs": ["docs"]
+  }
+}

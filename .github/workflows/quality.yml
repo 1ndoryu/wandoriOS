@@ -1,0 +1,94 @@
+name: Quality gate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      CI: 'true'
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+      CARGO_TARGET_DIR_BASE: /tmp/glory-target
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Instalar frontend
+        run: npm ci --prefix frontend
+      - name: Instalar cliente PostgreSQL
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - name: Preparar herramientas fijadas
+        run: npm run quality:setup
+      - name: Probar orquestador
+        run: npm run quality:test
+      - name: Preparar base de datos
+        run: node scripts/prepare-ci-db.mjs
+      - name: Regenerar cliente OpenAPI
+        run: npm run codegen:local
+      # [108A-6] Gate canónico: `sentinel check --stages` es la única autoridad
+      # de cierre (ADR 0001, gate SNT-10). `task:check` queda como alias
+      # temporal de compatibilidad hasta la retirada física de scripts/quality.
+      - name: Ejecutar gate completo
+        run: npm run gate:check -- 297A-6 --ci
+      # [028A-6 Fase 4] Los artifacts se publican con branch-key + task +
+      # commit corto (contrato del plan): runners reutilizados nunca mezclan
+      # reportes de ramas distintas. resolveBranchIdentity usa GITHUB_HEAD_REF
+      # / GITHUB_REF_NAME (allowlisted) en CI. if: always() para que un gate
+      # fallido siga nombrando sus artifacts con la rama correcta (los pasos
+      # de publicación usan always() y no pueden quedarse con el nombre vacío).
+      - name: Resolver identidad de rama para artifacts
+        if: always()
+        id: identity
+        run: |
+          node --input-type=module -e "
+            import { resolveBranchIdentity } from './scripts/quality/branch-identity.mjs';
+            const id = await resolveBranchIdentity(process.cwd());
+            console.log('branchKey=' + id.branchKey);
+            console.log('shortCommit=' + id.shortCommit);
+          " >> "$GITHUB_OUTPUT"
+      - name: Exportar métricas históricas
+        if: always()
+        run: node scripts/quality/export-ci-metrics.mjs
+      - name: Publicar reportes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-reports-${{ steps.identity.outputs.branchKey }}-297A-6-${{ steps.identity.outputs.shortCommit }}
+          path: .quality-reports/
+          if-no-files-found: warn
+          retention-days: 14
+      # [028A-8 Fase 4] Publicación de métricas históricas: solo timing/cache/
+      # estado (ya redactado en origen); nunca código fuente ni secretos.
+      - name: Publicar métricas históricas
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-metrics-${{ steps.identity.outputs.branchKey }}-${{ steps.identity.outputs.shortCommit }}
+          path: .quality-reports/ci-metrics.json
+          if-no-files-found: warn
+          retention-days: 30

@@ -1,0 +1,445 @@
+/* [297A-12] Prototipo visual móvil para aprobación. La identidad consume tokens
+ * globales y queda aislada del chrome desktop; la lógica final llegará después. */
+
+@layer components {
+  .movilOs {
+    width: 100%;
+    min-height: 100dvh;
+    background: var(--sistema-fondo);
+    color: var(--sistema-texto);
+    font-family: var(--fuente-sistema);
+    font-size: var(--sistema-texto-tamano);
+  }
+
+  .movilOs__viewport {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) var(--altoNavegacionSistemaMovil);
+    min-height: 100dvh;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+
+  .movilOs__routerOutlet {
+    display: none;
+  }
+
+  .movilMarca {
+    width: var(--sistema-logo-tamano);
+    height: var(--sistema-logo-tamano);
+    border-radius: 50%;
+    background: var(--sistema-texto);
+    flex: 0 0 auto;
+  }
+
+  .movilLauncher {
+    min-height: 0;
+    overflow-y: auto;
+    background-color: var(--sistema-fondo);
+    background-image: var(--sistema-trama-escritorio);
+    background-size: var(--sistema-trama-tamano) var(--sistema-trama-tamano);
+  }
+
+  .movilLauncher__cabecera {
+    display: flex;
+    align-items: center;
+    gap: var(--espacio-sm);
+    min-height: var(--altoCabeceraSistemaMovil);
+    padding: var(--espacio-md) var(--espacio-lg);
+    border-bottom: var(--sistema-borde);
+    background: var(--sistema-fondo);
+  }
+
+  .movilLauncher__fecha {
+    margin: 0;
+    font-size: var(--sistema-menu-contexto-texto-tamano);
+  }
+
+  .movilLauncher__acciones {
+    display: flex;
+    align-items: center;
+    gap: var(--espacio-sm);
+    margin-left: auto;
+  }
+
+  /* [297A-13] Cuenta proyecta authStore; no mantiene estado móvil paralelo. */
+  .movilLauncher__cuenta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--espacio-xs);
+    min-height: var(--areaControlSistemaMovil);
+    padding: 0 var(--espacio-sm);
+    border: var(--sistema-borde);
+    background: var(--sistema-fondo);
+    color: var(--sistema-texto);
+    font-family: var(--fuente-sistema);
+    font-size: var(--sistema-menu-contexto-texto-tamano);
+  }
+
+  .movilLauncher__cuenta svg {
+    width: var(--sistema-control-icono-tamano);
+    height: var(--sistema-control-icono-tamano);
+    stroke-width: var(--sistema-icono-trazo);
+  }
+
+  .movilLauncher__cuenta:hover {
+    background: var(--sistema-texto);
+    color: var(--sistema-fondo);
+  }
+
+  .movilLauncher__cuenta:focus-visible {
+    outline: var(--sistema-borde);
+    outline-offset: var(--espacio-xs);
+  }
+
+  .movilLauncher__control {
+    display: grid;
+    width: var(--areaControlSistemaMovil);
+    height: var(--areaControlSistemaMovil);
+    place-items: center;
+    border: var(--sistema-borde);
+    background: var(--sistema-fondo);
+    color: var(--sistema-texto);
+  }
+
+  .movilLauncher__control svg {
+    width: var(--sistema-control-icono-tamano);
+    height: var(--sistema-control-icono-tamano);
+    stroke-width: var(--sistema-icono-trazo);
+  }
+
+  .movilLauncher__control[data-hay-novedades="true"] {
+    background: var(--sistema-texto);
+    color: var(--sistema-fondo);
+  }
+
+  .movilLauncher__control:focus-visible {
+    outline: var(--sistema-borde);
+    outline-offset: var(--espacio-xs);
+  }
+
+  /* [297A-18] Botón de tema del launcher: área táctil mínima, tokens del sistema. */
+  .movilLauncher__tema {
+    display: grid;
+    width: var(--areaControlSistemaMovil);
+    height: var(--areaControlSistemaMovil);
+    margin-left: auto;
+    place-items: center;
+    border: var(--sistema-borde);
+    background: var(--sistema-fondo);
+    color: var(--sistema-texto);
+  }
+
+  .movilLauncher__tema svg {
+    width: var(--sistema-control-icono-tamano);
+    height: var(--sistema-control-icono-tamano);
+    stroke-width: var(--sistema-icono-trazo);
+  }
+
+  .movilLauncher__tema:focus-visible {
+    outline: var(--sistema-borde);
+    outline-offset: var(--espacio-xs);
+  }
+
+  .movilLauncher__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--espacio-xl) var(--espacio-sm);
+    padding: var(--espacio-2xl) var(--espacio-md);
+  }
+
+  @media (max-width: 480px) {
+    .movilLauncher__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .movilLauncher__grid--editando {
+    touch-action: none;
+  }
+
+  .movilLauncher__navegacion {
+    display: grid;
+    width: calc(100% - (2 * var(--espacio-md)));
+    min-height: var(--areaControlSistemaMovil);
+    margin: 0 var(--espacio-md) var(--espacio-lg);
+    place-items: center;
+    border: var(--sistema-borde);
+    background: var(--sistema-fondo);
+    color: var(--sistema-texto);
+    font-family: var(--fuente-sistema);
+  }
+
+  .movilLauncher__app,
+  .movilCarpeta__archivo {
+    display: flex;
+    min-width: 0;
+    min-height: var(--areaControlSistemaMovil);
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--espacio-sm);
+    color: var(--sistema-texto);
+    font-family: var(--fuente-sistema);
+    font-size: var(--sistema-menu-contexto-texto-tamano);
+    /* [297A-22] El control conserva el scroll normal, pero evita que el
+     * navegador convierta un toque del launcher en zoom de doble toque. Al
+     * entrar en edición, el grid padre aplica touch-action:none para el drag. */
+    touch-action: manipulation;
+  }
+
+  .movilLauncher__app--editando {
+    outline: var(--sistema-borde);
+    outline-offset: var(--espacio-xs);
+  }
+
+  .movilLauncher__app--arrastrando {
+    opacity: 0.35;
+  }
+
+  .movilLauncher__app--ghost {
+    opacity: 0.8;
+    background: var(--sistema-fondo);
+    border: var(--sistema-borde);
+  }
+
+  .movilLauncher__app:focus-visible,
+  .movilCarpeta__archivo:focus-visible,
+  .movilNavegacion__control:focus-visible,
+  .movilAccion:focus-visible,
+  .movilCampo input:focus-visible {
+    outline: var(--sistema-borde);
+    outline-offset: var(--espacio-xs);
+  }
+
+  /* El menú sigue siendo el dropdown canónico; solo cambia su presentación. */
+  .desktop-context-menu--mobile {
+    min-width: min(240px, calc(100vw - var(--espacio-lg)));
+    max-width: calc(100vw - var(--espacio-lg));
+  }
+
+  .desktop-context-menu--mobile .desktop-context-menu__item {
+    min-height: var(--areaControlSistemaMovil);
+    padding: var(--espacio-sm) var(--espacio-md);
+  }
+
+  .movilLauncher__pictograma {
+    display: grid;
+    width: var(--tamanoCeldaSistemaMovil);
+    height: var(--tamanoCeldaSistemaMovil);
+    place-items: center;
+    border: var(--sistema-borde);
+    background: var(--sistema-fondo);
+  }
+
+  .movilLauncher__icono,
+  .movilCarpeta__icono {
+    width: var(--tamanoIconoSistemaMovil);
+    height: var(--tamanoIconoSistemaMovil);
+    stroke-width: var(--sistema-icono-trazo);
+  }
+
+  .movilLauncher__etiqueta,
+  .movilCarpeta__archivo span {
+    max-width: 100%;
+    overflow: hidden;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .movilNavegacion {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    align-items: center;
+    min-height: var(--altoNavegacionSistemaMovil);
+    padding: 0 var(--espacio-lg);
+    border-top: var(--sistema-borde);
+    background: var(--sistema-fondo);
+  }
+
+  .movilNavegacion__control {
+    display: grid;
+    width: var(--areaControlSistemaMovil);
+    height: var(--areaControlSistemaMovil);
+    place-items: center;
+  }
+
+  .movilNavegacion__control:first-child {
+    justify-self: start;
+  }
+
+  .movilNavegacion__control:last-child {
+    grid-column: 2;
+    justify-self: center;
+  }
+
+  .movilNavegacion__control svg {
+    width: var(--sistema-control-icono-tamano);
+    stroke-width: var(--sistema-icono-trazo);
+  }
+
+  .movilNavegacion__control:disabled {
+    visibility: hidden;
+  }
+
+  .movilApp {
+    display: grid;
+    /* [018A-1 F1] Tercera fila opcional: franja de acciones inferior
+     * (solo existe si la app aporta MountedView.actions; la oculta con
+     * [hidden] -> display:none cuando el contexto no tiene acciones). */
+    grid-template-rows: var(--altoCabeceraSistemaMovil) minmax(0, 1fr) auto;
+    min-height: 0;
+    background: var(--sistema-fondo);
+  }
+
+  .movilApp__cabecera {
+    display: grid;
+    grid-template-columns: var(--sistema-logo-tamano) 1fr var(--sistema-logo-tamano);
+    align-items: center;
+    gap: var(--espacio-sm);
+    padding: 0 var(--espacio-lg);
+    border-bottom: var(--sistema-borde);
+  }
+
+  .movilApp__titulo {
+    overflow: hidden;
+    font-family: var(--fuente-sistema);
+    font-size: var(--sistema-texto-tamano);
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .movilApp__contenido {
+    min-height: 0;
+    overflow-y: auto;
+    padding: var(--espacio-lg);
+  }
+
+  /* El layout lo declara AppRegistry; full-bleed no recibe padding del shell. */
+  .movilApp__contenido--fullBleed {
+    padding: 0;
+  }
+
+  .movilPerfil {
+    display: grid;
+    place-items: center;
+  }
+
+  .movilPerfil .profile {
+    margin: 0;
+    font-family: var(--fuente-sistema);
+  }
+
+  .movilPerfil .profile-nombre,
+  .movilPerfil .profile-redes a {
+    font-family: var(--fuente-sistema);
+  }
+
+  .movilPerfil .profile-foto {
+    width: var(--tamanoFotoSistemaMovil);
+    height: var(--tamanoFotoSistemaMovil);
+  }
+
+  .movilCarpeta {
+    padding: 0;
+  }
+
+  .movilCarpeta__ruta {
+    margin: 0;
+    padding: var(--espacio-sm) var(--espacio-md);
+    border-bottom: var(--sistema-borde);
+    font-size: var(--sistema-menu-contexto-texto-tamano);
+  }
+
+  .movilCarpeta__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--espacio-xl) var(--espacio-sm);
+    padding: var(--espacio-xl) var(--espacio-md);
+  }
+
+  .movilArticulo,
+  .movilProducto,
+  .movilCompra {
+    max-width: var(--anchoContenidoSistemaMovil);
+    margin: 0 auto;
+  }
+
+  .movilArticulo__meta,
+  .movilProducto__tipo,
+  .movilCompra__nota {
+    margin-bottom: var(--espacio-sm);
+    font-size: var(--sistema-menu-contexto-texto-tamano);
+  }
+
+  .movilArticulo__titulo,
+  .movilProducto__titulo {
+    margin-bottom: var(--espacio-lg);
+    font-family: var(--fuente-sistema);
+    font-size: var(--tamano-titulo);
+  }
+
+  .movilArticulo__imagen,
+  .movilProducto__imagen {
+    min-height: var(--altoMediaSistemaMovil);
+    margin-bottom: var(--espacio-lg);
+    border: var(--sistema-borde);
+    background-image: repeating-linear-gradient(135deg, transparent 0, transparent var(--espacio-sm), var(--sistema-texto) var(--espacio-sm), var(--sistema-texto) calc(var(--espacio-sm) + 1px));
+  }
+
+  .movilArticulo blockquote {
+    margin: var(--espacio-lg) 0;
+    color: var(--sistema-texto);
+  }
+
+  .movilAccion {
+    display: grid;
+    width: 100%;
+    min-height: var(--areaControlSistemaMovil);
+    margin-top: var(--espacio-lg);
+    place-items: center;
+    border: var(--sistema-borde);
+    background: var(--sistema-texto);
+    color: var(--sistema-fondo);
+    font-family: var(--fuente-sistema);
+  }
+
+  .movilCompra__resumen {
+    padding-bottom: var(--espacio-md);
+    border-bottom: var(--sistema-borde);
+  }
+
+  .movilCampo {
+    display: grid;
+    gap: var(--espacio-xs);
+    margin-top: var(--espacio-lg);
+    font-size: var(--sistema-menu-contexto-texto-tamano);
+  }
+
+  .movilCampo input {
+    min-height: var(--areaControlSistemaMovil);
+    padding: 0 var(--espacio-sm);
+    border: var(--sistema-borde);
+    font-family: var(--fuente-sistema);
+  }
+
+  .movilCompra__nota {
+    margin-top: var(--espacio-sm);
+    text-align: center;
+  }
+
+  @media (max-width: 340px) {
+    .movilLauncher__grid,
+    .movilCarpeta__grid {
+      gap: var(--espacio-lg) var(--espacio-xs);
+      padding-right: var(--espacio-sm);
+      padding-left: var(--espacio-sm);
+    }
+  }
+
+  @media (min-width: 768px) {
+    .movilOs {
+      display: none;
+    }
+  }
+}

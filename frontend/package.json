@@ -1,0 +1,36 @@
+{
+  "name": "wandorius-frontend",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "type-check": "tsc --noEmit",
+    "test": "node ../scripts/quality/run-frontend-tests.mjs",
+    "test:changed": "node ../scripts/quality/run-frontend-tests.mjs",
+    "test:full": "vitest run --maxWorkers=1 --no-file-parallelism",
+    "test:file": "vitest run --maxWorkers=1 --no-file-parallelism",
+    "test:watch": "vitest",
+    "codegen": "orval"
+  },
+  "dependencies": {
+    "@tiptap/core": "^2.6.0",
+    "@tiptap/extension-image": "^2.6.0",
+    "@tiptap/extension-link": "^2.6.0",
+    "@tiptap/extension-placeholder": "^2.6.0",
+    "@tiptap/starter-kit": "^2.6.0",
+    "lucide": "^1.27.0",
+    "three": "^0.185.1"
+  },
+  "devDependencies": {
+    "@types/three": "^0.185.3",
+    "jsdom": "^29.1.1",
+    "orval": "^8.6.2",
+    "terser": "^5.31.0",
+    "typescript": "^5.5.0",
+    "vite": "^5.4.0",
+    "vitest": "^4.1.10"
+  }
+}

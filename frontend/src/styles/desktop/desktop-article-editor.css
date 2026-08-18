@@ -1,0 +1,66 @@
+/* wandori.us — Article Editor
+ * [018A-74] CSS propio de la app de edición de artículos.
+ * El editor de contenido (TipTap) no tenía reglas: solo heredaba la utilidad
+ * .border-bottom y se veía como una línea sin caja frente al campo de
+ * extracto (.campo-textarea, que sí es un campo con borde completo).
+ * Se le da el mismo tratamiento de campo: borde completo, padding y
+ * min-height; el foco engrosa el borde igual que .campo-textarea:focus. */
+
+.article-editor__content {
+  min-height: 200px;
+  padding: var(--espacio-sm);
+  border: var(--borde);
+}
+
+/* El foco engrosa el borde del campo, igual que .campo-textarea:focus. */
+.article-editor__content:focus-within {
+  border-width: 2px;
+}
+
+/* ProseMirror: sin outline propio (el borde del campo ya marca el foco). */
+.article-editor__content .tiptap.ProseMirror {
+  outline: none;
+}
+
+/* Las listas perdieron su estilo en el reset; dentro del contenido se
+ * restauran con los tokens del sistema. */
+.article-editor__content ul {
+  list-style: disc;
+  padding-left: var(--espacio-xl);
+  margin-bottom: var(--espacio-md);
+}
+
+.article-editor__content ol {
+  list-style: decimal;
+  padding-left: var(--espacio-xl);
+  margin-bottom: var(--espacio-md);
+}
+
+/* Listas anidadas conservan marcador propio. */
+.article-editor__content ul ul {
+  list-style: circle;
+}
+
+.article-editor__content ol ol {
+  list-style: lower-alpha;
+}
+
+/* Bloques de código del StarterKit: caja con borde y padding. */
+.article-editor__content pre {
+  padding: var(--espacio-sm);
+  border: var(--borde);
+  margin-bottom: var(--espacio-md);
+  white-space: pre-wrap;
+}
+
+.article-editor__content pre code {
+  border: none;
+  padding: 0;
+}
+
+/* Media insertada por la toolbar (imagen/audio/video). */
+.article-editor__content audio {
+  display: block;
+  max-width: 100%;
+  margin-bottom: var(--espacio-md);
+}

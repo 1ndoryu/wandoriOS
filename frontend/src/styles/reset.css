@@ -1,0 +1,95 @@
+/* wandori.us — CSS Reset
+ * Elimina TODOS los estilos por defecto del navegador.
+ * Obligatorio: ningún elemento debe verse "por defecto".
+ * [Auditoría v2 §3.4] @layer base — lowest specificity layer. */
+
+@layer base {
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: var(--tamano-texto);
+  line-height: var(--linea-altura);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--fuente-texto);
+  color: var(--color-texto);
+  background-color: var(--color-fondo);
+  min-height: 100vh;
+}
+
+/* Selección de texto: invertido B&W */
+::selection {
+  background: var(--color-seleccion);
+  color: var(--color-seleccion-texto);
+}
+
+/* Links: sin color, sin decoración por defecto */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Imágenes: responsive por defecto */
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* Inputs: heredar tipografía */
+input, button, textarea, select {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  outline: none;
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+/* Listas sin estilo */
+ul, ol {
+  list-style: none;
+}
+
+/* Tablas sin espaciado */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* Headings: heredar fuente */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--fuente-titulo);
+  line-height: var(--linea-altura-titulo);
+  font-weight: var(--peso-normal);
+}
+
+/* Scrollbar minimalista */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-borde);
+}
+
+} /* @layer base */

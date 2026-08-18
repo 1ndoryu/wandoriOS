@@ -1,0 +1,90 @@
+/* [297A-14 F4] Biblioteca de media — grid de assets con tokens del sistema.
+ * Chrome monocromo; el contenido multimedia conserva su color.
+ * [018A-71] Sin toolbar de contenido: el control de vista vive en el app
+ * toolbar real de la ventana (grupo "Ver" de app-registration-admin). */
+
+.media-library {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-lg);
+  min-height: 0;
+}
+
+/* [317A-2] flex:1 + min-height:0 permite que el estado vacio (.vacio con
+ * grid-column 1/-1 y height:100%) llene el resto de la ventana. */
+.media-library__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--espacio-lg);
+  align-content: start;
+  flex: 1;
+  min-height: 0;
+}
+
+.media-library__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-sm);
+  min-width: 0;
+  padding: var(--espacio-md);
+  border: var(--sistema-borde);
+  background: var(--sistema-superficie);
+}
+
+.media-library__thumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 4 / 3;
+  border: var(--sistema-borde);
+  background: var(--sistema-fondo);
+  overflow: hidden;
+}
+
+.media-library__thumb-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.media-library__thumb-icon {
+  width: var(--sistema-finder-documento-tamano);
+  height: var(--sistema-finder-documento-tamano);
+  stroke-width: var(--sistema-icono-trazo);
+  color: var(--sistema-texto);
+}
+
+.media-library__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--sistema-menu-contexto-texto-tamano);
+}
+
+.media-library__meta {
+  display: flex;
+  gap: var(--espacio-md);
+  font-size: var(--sistema-menu-contexto-texto-tamano);
+  color: var(--sistema-texto-secundario);
+}
+
+.media-library__badge {
+  align-self: flex-start;
+  padding: 0 var(--espacio-sm);
+  border: var(--sistema-borde);
+  font-size: var(--sistema-menu-contexto-texto-tamano);
+}
+
+.media-library__badge--rejected {
+  border-style: dashed;
+}
+
+.media-library__badge--processing {
+  border-style: dotted;
+}
+
+.media-library__actions {
+  display: flex;
+  gap: var(--espacio-sm);
+}

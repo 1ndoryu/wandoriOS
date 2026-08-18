@@ -1,0 +1,258 @@
+/* [297A-2] Contenido visual de Finder y Reader para evaluación previa.
+ * El chrome pertenece siempre a desktop-window.css. */
+
+.desktop-finder-window {
+  top: var(--espacio-2xl);
+  left: var(--espacio-2xl);
+  z-index: calc(var(--z-sistema-ventana) + 2);
+  width: min(var(--sistema-finder-ancho), calc(100% - var(--espacio-3xl)));
+  height: min(var(--sistema-finder-alto), calc(100% - var(--espacio-3xl)));
+}
+
+.desktop-reader-window {
+  top: var(--espacio-xl);
+  left: clamp(var(--espacio-xl), 12%, var(--espacio-3xl));
+  z-index: calc(var(--z-sistema-ventana) + 4);
+  width: min(var(--sistema-reader-ancho), calc(100% - var(--espacio-3xl)));
+  height: calc(100% - var(--espacio-3xl));
+}
+
+.desktop-finder-window .desktop-window__body,
+.desktop-reader-window .desktop-window__body {
+  height: calc(100% - var(--sistema-titulo-alto));
+  overflow: auto;
+}
+
+.desktop-finder__path {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-xs);
+  padding: var(--espacio-sm) var(--espacio-md);
+  border-bottom: var(--sistema-borde);
+}
+
+/* [018A-91] Botón 'volver' a la carpeta anterior: mismo patrón de botón de
+ * toolbar (sin borde, hover inverso) integrado a la izquierda de los crumbs.
+ * Deshabilitado se atenúa con opacity como desktop-app-toolbar. */
+.desktop-finder__back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: var(--sistema-titulo-alto);
+  height: var(--sistema-titulo-alto);
+  margin-right: var(--espacio-sm);
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: var(--sistema-texto);
+  cursor: pointer;
+  font-family: var(--fuente-sistema);
+}
+
+.desktop-finder__back:hover:not(:disabled) {
+  background: var(--sistema-texto);
+  color: var(--sistema-superficie);
+}
+
+.desktop-finder__back:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.desktop-finder__back-icon svg {
+  width: var(--sistema-tema-boton-tamano);
+  height: var(--sistema-tema-boton-tamano);
+  stroke-width: var(--sistema-icono-trazo);
+}
+
+/* [018A-78][018A-80] Iconos del Finder compactos y coherentes con el escritorio.
+ * 018A-78: celdas de --sistema-icono-celda (no 1fr), trazo 1px y regla muerta
+ * .desktop-finder__document-icon retirada.
+ * 018A-80: columnas automáticas (auto-fill, como el escritorio) en vez de fijar
+ * 3, e icono un poco más pequeño (--sistema-finder-icono-tamano 40px). El
+ * override móvil de 2 columnas quedó redundante y se retiró.
+ * [018A-89] El grid debe ocupar todo el alto del panel: con pocos ítems
+ * quedaba espacio vacío debajo del grid (fuera de su área), así que el clic
+ * derecho en esa zona no abría el menú contextual. min-height: 100% en el
+ * contenedor + flex: 1 en el grid lo estiran; align-content: start evita que
+ * las filas implícitas se estiren (iconos espaciados verticalmente).
+ * [018A-93] Alineación horizontal al inicio (justify-content: start), igual
+ * que el grid del escritorio: los iconos se agrupan a la izquierda en vez de
+ * centrarse. */
+.desktop-finder {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.desktop-finder__grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, var(--sistema-icono-celda));
+  justify-content: start;
+  align-content: start;
+  flex: 1;
+  gap: var(--espacio-md);
+  padding: var(--espacio-md);
+}
+
+.desktop-finder__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espacio-sm);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--sistema-texto);
+  font-family: var(--fuente-sistema);
+  font-size: var(--sistema-menu-contexto-texto-tamano);
+  opacity: 1;
+}
+
+.desktop-finder__icon {
+  width: var(--sistema-finder-icono-tamano);
+  height: var(--sistema-finder-icono-tamano);
+  stroke-width: var(--sistema-icono-trazo);
+}
+
+.desktop-finder__thumbnail {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border: var(--sistema-borde);
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.08);
+}
+
+.desktop-finder__label {
+  max-width: 100%;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* [018A-88] Estado de selección del Finder: mismo patrón y tokens que el
+ * escritorio (.desktop-icon--selected en desktop-shell.css). Sin colores
+ * ad-hoc — consume --sistema-inverso-* del sistema de diseño. */
+.desktop-finder__item--selected .desktop-finder__label {
+  color: var(--sistema-inverso-texto);
+  background: var(--sistema-inverso-fondo);
+}
+
+.desktop-reader {
+  padding: var(--espacio-xl);
+  font-family: var(--fuente-sistema);
+  line-height: var(--linea-altura);
+}
+
+.desktop-reader__header {
+  margin-bottom: var(--espacio-lg);
+}
+
+.desktop-reader__title {
+  margin: 0 0 var(--espacio-sm);
+  font-family: var(--fuente-sistema);
+  font-size: var(--tamano-titulo);
+  line-height: var(--linea-altura-titulo);
+}
+
+.desktop-reader__date {
+  font-size: var(--sistema-menu-contexto-texto-tamano);
+}
+
+.desktop-reader__image {
+  display: block;
+  width: 100%;
+  max-height: var(--sistema-reader-imagen-alto);
+  margin: var(--espacio-lg) 0;
+  border: var(--sistema-borde);
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.08);
+}
+
+.desktop-reader__quote {
+  margin: var(--espacio-lg) 0;
+  padding-left: var(--espacio-md);
+  border-left: var(--sistema-borde);
+  font-style: italic;
+}
+
+/* [018A-75] Tipografía del contenido renderizado (ProseMirror → HTML).
+ * El reset global elimina los marcadores de lista; se restauran con tokens
+ * del sistema. La tipografía base (p, h1-h3, blockquote, hr, code) ya la
+ * aporta base.css y aplica dentro del Reader. */
+.desktop-reader__body h1,
+.desktop-reader__body h2,
+.desktop-reader__body h3,
+.desktop-reader__body h4,
+.desktop-reader__body h5,
+.desktop-reader__body h6 {
+  margin: var(--espacio-lg) 0 var(--espacio-sm);
+}
+
+.desktop-reader__body p {
+  margin-bottom: var(--espacio-md);
+}
+
+.desktop-reader__body ul {
+  list-style: disc;
+  padding-left: var(--espacio-xl);
+  margin-bottom: var(--espacio-md);
+}
+
+.desktop-reader__body ol {
+  list-style: decimal;
+  padding-left: var(--espacio-xl);
+  margin-bottom: var(--espacio-md);
+}
+
+.desktop-reader__body ul ul {
+  list-style: circle;
+}
+
+.desktop-reader__body ol ol {
+  list-style: lower-alpha;
+}
+
+.desktop-reader__body pre {
+  padding: var(--espacio-sm);
+  border: var(--borde);
+  margin-bottom: var(--espacio-md);
+  white-space: pre-wrap;
+}
+
+.desktop-reader__body pre code {
+  border: none;
+  padding: 0;
+}
+
+.desktop-reader__body img {
+  display: block;
+  max-width: 100%;
+  margin: var(--espacio-lg) 0;
+  border: var(--sistema-borde);
+}
+
+.desktop-reader__body audio,
+.desktop-reader__body video {
+  display: block;
+  max-width: 100%;
+  margin-bottom: var(--espacio-md);
+}
+
+@media (max-width: 768px) {
+  .desktop-finder-window,
+  .desktop-reader-window {
+    top: var(--espacio-md);
+    left: var(--espacio-md);
+    width: calc(100% - var(--espacio-xl));
+    height: calc(100% - var(--espacio-xl));
+  }
+}

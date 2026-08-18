@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "installRoot": ".quality-tools",
+  "tools": {
+    "sentinel": {
+      "repository": "https://github.com/1ndoryu/glory-sentinel.git",
+      "sourcePath": "tools/sentinel",
+      "commit": "0349485c121784513c7ecef8a8de1535e841a5ae",
+      "version": "0.7.4",
+      "outputSchemaVersion": "1",
+      "buildScript": "compile",
+      "testScript": "test:unit",
+      "requiredCapabilities": [
+        "guard",
+        "doctor",
+        "task",
+        "recover"
+      ],
+      "releaseRefs": [
+        "refs/remotes/origin/main",
+        "refs/tags/v*"
+      ],
+      "cli": "out/cli/index.js"
+    },
+    "varsense": {
+      "repository": "https://github.com/1ndoryu/varsense.git",
+      "sourcePath": "tools/varsense",
+      "commit": "88f281f94e6febd02a386b7ed03d30d285eb82e1",
+      "version": "2.2.1",
+      "outputSchemaVersion": "1",
+      "buildScript": "compile",
+      "cli": "dist/cli/index.js",
+      "testScript": "test",
+      "releaseRefs": [
+        "refs/remotes/origin/main",
+        "refs/tags/v*"
+      ],
+      "capabilities": {
+        "filesFrom": true,
+        "persistentIndex": true
+      }
+    }
+  }
+}

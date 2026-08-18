@@ -1,0 +1,208 @@
+/* [297A-2] Barra global y menús contextuales del sistema.
+ * La fase visual mantiene Archivo abierto para validar la jerarquía de dos niveles. */
+
+.desktop-menu-bar {
+  position: relative;
+  z-index: var(--z-sistema-barra);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: var(--espacio-md);
+  min-width: 0;
+  padding: 0 var(--espacio-sm);
+  border-bottom: var(--sistema-borde-doble);
+  background: var(--sistema-superficie);
+}
+
+.desktop-menu-bar__menus {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-md);
+  min-width: 0;
+}
+
+.desktop-menu-bar__entry {
+  position: relative;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+}
+
+.desktop-menu-bar__brand {
+  display: block;
+  width: var(--sistema-logo-tamano);
+  height: var(--sistema-logo-tamano);
+  border-radius: 50%;
+  background: var(--sistema-texto);
+}
+
+.desktop-menu-bar__item {
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--sistema-texto);
+  font-family: var(--fuente-sistema);
+  opacity: 1;
+}
+
+/* [018A-64] Sin subrayado en botones: el menú abierto se indica con el propio
+ * desplegable, no con subrayado del ítem de la barra. */
+.desktop-menu-bar__item,
+.desktop-menu-bar__clock {
+  white-space: nowrap;
+}
+
+.desktop-menu-bar__clock {
+  justify-self: end;
+  font-variant-numeric: tabular-nums;
+}
+
+/* [297A-13] Estado de sesión: proyección del authStore, no estado paralelo. */
+.desktop-menu-bar__account {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-xs);
+  cursor: pointer;
+}
+
+.desktop-menu-bar__account svg {
+  width: var(--espacio-md);
+  height: var(--espacio-md);
+  stroke-width: var(--sistema-icono-trazo);
+}
+
+.desktop-menu-bar__account:hover {
+  background: var(--sistema-texto);
+  color: var(--sistema-superficie);
+}
+
+.desktop-menu-bar__account:focus-visible {
+  outline: 1px solid var(--sistema-texto);
+  outline-offset: 2px;
+}
+
+/* [297A-21] Campana compartida: el contador es solo estado de presentación;
+ * la fuente de novedades vive en notifications-store. */
+.desktop-menu-bar__notificaciones {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--sistema-tema-boton-tamano);
+  height: var(--sistema-tema-boton-tamano);
+  cursor: pointer;
+}
+
+.desktop-menu-bar__notificaciones svg {
+  width: var(--sistema-tema-boton-icono-tamano);
+  height: var(--sistema-tema-boton-icono-tamano);
+  stroke-width: var(--sistema-icono-trazo);
+}
+
+.desktop-menu-bar__notificaciones:hover,
+.desktop-menu-bar__notificaciones[data-hay-novedades="true"] {
+  background: var(--sistema-texto);
+  color: var(--sistema-superficie);
+}
+
+.desktop-menu-bar__notificaciones:focus-visible {
+  outline: 1px solid var(--sistema-texto);
+  outline-offset: 2px;
+}
+
+.desktop-menu-bar__notificaciones-contador {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  min-width: 10px;
+  padding: 0 2px;
+  background: var(--sistema-texto);
+  color: var(--sistema-superficie);
+  font-size: var(--sistema-menu-contexto-texto-tamano);
+  line-height: 1;
+  text-align: center;
+}
+
+/* [297A-18] Grupo derecho de la barra: hora + botón de tema. */
+.desktop-menu-bar__derecha {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-md);
+  justify-self: end;
+}
+
+/* [297A-18] Botón único de tema del OS (barra superior).
+ * Comparte comando con el launcher móvil; solo consume tokens del sistema.
+ * 1px mayor que los controles de ventana (--sistema-tema-boton-tamano). */
+.desktop-menu-bar__tema {
+  display: grid;
+  place-items: center;
+  width: var(--sistema-tema-boton-tamano);
+  height: var(--sistema-tema-boton-tamano);
+  cursor: pointer;
+}
+
+.desktop-menu-bar__tema:hover {
+  background: var(--sistema-texto);
+  color: var(--sistema-superficie);
+}
+
+.desktop-menu-bar__tema svg {
+  width: var(--sistema-tema-boton-icono-tamano);
+  height: var(--sistema-tema-boton-icono-tamano);
+  stroke-width: var(--sistema-icono-trazo);
+}
+
+.desktop-menu-bar__tema:focus-visible {
+  outline: 1px solid var(--sistema-texto);
+  outline-offset: 2px;
+}
+
+.desktop-context-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: var(--sistema-menu-contexto-ancho);
+  border: var(--sistema-borde);
+  background: var(--sistema-superficie);
+  font-size: var(--sistema-menu-contexto-texto-tamano);
+}
+
+/* Menús desplegables de la barra superior: por encima de ventanas */
+.desktop-menu-bar__entry .desktop-context-menu {
+  z-index: 9999;
+}
+
+.desktop-context-menu__branch {
+  position: relative;
+}
+
+.desktop-context-menu__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-md);
+  min-height: var(--sistema-titulo-alto);
+  padding: var(--espacio-xs) var(--espacio-sm);
+  background: var(--sistema-superficie);
+  color: var(--sistema-texto);
+}
+
+.desktop-context-menu__item--selected {
+  background: var(--sistema-inverso-fondo);
+  color: var(--sistema-inverso-texto);
+}
+
+.desktop-context-menu__chevron {
+  flex: 0 0 auto;
+  width: var(--espacio-md);
+  height: var(--espacio-md);
+  stroke-width: var(--sistema-icono-trazo);
+}
+
+.desktop-context-menu--nested {
+  top: -1px;
+  left: 100%;
+  width: var(--sistema-menu-contexto-submenu-ancho);
+}

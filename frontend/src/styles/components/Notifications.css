@@ -1,0 +1,168 @@
+/* wandori.us — Popover de novedades + etiqueta de estado
+ * Extraído de components.css [018A-73]. */
+
+@layer components {
+
+/* [028A-5] Popover de novedades (reemplaza la app notifications). Panel
+ * compacto anclado al botón que lo invoca (campana OS / control launcher);
+ * el posicionamiento (fixed + clamp) lo maneja notifications-popover.ts. */
+.notificacionesPopover {
+  position: fixed;
+  z-index: 9999;
+  background: var(--sistema-superficie);
+  border: var(--sistema-borde);
+  font-family: var(--fuente-sistema);
+  /* Misma escala tipográfica que dropdowns y menús contextuales del OS. */
+  font-size: var(--sistema-menu-contexto-texto-tamano);
+  color: var(--sistema-texto);
+}
+
+.notificacionesPopover__cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-sm);
+  padding: var(--espacio-sm);
+  border-bottom: var(--sistema-borde);
+}
+
+.notificacionesPopover__titulo {
+  margin: 0;
+  font-family: var(--fuente-sistema);
+  font-size: var(--tamano-texto);
+  font-weight: var(--peso-medio);
+}
+
+.notificacionesPopover__recargar {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-xs);
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--sistema-texto);
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+}
+
+.notificacionesPopover__recargar svg,
+.notificacionesPopover__icono svg {
+  width: var(--sistema-control-icono-tamano);
+  height: var(--sistema-control-icono-tamano);
+  stroke-width: var(--sistema-icono-trazo);
+}
+
+.notificacionesPopover__lista {
+  display: flex;
+  flex-direction: column;
+  /* [028A-5] Boceto aprobado: la lista no supera ~260px y hace scroll. */
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.notificacionesPopover__item {
+  display: flex;
+  gap: var(--espacio-sm);
+  padding: var(--espacio-sm);
+  border-bottom: var(--sistema-borde);
+  cursor: pointer;
+}
+
+.notificacionesPopover__item:last-child {
+  border-bottom: none;
+}
+
+.notificacionesPopover__item--leida {
+  opacity: 0.55;
+}
+
+.notificacionesPopover__item--noLeida .notificacionesPopover__itemTitulo::before {
+  /* Marcador del boceto: cuadrado negro precede al título no leído. */
+  content: '■';
+  margin-right: var(--espacio-xs);
+}
+
+.notificacionesPopover__item:focus-visible {
+  outline: var(--sistema-borde-doble);
+  outline-offset: var(--espacio-xs);
+}
+
+.notificacionesPopover__icono {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+}
+
+.notificacionesPopover__contenido {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.notificacionesPopover__itemTitulo,
+.notificacionesPopover__itemTexto {
+  margin: 0;
+}
+
+.notificacionesPopover__itemTitulo {
+  font-weight: var(--peso-medio);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.notificacionesPopover__itemTexto {
+  margin-top: var(--espacio-xs);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.notificacionesPopover__itemFecha {
+  display: block;
+  margin-top: var(--espacio-xs);
+  font-size: var(--tamano-pequeno);
+  color: var(--sistema-texto-secundario);
+}
+
+.notificacionesPopover__pie {
+  border-top: var(--sistema-borde);
+  padding: var(--espacio-sm);
+  text-align: center;
+}
+
+.notificacionesPopover__pieBoton {
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--sistema-texto);
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+}
+
+/* [028A-5] Etiqueta de estado en listados del admin (recurso agnóstico:
+ * novedades, y reutilizable por otras listas). */
+.tag-estado {
+  display: inline-block;
+  padding: 0 var(--espacio-xs);
+  border: var(--sistema-borde);
+  font-size: var(--tamano-pequeno);
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.tag-estado--borrador {
+  opacity: 0.6;
+}
+
+.tag-estado--published {
+  font-weight: var(--peso-medio);
+}
+
+.tag-estado--archivado {
+  opacity: 0.4;
+}
+
+} /* @layer components */

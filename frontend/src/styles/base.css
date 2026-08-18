@@ -1,0 +1,84 @@
+/* wandori.us — Base Typography
+ * Estilos base para tipografía y elementos semánticos.
+ * [Auditoría v2 §3.4] @layer base. */
+
+@layer base {
+
+body {
+  font-family: var(--fuente-texto);
+  font-size: var(--tamano-texto);
+  line-height: var(--linea-altura);
+  letter-spacing: 0.01em;
+}
+
+h1 {
+  font-family: var(--fuente-titulo);
+  font-size: var(--tamano-titulo-grande);
+  font-weight: var(--peso-normal);
+  line-height: var(--linea-altura-titulo);
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-family: var(--fuente-titulo);
+  font-size: var(--tamano-titulo);
+  font-weight: var(--peso-normal);
+  line-height: var(--linea-altura-titulo);
+  letter-spacing: -0.01em;
+}
+
+h3 {
+  font-family: var(--fuente-titulo);
+  font-size: var(--tamano-grande);
+  font-weight: var(--peso-medio);
+  line-height: var(--linea-altura-titulo);
+}
+
+p {
+  margin-bottom: var(--espacio-md);
+}
+
+p:last-child {
+  margin-bottom: 0;
+}
+
+small {
+  font-size: var(--tamano-pequeno);
+  color: var(--color-texto-secundario);
+}
+
+strong {
+  font-weight: var(--peso-medio);
+}
+
+em {
+  font-style: italic;
+}
+
+code {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: var(--tamano-pequeno);
+  padding: 1px 4px;
+  border: var(--borde);
+}
+
+blockquote {
+  border-left: var(--borde);
+  padding-left: var(--espacio-md);
+  margin: var(--espacio-md) 0;
+  color: var(--color-texto-secundario);
+  font-style: italic;
+}
+
+hr {
+  border: none;
+  border-top: var(--borde);
+  margin: var(--espacio-xl) 0;
+}
+
+/* Links dentro de contenido: sin subrayado */
+.articulo-contenido a {
+  text-decoration: none;
+}
+
+} /* @layer base */

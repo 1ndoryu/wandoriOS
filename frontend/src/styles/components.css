@@ -1,0 +1,29 @@
+/* wandori.us — Componentes UI (índice)
+ * Todos los componentes son minimalistas B&W. El CSS se divide por dominio
+ * en `components/` [018A-73]: Button, Form, Modal, Overlay, Commerce,
+ * Notifications, Analytics y Misc. Cada módulo abre su propio `@layer
+ * components` (los layers con el mismo nombre se fusionan y la cascada se
+ * resuelve por orden de importación).
+ * El orden de los imports NO replica exactamente el orden original de las
+ * reglas (los módulos agrupan por dominio); es seguro porque dentro del
+ * layer la cascada solo depende del orden de fuente para selectores de
+ * IGUAL especificidad sobre el MISMO elemento, y los únicos overrides
+ * cruzados (`.analyticsConsent .boton`, `.barra-tabs .boton`,
+ * `.analyticsPanel__toolbar .boton`, `.slider-header .campo-etiqueta`)
+ * tienen especificidad MAYOR que la regla base, así que su posición no
+ * importa. Dentro de cada módulo se conserva el orden relativo original
+ * (p.ej. `.boton-con-icono` después de `.boton` en Button.css).
+ * PROHIBIDO: sombras, colores, bordes redondeados, hover effects.
+ * [317A-4] Borde 1px en botones dentro de superficies OS.
+ * [Auditoría v3 §2.4] @layer components — specificity management.
+ * [018A-40] Las utilidades gap-sm/mt-md/mb-lg se retiraron tras confirmar
+ * ausencia de consumidores; las variantes restantes siguen siendo públicas. */
+
+@import './components/Button.css';
+@import './components/Form.css';
+@import './components/Modal.css';
+@import './components/Overlay.css';
+@import './components/Commerce.css';
+@import './components/Notifications.css';
+@import './components/Analytics.css';
+@import './components/Misc.css';

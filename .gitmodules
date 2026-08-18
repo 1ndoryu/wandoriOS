@@ -1,0 +1,10 @@
+[submodule "glory-rs"]
+	path = glory-rs
+	url = https://github.com/1ndoryu/glory-rs-framework.git
+	branch = main
+[submodule "tools/varsense"]
+	path = tools/varsense
+	url = https://github.com/1ndoryu/varsense.git
+[submodule "tools/sentinel"]
+	path = tools/sentinel
+	url = https://github.com/1ndoryu/glory-sentinel.git

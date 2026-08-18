@@ -1,0 +1,105 @@
+{
+  "variableFiles": [
+    "frontend/src/styles/variables.css"
+  ],
+  "includePatterns": [
+    "frontend/src/**/*.css",
+    "frontend/src/**/*.ts"
+  ],
+  "excludePatterns": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/.quality-tools/**",
+    "**/.quality-reports/**",
+    "**/.sentinel/**",
+    "**/.vscode-test/**",
+    "**/tools/**",
+    "frontend/src/api/generated/**"
+  ],
+  "scanAllFiles": false,
+  "hardcodedDetection": {
+    "enabled": true,
+    "severity": "warning",
+    "properties": {
+      "color": true,
+      "background": true,
+      "background-color": true,
+      "border-color": true,
+      "border-radius": true,
+      "font-size": true,
+      "font-family": true,
+      "box-shadow": true
+    },
+    "allowedValues": [
+      "0",
+      "0px",
+      "auto",
+      "inherit",
+      "initial",
+      "unset",
+      "none",
+      "100%",
+      "50%",
+      "transparent",
+      "currentColor"
+    ]
+  },
+  "inlineDetection": {
+    "enabled": true,
+    "severity": "information"
+  },
+  "tokenDetection": {
+    "duplicate": {
+      "enabled": true,
+      "severity": "warning"
+    },
+    "unused": {
+      "enabled": true,
+      "severity": "hint"
+    }
+  },
+  "bannedProperties": {
+    "enabled": true,
+    "severity": "warning",
+    "properties": [
+      "box-shadow"
+    ]
+  },
+  "orphanClassDetection": {
+    "minClassLength": 3,
+    "excludeClassPatterns": [
+      "^lucide($|-)",
+      "^is-",
+      "^js-",
+      "^sk-",
+      "^estimator",
+      "^parameters-table",
+      "^param($|-)",
+      "^copy-paste",
+      "^caption$",
+      "^fitted$",
+      "^user-set$",
+      "^light$",
+      "^dark$",
+      "^desktop-",
+      "^campo-error$",
+      "^entrada-fijada$",
+      "^columna-derecha",
+      "^profile-redes",
+      "^modal-(cabecera|titulo|cerrar|pie)$",
+      "^boton(Sm|Md|Lg|Secundario|Peligro|Exito|Fantasma|Ancho|Cargando)$",
+      "^campo(Entrada|Sm|Md|Lg)$",
+      "^valor$",
+      "^value$",
+      "^default$",
+      "^contenido$",
+      "^separador$",
+      "^tag$",
+      "^inline$",
+      "^mt-lg$",
+      "^align-start$",
+      "^flex-wrap-center$"
+    ]
+  }
+}

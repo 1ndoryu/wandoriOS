@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "1",
+  "entries": [
+    {
+      "ruta": "src/index.js",
+      "findings": [
+        {
+          "ruleId": "fixture-no-eval",
+          "severity": "error",
+          "range": { "start": { "line": 6 } },
+          "message": "eval is not allowed in project code"
+        }
+      ]
+    }
+  ]
+}

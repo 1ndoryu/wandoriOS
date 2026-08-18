@@ -1,0 +1,76 @@
+# Rust
+/target/
+**/*.rs.bk
+*.pdb
+
+# Environment (secrets)
+.env
+
+# Frontend
+/frontend/node_modules/
+/frontend/dist/
+/frontend/src/api/generated/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+/logs/
+
+# Fotos personales / medios locales (no se publican en el repo)
+/frontend/public/profile.jpg
+/frontend/public/uploads/profile.jpg
+
+# Local runtime scratch space
+/temp/
+/.sentinel/
+
+# Python local envs / caches
+**/.venv/
+**/__pycache__/
+*.pyc
+
+/scripts/*
+!/scripts/quality/
+!/scripts/quality/**
+!/scripts/branch-db.mjs
+!/scripts/run-with-db.mjs
+!/scripts/dev.mjs
+!/scripts/check-roadmap.mjs
+!/scripts/self-check.ps1
+!/scripts/prepare-ci-db.mjs
+!/scripts/codegen-local.mjs
+!/scripts/emit-openapi.ps1
+/backups/
+/clients/
+/frontend/public/legacy-assets/
+/prerendered/
+/node_modules/
+/cliente/
+/uploads/
+.tsbuildinfo
+frontend/tsconfig.tsbuildinfo
+glory-rust-template.code-workspace
+.sentinel-report.md
+.quality-tools/
+.quality-reports/
+.quality-bench/
+.cargo/config.toml
+.tmp-sentinel/edit.mjs
+.tmp-sentinel/expected-findings.json
+.tmp-sentinel/newfunc.txt
+.tmp-sentinel/rustRouteSyntaxRule.test.ts
+.tmp-sentinel/sample.rs
+.freebuff/desktop-v2.db
+.freebuff/desktop-v2.db-shm
+.freebuff/
+*.bak

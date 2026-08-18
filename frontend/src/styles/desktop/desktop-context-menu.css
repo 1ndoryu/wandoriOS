@@ -1,0 +1,98 @@
+/* wandori.us — Desktop Context Menu
+ * Menú contextual minimalista B&W.
+ * [Plan §3.2] Proyección del CommandRegistry.
+ * Sin sombras, radios, blur ni gradientes. */
+
+.desktop-context-menu {
+  min-width: 180px;
+  max-width: 280px;
+  background: var(--sistema-superficie);
+  border: var(--sistema-borde);
+  font-family: var(--fuente-sistema);
+  /* [297A-20] Prueba de usuario: texto 2px menor (13px -> 11px).
+   * Antes usaba --sistema-texto-tamano (13px) y anulaba el token dedicado
+   * --sistema-menu-contexto-texto-tamano (11px) que ya consumen dropdowns
+   * y menus moviles. Consumir el token unifica todos los menus contextuales.
+   * Para revertir: volver a var(--sistema-texto-tamano). */
+  font-size: var(--sistema-menu-contexto-texto-tamano);
+}
+
+.desktop-context-menu__item {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-sm);
+  width: 100%;
+  padding: var(--espacio-xs) var(--espacio-sm);
+  /* [018A-71] Sin bordes entre items: la separación la aporta el separador
+   * (o el agrupamiento del menú); los bordes por item chocaban con el
+   * separador y recargaban el menú. */
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: var(--sistema-texto);
+  font-family: inherit;
+  font-size: inherit;
+  text-align: left;
+  cursor: pointer;
+  line-height: var(--linea-altura);
+}
+
+.desktop-context-menu__item:hover {
+  color: var(--sistema-inverso-texto);
+  background: var(--sistema-inverso-fondo);
+}
+
+.desktop-context-menu__item--disabled {
+  color: var(--sistema-texto-deshabilitado);
+  cursor: not-allowed;
+}
+
+.desktop-context-menu__item--disabled:hover {
+  color: var(--sistema-texto-deshabilitado);
+  background: transparent;
+}
+
+.desktop-context-menu__icon {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: var(--espacio-md);
+  height: var(--espacio-md);
+}
+
+.desktop-context-menu__icon svg {
+  width: 100%;
+  height: 100%;
+  stroke-width: var(--sistema-icono-trazo);
+}
+
+.desktop-context-menu__label {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.desktop-context-menu__shortcut {
+  flex: 0 0 auto;
+  /* [297A-20] Prueba de usuario: el atajo tambien baja 2px (13px -> 11px),
+   * alineado con el texto del item. Antes usaba --tamano-pequeno (13px).
+   * Para revertir: volver a var(--tamano-pequeno). */
+  font-size: var(--sistema-menu-contexto-texto-tamano);
+  color: var(--sistema-texto-secundario);
+  margin-left: var(--espacio-md);
+}
+
+.desktop-context-menu__item:hover .desktop-context-menu__shortcut {
+  color: var(--sistema-inverso-texto);
+}
+
+/* [018A-70] Separador del menú contextual: lo renderiza dropdown-menu.ts
+ * (createDropdownItem) pero no tenía regla visual; misma receta que el
+ * separador del app toolbar (.desktop-app-toolbar__separator). */
+.desktop-context-menu__separator {
+  height: 1px;
+  margin: var(--espacio-xs) 0;
+  background: var(--sistema-texto);
+  opacity: 0.15;
+}

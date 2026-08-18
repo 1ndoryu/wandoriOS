@@ -1,0 +1,175 @@
+/* wandori.us — Utilidades y componentes menores (tabs, toast, estados)
+ * Extraído de components.css [018A-73]. */
+
+@layer components {
+
+/* === UTILIDADES — Clases reutilizables para reemplazar inline styles === */
+.oculto { display: none !important; }
+.flex-columna { display: flex; flex-direction: column; }
+.flex-fila { display: flex; }
+.flex-wrap { flex-wrap: wrap; }
+.gap-md { gap: var(--espacio-md); }
+.gap-lg { gap: var(--espacio-lg); }
+.mt-sm { margin-top: var(--espacio-sm); }
+.mt-lg { margin-top: var(--espacio-lg); }
+.mb-sm { margin-bottom: var(--espacio-sm); }
+.mb-md { margin-bottom: var(--espacio-md); }
+.ml-sm { margin-left: var(--espacio-sm); }
+.align-start { align-self: flex-start; }
+.border-bottom { border-bottom: var(--borde); }
+.flex-wrap-center { display: flex; flex-wrap: wrap; justify-content: center; }
+
+/* === BARRA DE PESTAÑAS — Componente universal (Admin y futuras apps) ===
+ * Autocontenida: posee su propio gap para que el consumidor no dependa de
+ * utilidades externas (regla 9.1: receta compartida en el sistema).
+ * [317A-4] Regla aprobada: variante vertical alineada a la izquierda, sin
+ * borde; el estado activo tiene opacidad plena y peso medio; los inactivos
+ * bajan de opacidad. La separación con el contenido la decide el layout del
+ * consumidor (en Admin: gap del padre en 2 columnas). */
+.barra-tabs {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espacio-sm);
+}
+
+.barra-tabs__tab {
+  font-weight: var(--peso-normal);
+  opacity: 0.45;
+}
+
+.barra-tabs__tab--activa {
+  font-weight: var(--peso-medio);
+  opacity: 1;
+}
+
+/* === TOAST / NOTIFICACIÓN === */
+.toast-contenedor {
+  position: fixed;
+  top: var(--espacio-md);
+  right: var(--espacio-md);
+  z-index: var(--z-toast);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-sm);
+}
+
+.toast {
+  padding: var(--espacio-sm) var(--espacio-md);
+  border: var(--borde);
+  font-size: var(--tamano-pequeno);
+  max-width: 320px;
+}
+
+/* === LOADING === */
+.cargando {
+  font-size: var(--tamano-pequeno);
+  color: var(--color-texto-secundario);
+  text-transform: lowercase;
+}
+
+/* === SLIDER (range input) === */
+.slider-header .campo-etiqueta {
+  font-size: var(--tamano-pequeno);
+  font-weight: var(--peso-normal);
+}
+
+.slider-header {
+  display: flex;
+  align-items: center;
+}
+
+.slider-valor {
+  margin-left: var(--espacio-sm);
+  font-size: var(--tamano-pequeno);
+}
+
+.slider-input {
+  width: 100%;
+  height: 0.5px;
+  appearance: none;
+  -webkit-appearance: none;
+  background: var(--color-borde);
+  outline: none;
+  cursor: pointer;
+}
+
+.slider-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  background: var(--color-texto);
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+}
+
+.slider-input::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  background: var(--color-texto);
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+}
+
+/* === PERFIL CONFIG === */
+.config-imagen-preview {
+  width: 80px;
+  height: 80px;
+  border: var(--borde);
+  object-fit: cover;
+  margin-bottom: var(--espacio-sm);
+}
+
+/* === VACIO (estado vacio universal, ver createVacio) === */
+/* El wrapper ocupa 100% ancho+alto y centra su texto; el <p> interno lleva
+ * el estilo. grid-column: 1/-1 permite llenar el ancho dentro de grids
+ * (p.ej. media-library). min-height da un minimo razonable cuando el padre
+ * no define altura (editores, modales). */
+.vacio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  flex: 1 1 auto;
+  min-height: var(--espacio-3xl);
+  grid-column: 1 / -1;
+}
+
+.vacio p {
+  font-size: var(--tamano-texto);
+  color: var(--color-texto-secundario);
+  font-style: italic;
+}
+
+/* === EDITOR DE ENLACES SOCIALES === */
+.enlaces-editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-sm);
+}
+
+.enlace-row {
+  display: flex;
+  gap: var(--espacio-sm);
+  align-items: center;
+}
+
+.enlace-nombre {
+  flex: 0 0 100px;
+}
+
+.enlace-url {
+  flex: 1;
+}
+
+.enlace-quitar {
+  flex-shrink: 0;
+  font-size: var(--tamano-grande);
+  padding: 0 var(--espacio-sm);
+}
+
+} /* @layer components */

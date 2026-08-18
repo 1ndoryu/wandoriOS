@@ -1,0 +1,97 @@
+/* wandori.us — Analytics (consentimiento + panel)
+ * Extraído de components.css [018A-73]. */
+
+@layer components {
+
+/* [018A-12] Consentimiento opcional: superficie compacta, sin bloquear el
+ * escritorio y con los mismos botones del sistema. */
+.analyticsConsent {
+  position: fixed;
+  right: var(--espacio-md);
+  bottom: var(--sistema-tareas-alto);
+  z-index: var(--z-modal);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-sm);
+  width: min(360px, calc(100vw - (2 * var(--espacio-md))));
+  padding: var(--espacio-md);
+  border: var(--sistema-borde);
+  background: var(--sistema-superficie);
+  color: var(--sistema-texto);
+}
+
+.analyticsConsent[hidden] {
+  display: none;
+}
+
+.analyticsConsent__titulo,
+.analyticsConsent__texto {
+  margin: 0;
+}
+
+.analyticsConsent__texto {
+  font-size: var(--sistema-menu-contexto-texto-tamano);
+}
+
+.analyticsConsent__acciones {
+  display: flex;
+  gap: var(--espacio-md);
+}
+
+/* [028A-17] El banner es una superficie del OS (--sistema-*) que vive fuera
+ * de .desktop-window/.movilApp, así que el override del dark mode que
+ * redefine --color-* a blanco no le llega. Sus botones .boton forzaban
+ * --color-texto (negro en :root) y quedaban invisibles sobre la superficie
+ * oscura; consumen el token del sistema como el resto del banner. */
+.analyticsConsent .boton {
+  color: var(--sistema-texto);
+}
+
+.analyticsConsent .boton:disabled {
+  color: var(--sistema-texto-deshabilitado);
+}
+
+.analyticsPanel {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: row;
+  gap: var(--espacio-lg);
+}
+
+.analyticsPanel__contenido {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  gap: var(--espacio-md);
+  overflow-y: auto;
+}
+
+.analyticsPanel__toolbar {
+  position: absolute;
+  top: var(--espacio-md);
+  right: var(--espacio-md);
+}
+
+.analyticsPanel__toolbar .boton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-xs);
+}
+
+.analyticsPanel__toolbar svg {
+  width: var(--sistema-control-icono-tamano);
+  height: var(--sistema-control-icono-tamano);
+  stroke-width: var(--sistema-icono-trazo);
+}
+
+@media (max-width: 767px) {
+  .analyticsConsent {
+    right: var(--espacio-sm);
+    bottom: calc(var(--altoNavegacionSistemaMovil) + var(--espacio-sm));
+    width: calc(100vw - (2 * var(--espacio-sm)));
+  }
+}
+
+} /* @layer components */

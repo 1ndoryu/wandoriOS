@@ -1,0 +1,60 @@
+/* [018A-39] Propiedades reutiliza tokens del OS y no expone IDs internos. */
+
+.propiedadesApp {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-lg);
+  min-height: 100%;
+}
+
+.propiedadesTitulo {
+  margin: 0;
+  font-size: var(--tamano-grande);
+  font-weight: var(--peso-medio);
+}
+
+.propiedadesLista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-sm);
+  margin: 0;
+}
+
+.propiedadFila {
+  display: grid;
+  grid-template-columns: minmax(7rem, 0.6fr) minmax(0, 1fr);
+  gap: var(--espacio-md);
+  padding-block: var(--espacio-xs);
+  border-bottom: var(--sistema-borde);
+}
+
+.propiedadEtiqueta,
+.propiedadValor {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.propiedadEtiqueta {
+  opacity: 0.6;
+}
+
+.propiedadValor {
+  text-align: right;
+}
+
+.propiedadesVacio {
+  margin: auto;
+  text-align: center;
+  opacity: 0.6;
+}
+
+@media (max-width: 480px) {
+  .propiedadFila {
+    grid-template-columns: 1fr;
+    gap: var(--espacio-xs);
+  }
+
+  .propiedadValor {
+    text-align: left;
+  }
+}

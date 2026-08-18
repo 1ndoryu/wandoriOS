@@ -1,0 +1,114 @@
+/* wandori.us — App Toolbar
+ * Barra de herramientas declarativa dentro de cada ventana.
+ * Reutiliza el mismo patrón visual que desktop-menu-bar pero a nivel de app.
+ * Las apps declaran menus; el shell renderiza el toolbar.
+ * [297A-11] Escalable, compartido, arquitectónicamente correcto. */
+
+.desktop-app-toolbar {
+  display: flex;
+  align-items: stretch;
+  min-height: var(--sistema-titulo-alto);
+  border-bottom: var(--sistema-borde);
+  background: var(--sistema-superficie);
+  font-family: var(--fuente-sistema);
+  font-size: var(--sistema-texto-tamano);
+}
+
+.desktop-app-toolbar__entry {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+}
+
+.desktop-app-toolbar__item {
+  display: flex;
+  align-items: center;
+  padding: 0 var(--espacio-sm);
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: var(--sistema-texto);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  white-space: nowrap;
+}
+
+.desktop-app-toolbar__item:hover,
+.desktop-app-toolbar__entry--open > .desktop-app-toolbar__item {
+  background: var(--sistema-texto);
+  color: var(--sistema-superficie);
+}
+
+/* Dropdown — hereda estilos de desktop-context-menu */
+.desktop-app-toolbar__dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 9999;
+  min-width: 160px;
+  border: var(--sistema-borde);
+  background: var(--sistema-superficie);
+}
+
+.desktop-app-toolbar__menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-sm);
+  width: 100%;
+  padding: var(--espacio-xs) var(--espacio-sm);
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: var(--sistema-texto);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  text-align: left;
+}
+
+.desktop-app-toolbar__menu-item:hover {
+  background: var(--sistema-texto);
+  color: var(--sistema-superficie);
+}
+
+.desktop-app-toolbar__menu-item--disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.desktop-app-toolbar__menu-item--disabled:hover {
+  background: transparent;
+  color: var(--sistema-texto);
+}
+
+.desktop-app-toolbar__icon {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: var(--espacio-md);
+  height: var(--espacio-md);
+}
+
+.desktop-app-toolbar__icon svg {
+  width: 100%;
+  height: 100%;
+  stroke-width: var(--sistema-icono-trazo);
+}
+
+.desktop-app-toolbar__label {
+  flex: 1 1 auto;
+}
+
+.desktop-app-toolbar__shortcut {
+  flex: 0 0 auto;
+  opacity: 0.5;
+  font-size: var(--tamano-pequeno);
+}
+
+.desktop-app-toolbar__separator {
+  height: 1px;
+  margin: var(--espacio-xs) 0;
+  background: var(--sistema-texto);
+  opacity: 0.15;
+}

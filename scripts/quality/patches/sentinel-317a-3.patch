@@ -1,0 +1,50 @@
+diff --git a/src/analyzers/react/reactComponentRules.ts b/src/analyzers/react/reactComponentRules.ts
+index 9830d2a..b97b03b 100644
+--- a/src/analyzers/react/reactComponentRules.ts
++++ b/src/analyzers/react/reactComponentRules.ts
+@@ -355,6 +355,9 @@ const CLASES_BOTON_SISTEMA = new Set([
+   'botonExito', 'botonExitoSuave', 'botonPeligro', 'botonPeligroSuave',
+   'botonAdvertencia', 'botonAdvertenciaSuave', 'botonInfo', 'botonInfoSuave',
+   'botonPequeno', 'botonMediano', 'botonGrande',
++  /* [317A-3] Receta .boton-icono (solo icono) y variantes kebab reales del proyecto. */
++  'boton-pequeno', 'boton-mediano', 'boton-grande', 'boton-icono',
++  'botonIcono',
+ ]);
+ 
+ function esClaseBotonEspecifica(nombreClase: string): boolean {
+diff --git a/src/analyzers/static/staticCssRules.ts b/src/analyzers/static/staticCssRules.ts
+index 56ff0fa..50b68ee 100644
+--- a/src/analyzers/static/staticCssRules.ts
++++ b/src/analyzers/static/staticCssRules.ts
+@@ -15,6 +15,10 @@ const CLASES_BOTON_SISTEMA = new Set([
+   'botonExito', 'botonExitoSuave', 'botonPeligro', 'botonPeligroSuave',
+   'botonAdvertencia', 'botonAdvertenciaSuave', 'botonInfo', 'botonInfoSuave',
+   'botonPequeno', 'botonMediano', 'botonGrande',
++  /* [317A-3] Variantes kebab reales del proyecto (wandori.us usa kebab, no camelCase)
++   * y la receta nueva .boton-icono (boton de solo icono para toolbars de apps). */
++  'boton-pequeno', 'boton-mediano', 'boton-grande', 'boton-icono',
++  'botonIcono',
+ ]);
+ 
+ const CLASES_MODAL_CANONICAS = new Set([
+diff --git a/src/test/suite/cssAdhocButtonStyle.test.ts b/src/test/suite/cssAdhocButtonStyle.test.ts
+index f3c55c5..950e372 100644
+--- a/src/test/suite/cssAdhocButtonStyle.test.ts
++++ b/src/test/suite/cssAdhocButtonStyle.test.ts
+@@ -36,4 +36,15 @@ suite('css-adhoc-button-style', () => {
+     assert.strictEqual(framework.length, 0);
+     assert.strictEqual(assets.length, 0);
+   });
++
++  /* [317A-3] La receta .boton-icono (solo icono) es parte del sistema de diseño,
++   * no un boton ad-hoc: no debe reportarse. Regresión de allowlist CLASES_BOTON_SISTEMA. */
++  test('ignora la receta del sistema boton-icono y sus variantes kebab', () => {
++    const icono = verificarCssAdhocButtonStyle('.boton-icono { cursor: pointer; }', crearDocumento('/repo/frontend/src/styles/components.css'), 'components.css');
++    const pequeno = verificarCssAdhocButtonStyle('.boton-pequeno { cursor: pointer; }', crearDocumento('/repo/frontend/src/styles/components.css'), 'components.css');
++    const grande = verificarCssAdhocButtonStyle('.boton-grande { cursor: pointer; }', crearDocumento('/repo/frontend/src/styles/components.css'), 'components.css');
++    assert.strictEqual(icono.length, 0);
++    assert.strictEqual(pequeno.length, 0);
++    assert.strictEqual(grande.length, 0);
++  });
+ });
+\ No newline at end of file

@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 2,
+  "mode": "enforce",
+  "project": {
+    "primaryBranch": "wandorius"
+  },
+  "gate": {
+    "command": ["sentinel", "check", "--"],
+    "taskIdRequired": true
+  },
+  "guard": {
+    "directCommands": {
+      "npmScripts": ["test", "test:changed", "test:full", "test:file", "test:watch", "type-check", "lint", "check", "check:back", "check:front", "fmt", "fmt:check", "build"],
+      "npxTools": ["vitest", "tsc", "eslint", "prettier", "rustfmt"],
+      "cargoSubcommands": ["check", "clippy", "test", "bench", "fmt"],
+      "tools": ["vitest", "tsc", "eslint", "prettier", "rustfmt"]
+    }
+  },
+  "runtime": {
+    "minimumVersion": "0.5.0",
+    "protocolVersion": 1,
+    "lockFile": "sentinel.lock.json"
+  },
+  "analyzers": {
+    "sentinel": {
+      "enabled": true,
+      "profile": "project-default",
+      "config": {
+        "includePatterns": [
+          "**/*.rs",
+          "frontend/**/*.ts",
+          "frontend/**/*.css",
+          "scripts/**/*.mjs",
+          "scripts/**/*.ps1"
+        ],
+        "excludePatterns": [
+          "**/node_modules/**",
+          "**/dist/**",
+          "**/out/**",
+          "**/target/**",
+          "**/.quality-tools/**",
+          "**/.quality-reports/**",
+          "**/.sentinel/**",
+          "tools/sentinel/**",
+          "frontend/src/api/generated/**",
+          "frontend/src/utils/dom.ts"
+        ],
+        "directoryExceptions": [
+          "migrations",
+          "scripts",
+          "src/handlers",
+          "frontend"
+        ],
+        "portableBoundaries": {
+          "dom": [
+            "/frontend/src/utils/dom.ts",
+            "/frontend/src/platform/",
+            "/frontend/src/adapters/"
+          ],
+          "window": [
+            "/frontend/src/platform/",
+            "/frontend/src/adapters/",
+            "/frontend/src/navigation/"
+          ],
+          "services": [
+            "/frontend/src/services/",
+            "/frontend/src/api/",
+            "/frontend/src/adapters/"
+          ],
+          "loggerModules": [
+            "/frontend/src/services/logger",
+            "/frontend/src/utils/logger"
+          ]
+        },
+        "rules": {
+          "barras-decorativas": {
+            "severidad": "warning"
+          },
+          "catch-vacio": {
+            "severidad": "error"
+          },
+          "hardcoded-secret": {
+            "severidad": "error"
+          },
+          "innerhtml-variable": {
+            "severidad": "error"
+          },
+          "unwrap-produccion-rs": {
+            "severidad": "error"
+          },
+          "panic-produccion-rs": {
+            "severidad": "error"
+          },
+          "git-add-all": {
+            "severidad": "error"
+          },
+          "css-especificacion-diseno-local": {
+            "severidad": "information"
+          },
+          "axum-ruta-sintaxis-rs": {
+            "severidad": "error"
+          },
+          "unsafe-process-shell": {
+            "severidad": "error"
+          },
+          "default-export": {
+            "habilitada": false
+          }
+        }
+      }
+    },
+    "varsense": {
+      "enabled": true,
+      "profile": "project-default",
+      "config": "varsense.config.json"
+    }
+  }
+}

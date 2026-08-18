@@ -1,0 +1,296 @@
+diff --git a/src/core/classIndexBuilder.ts b/src/core/classIndexBuilder.ts
+index d94f790..460f3d0 100644
+--- a/src/core/classIndexBuilder.ts
++++ b/src/core/classIndexBuilder.ts
+@@ -37,7 +37,15 @@ const DEFAULT_CONSUMER_PATTERNS = [
+ const DEFAULT_MIN_LENGTH = 3;
+ const REGEX_CLASS_ATTR = /(?:className|class)\s*=\s*["']([^"']+)["']/g;
+ const REGEX_CLASS_TEMPLATE = /(?:className|class)\s*=\s*\{[`]([^`]+)[`]\}/g;
+-const REGEX_TOKEN = /[a-zA-Z_][\w-]+/g;
++/* Vanilla TS/DOM factories commonly pass classes as object attributes:
++ * createEl('div', { className: 'panel panel--active' }). Keep this parser
++ * framework-agnostic while covering the project's createEl contract. */
++const REGEX_CLASS_OBJECT = /(?:['"]?className['"]?|['"]?class['"]?)\s*:\s*(?:['"]([^'"]+)['"]|[`]([^`]+)[`])/g;
++const REGEX_CLASS_FACTORY = /createContainer\s*\(\s*['"]([^'"]+)['"]/g;
++const REGEX_EXTERNAL_LINK_CLASS = /createExternalLink\s*\([^,]+,[^,]+,\s*['"]([^'"]+)['"]/g;
++const REGEX_CLASS_LIST = /classList\.add\s*\(([^)]*)\)/g;
++const REGEX_CLASS_DECLARATION = /\b(?:const|let|var)\s+(?:className|contentClass)\s*=\s*([\s\S]{0,240}?);/g;
++const REGEX_STRING_LITERAL = /['"`]([^'"`$]+)['"`]/g;
+ const MAX_TOKENS = 10000;
+ 
+ export function extraerClasesDeTexto(texto: string, rutaArchivo: string): ClaseCssDefinida[] {
+@@ -79,11 +87,129 @@ export function extraerClasesDeTexto(texto: string, rutaArchivo: string): ClaseC
+     return clases;
+ }
+ 
++function addClassTokens(value: string, tokens: Set<string>): void {
++    const withoutInterpolation = value.replace(/\$\{[^}]*\}/g, ' ');
++    for (const clase of withoutInterpolation.split(/\s+/)) {
++        if (clase.length > 1 && /^[a-zA-Z_][\w-]*$/.test(clase)) {
++            tokens.add(clase);
++        }
++    }
++
++    /* Conserva clases literales dentro de ternarios/template expressions:
++     * `campo ${error ? 'campoError' : ''}`. Nunca agrega identificadores. */
++    const interpolations = value.match(/\$\{[^}]*\}/g) ?? [];
++    for (const interpolation of interpolations) {
++        const literals = interpolation.match(/["']([^"']+)["']/g) ?? [];
++        for (const literal of literals) {
++            addClassTokens(literal.slice(1, -1), tokens);
++        }
++    }
++}
++
++function previousCodeCharacter(source: string, index: number): string {
++    let cursor = index - 1;
++    while (cursor >= 0 && /\s/.test(source[cursor])) {cursor--;}
++    return cursor >= 0 ? source[cursor] : '';
++}
++
++function addQuotedClassTokens(value: string, tokens: Set<string>): void {
++    REGEX_STRING_LITERAL.lastIndex = 0;
++    let literal: RegExpExecArray | null;
++    while ((literal = REGEX_STRING_LITERAL.exec(value)) !== null) {
++        addClassTokens(literal[1], tokens);
++    }
++}
++
++function addDeclarationClassTokens(value: string, tokens: Set<string>): void {
++    const trimmed = value.trim();
++    if (/^(['"`])[\s\S]*\1$/.test(trimmed)) {
++        addClassTokens(trimmed.slice(1, -1), tokens);
++        addQuotedClassTokens(trimmed, tokens);
++        return;
++    }
++    if (trimmed.includes('?')) {
++        addQuotedClassTokens(trimmed, tokens);
++    }
++}
++
++function removeComments(texto: string): string {
++    let result = '';
++    let quote = '';
++    let escaped = false;
++    let comment = '';
++
++    for (let index = 0; index < texto.length; index++) {
++        const current = texto[index];
++        const next = texto[index + 1] ?? '';
++
++        if (comment === 'line') {
++            result += current === '\\n' ? '\\n' : ' ';
++            if (current === '\\n') {comment = '';}
++            continue;
++        }
++        if (comment === 'block') {
++            result += current === '\\n' ? '\\n' : ' ';
++            if (current === '*' && next === '/') {
++                result += ' ';
++                index++;
++                comment = '';
++            }
++            continue;
++        }
++
++        if (quote) {
++            result += current;
++            if (escaped) {escaped = false;}
++            else if (current === '\\\\') {escaped = true;}
++            else if (current === quote) {quote = '';}
++            continue;
++        }
++
++        if (current === '/' && next === '/') {
++            result += '  ';
++            index++;
++            comment = 'line';
++            continue;
++        }
++        if (current === '/' && next === '*') {
++            result += '  ';
++            index++;
++            comment = 'block';
++            continue;
++        }
++        if (current === '"' || current === "'" || current === '`') {quote = current;}
++        result += current;
++    }
++    return result;
++}
++
++function isInsideString(source: string, index: number): boolean {
++    let quote = '';
++    let escaped = false;
++    for (let cursor = 0; cursor < index; cursor++) {
++        const current = source[cursor];
++        if (quote) {
++            if (escaped) {escaped = false;}
++            else if (current === '\\\\') {escaped = true;}
++            else if (current === quote) {quote = '';}
++        } else if (current === '"' || current === "'" || current === '`') {
++            quote = current;
++        }
++    }
++    return Boolean(quote);
++}
++
++function isCodeMatch(source: string, matchIndex: number): boolean {
++    return !isInsideString(source, matchIndex);
++}
++
+ function extraerTokensDeTexto(texto: string, tokens: Set<string>): void {
++    const source = removeComments(texto);
+     let match: RegExpExecArray | null;
+ 
+     REGEX_CLASS_ATTR.lastIndex = 0;
+-    while ((match = REGEX_CLASS_ATTR.exec(texto)) !== null) {
++    while ((match = REGEX_CLASS_ATTR.exec(source)) !== null) {
++        if (!isCodeMatch(source, match.index)) {continue;}
+         for (const clase of match[1].split(/\s+/)) {
+             if (clase.length > 1) {
+                 tokens.add(clase);
+@@ -92,13 +218,49 @@ function extraerTokensDeTexto(texto: string, tokens: Set<string>): void {
+     }
+ 
+     REGEX_CLASS_TEMPLATE.lastIndex = 0;
+-    while ((match = REGEX_CLASS_TEMPLATE.exec(texto)) !== null) {
+-        REGEX_TOKEN.lastIndex = 0;
+-        let tokenMatch: RegExpExecArray | null;
+-        while ((tokenMatch = REGEX_TOKEN.exec(match[1])) !== null) {
+-            tokens.add(tokenMatch[0]);
++    while ((match = REGEX_CLASS_TEMPLATE.exec(source)) !== null) {
++        if (isCodeMatch(source, match.index)) {
++            addClassTokens(match[1], tokens);
+         }
+     }
++
++    REGEX_CLASS_OBJECT.lastIndex = 0;
++    while ((match = REGEX_CLASS_OBJECT.exec(source)) !== null) {
++        if (!isCodeMatch(source, match.index)) {continue;}
++        const previous = previousCodeCharacter(source, match.index);
++        if (previous !== '{' && previous !== ',') {continue;}
++        addClassTokens(match[1] ?? match[2] ?? '', tokens);
++    }
++
++    REGEX_CLASS_FACTORY.lastIndex = 0;
++    while ((match = REGEX_CLASS_FACTORY.exec(source)) !== null) {
++        if (!isCodeMatch(source, match.index)) {continue;}
++        const previous = previousCodeCharacter(source, match.index);
++        if (previous && !/[=(,:]/.test(previous)) {continue;}
++        addClassTokens(match[1], tokens);
++    }
++
++    REGEX_EXTERNAL_LINK_CLASS.lastIndex = 0;
++    while ((match = REGEX_EXTERNAL_LINK_CLASS.exec(source)) !== null) {
++        if (!isCodeMatch(source, match.index)) {continue;}
++        const previous = previousCodeCharacter(source, match.index);
++        if (previous && !/[=(,:]/.test(previous)) {continue;}
++        addClassTokens(match[1], tokens);
++    }
++
++    REGEX_CLASS_LIST.lastIndex = 0;
++    while ((match = REGEX_CLASS_LIST.exec(source)) !== null) {
++        if (!isCodeMatch(source, match.index) || previousCodeCharacter(source, match.index) !== '.') {continue;}
++        addQuotedClassTokens(match[1], tokens);
++    }
++
++    REGEX_CLASS_DECLARATION.lastIndex = 0;
++    while ((match = REGEX_CLASS_DECLARATION.exec(source)) !== null) {
++        if (!isCodeMatch(source, match.index)) {continue;}
++        const previous = previousCodeCharacter(source, match.index);
++        if (previous && /[\\w'"`]/.test(previous)) {continue;}
++        addDeclarationClassTokens(match[1], tokens);
++    }
+ }
+ 
+ function compilarPatronesExcluidos(patterns: string[]): RegExp[] {
+diff --git a/src/test/suite/coreContracts.test.ts b/src/test/suite/coreContracts.test.ts
+index 0eac40a..e401aba 100644
+--- a/src/test/suite/coreContracts.test.ts
++++ b/src/test/suite/coreContracts.test.ts
+@@ -129,4 +129,84 @@ suite('VarSense editor-agnostic core contracts', () => {
+     assert.strictEqual(result.totalClasesHuerfanas, 1);
+     assert.strictEqual(result.clasesHuerfanas[0].nombre, 'panelOculto');
+   });
++
++  test('recognizes vanilla DOM class contracts without hiding orphan classes', async () => {
++    const provider = new MemoryWorkspaceProvider({
++      '/workspace/src/styles.css': {
++        languageId: 'css',
++        content: [
++          '.factoryPanel { color: red; }',
++          '.containerRow { color: red; }',
++          '.externalLink { color: red; }',
++          '.activeIcon { color: red; }',
++          '.contentFullBleed { color: red; }',
++          '.unusedPanel { color: blue; }',
++        ].join('\n'),
++      },
++      '/workspace/src/view.ts': {
++        languageId: 'typescript',
++        content: [
++          "const view = createEl('div', { className: 'factoryPanel' });",
++          "const row = createContainer('containerRow');",
++          "const link = createExternalLink(url, 'ver', 'externalLink');",
++          "icon.classList.add('activeIcon');",
++          "const contentClass = entry.layout === 'full-bleed' ? 'contentFullBleed' : 'other';",
++          "const className = helper('unusedPanel');",
++          "const contentClass = \"factoryPanel\";",
++          "// createContainer('fakeComment');",
++          "const text = \"className: 'fakeString'\";",
++        ].join('\n'),
++      },
++    });
++    const builder = new ClassIndexBuilder(provider, provider);
++
++    const result = await builder.scan({ exclude: [], minLength: 3 });
++
++    assert.strictEqual(result.totalClasesHuerfanas, 1);
++    assert.strictEqual(result.clasesHuerfanas[0].nombre, 'unusedPanel');
++    assert.equal(result.clasesHuerfanas.some(item => item.nombre === 'contentFullBleed'), false);
++    assert.equal(result.clasesHuerfanas.some(item => item.nombre === 'campoError'), false);
++  });
++
++  test('recognizes static classes inside template interpolations', async () => {
++    const provider = new MemoryWorkspaceProvider({
++      '/workspace/src/styles.css': {
++        languageId: 'css',
++        content: '.campoError { color: red; }\n.unusedClass { color: blue; }',
++      },
++      '/workspace/src/view.ts': {
++        languageId: 'typescript',
++        content: "const className = `campo ${error ? 'campoError' : ''}`;",
++      },
++    });
++    const builder = new ClassIndexBuilder(provider, provider);
++
++    const result = await builder.scan({ exclude: [], minLength: 3 });
++
++    assert.strictEqual(result.totalClasesHuerfanas, 1);
++    assert.strictEqual(result.clasesHuerfanas[0].nombre, 'unusedClass');
++  });
++
++  test('supports quoted object keys, templates and multiline consumers', async () => {
++    const provider = new MemoryWorkspaceProvider({
++      '/workspace/src/styles.css': {
++        languageId: 'css',
++        content: '.quotedObject { color: red; }\n.templateClass { color: red; }\n.multilineRow { color: red; }\n.stillOrphan { color: blue; }',
++      },
++      '/workspace/src/view.ts': {
++        languageId: 'typescript',
++        content: [
++          "const view = createEl('div', {\n  'className': `templateClass ${state}`\n});",
++          "const row = createContainer(\n  'multilineRow'\n);",
++          "const other = { 'className': 'quotedObject' };",
++        ].join('\n'),
++      },
++    });
++    const builder = new ClassIndexBuilder(provider, provider);
++
++    const result = await builder.scan({ exclude: [], minLength: 3 });
++
++    assert.strictEqual(result.totalClasesHuerfanas, 1);
++    assert.strictEqual(result.clasesHuerfanas[0].nombre, 'stillOrphan');
++  });
+ });

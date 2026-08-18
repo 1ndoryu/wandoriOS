@@ -1,0 +1,137 @@
+/* wandori.us — Resolución de conflictos (preferencias + overlay del workspace)
+ * Extraído de components.css [018A-73]. Patrón común: título + mensaje +
+ * pares clave/valor + acciones. */
+
+@layer components {
+
+/* === RESOLUCIÓN DE PREFERENCIAS === */
+.preferences-conflict {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-md);
+}
+
+.preferences-conflict__title {
+  margin: 0;
+  font-family: var(--fuente-titulo);
+  font-size: var(--tamano-grande);
+  font-weight: var(--peso-normal);
+}
+
+.preferences-conflict__message {
+  margin: 0;
+  line-height: var(--linea-altura);
+}
+
+.preferences-conflict__values {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--espacio-sm) var(--espacio-md);
+  margin: 0;
+  padding: var(--espacio-md) 0;
+  border-top: var(--borde);
+  border-bottom: var(--borde);
+}
+
+.preferences-conflict__values dt {
+  color: var(--color-texto-secundario);
+}
+
+.preferences-conflict__values dd {
+  margin: 0;
+  text-align: right;
+}
+
+.preferences-conflict__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--espacio-md);
+}
+
+/* [297A-26] Panel de preferencias embebido en la ventana Cuenta (reemplaza el
+ * modal global). Separador superior consistente con modales/paneles del
+ * sistema. El selector de tema usa la misma receta de botones del OS. */
+.preferences-panel {
+  border-top: var(--borde);
+  padding-top: var(--espacio-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-md);
+}
+
+.preferences-panel__selector {
+  display: flex;
+  align-items: baseline;
+  gap: var(--espacio-md);
+}
+
+.preferences-panel__etiqueta {
+  font-family: var(--fuente-menu);
+  font-size: var(--tamano-texto);
+  font-weight: 600;
+  min-width: 4ch;
+  /* [317A-4] Misma regla de capitalización que .campo-etiqueta. */
+  display: inline-block;
+}
+
+.preferences-panel__etiqueta::first-letter {
+  text-transform: uppercase;
+}
+
+.preferences-panel__temas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-md);
+}
+
+.preferences-panel__tema[aria-pressed='true'] {
+  font-weight: var(--peso-medio);
+}
+
+/* === RESOLUCIÓN DE OVERLAY DEL WORKSPACE === */
+.workspace-overlay-conflict {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-md);
+}
+
+.workspace-overlay-conflict__title {
+  margin: 0;
+  font-family: var(--fuente-titulo);
+  font-size: var(--tamano-grande);
+  font-weight: var(--peso-normal);
+}
+
+.workspace-overlay-conflict__message {
+  margin: 0;
+  line-height: var(--linea-altura);
+}
+
+.workspace-overlay-conflict__values {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--espacio-sm) var(--espacio-md);
+  margin: 0;
+  padding: var(--espacio-md) 0;
+  border-top: var(--borde);
+  border-bottom: var(--borde);
+}
+
+.workspace-overlay-conflict__values dt {
+  color: var(--color-texto-secundario);
+}
+
+.workspace-overlay-conflict__values dd {
+  margin: 0;
+  text-align: right;
+}
+
+.workspace-overlay-conflict__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--espacio-md);
+}
+
+} /* @layer components */

@@ -1,0 +1,124 @@
+@media (max-width: 1023px) {
+  .desktop-profile-window {
+    width: min(var(--sistema-perfil-ancho-tablet), calc(100% - var(--sistema-iconos-reserva-tablet)));
+  }
+
+  .desktop-menu-bar__menus {
+    gap: var(--espacio-sm);
+  }
+}
+
+@media (max-width: 768px) {
+  .columna-derecha {
+    height: auto;
+    min-height: var(--sistema-escritorio-alto-mobile);
+  }
+
+  .desktop-shell {
+    min-height: var(--sistema-escritorio-alto-mobile);
+  }
+
+  .desktop-menu-bar__menus {
+    overflow: hidden;
+  }
+
+  .desktop-menu-bar__entry:last-child {
+    display: none;
+  }
+
+  .desktop-workspace {
+    overflow-y: auto;
+  }
+
+  .desktop-profile-window {
+    top: var(--espacio-lg);
+    left: var(--espacio-md);
+    width: calc(100% - var(--espacio-xl));
+  }
+
+  .desktop-icon-grid {
+    position: relative;
+    top: auto;
+    right: auto;
+    left: auto;
+    /* [297A-20] Móvil: sin posiciones libres; auto-flow según mobileOrder. */
+    direction: ltr;
+    grid-auto-flow: row;
+    grid-template-columns: repeat(3, minmax(var(--sistema-icono-celda-mobile), 1fr));
+    gap: var(--espacio-xl) var(--espacio-sm);
+    padding: var(--sistema-iconos-offset-mobile) var(--espacio-md) var(--espacio-3xl);
+  }
+
+  .desktop-icon--posicionado {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .desktop-content-window {
+    top: var(--espacio-md);
+    left: var(--espacio-md);
+    width: calc(100% - var(--espacio-xl));
+    height: calc(100% - var(--espacio-xl));
+  }
+
+  .desktop-settings-window {
+    top: var(--espacio-md);
+    width: calc(100% - var(--espacio-xl));
+    max-height: calc(100% - var(--espacio-xl));
+  }
+}
+
+@media (max-width: 480px) {
+  .desktop-menu-bar__entry:nth-of-type(n + 2) {
+    display: none;
+  }
+
+  .desktop-context-menu--nested {
+    top: 100%;
+    left: 0;
+    width: min(var(--sistema-menu-contexto-submenu-ancho), calc(100vw - var(--espacio-xl)));
+  }
+
+  .desktop-profile-window .profile {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    justify-items: center;
+    gap: var(--espacio-md);
+    padding: var(--espacio-lg);
+  }
+
+  .desktop-profile-window .profile-foto {
+    grid-row: 1;
+    grid-column: 1;
+    width: var(--sistema-perfil-foto-mobile);
+    height: var(--sistema-perfil-foto-mobile);
+  }
+
+  .desktop-profile-window .profile-nombre {
+    grid-row: 2;
+    grid-column: 1;
+    align-self: auto;
+    text-align: center;
+  }
+
+  .desktop-profile-window .profile-redes {
+    grid-row: 3;
+    grid-column: 1;
+    justify-content: center;
+  }
+
+  .desktop-icon-grid {
+    grid-template-columns: repeat(2, minmax(var(--sistema-icono-celda-mobile), 1fr));
+    padding-top: var(--sistema-iconos-offset-mobile-pequeno);
+  }
+
+  .desktop-taskbar__nav-control span:last-child {
+    display: none;
+  }
+
+  .desktop-taskbar__task {
+    width: var(--sistema-tarea-ancho-mobile);
+    flex: 0 0 var(--sistema-tarea-ancho-mobile);
+  }
+
+}

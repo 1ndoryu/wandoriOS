@@ -1,0 +1,19 @@
+{
+  "generatedAt": "2026-08-07T00:00:00.000Z",
+  "decision": { "label": "FAIL" },
+  "stages": [
+    {
+      "stage": "node-check",
+      "status": "fail",
+      "findings": [
+        {
+          "ruleId": "fixture-no-eval",
+          "severity": "error",
+          "file": "src/index.js",
+          "line": 7,
+          "message": "eval is not allowed in project code"
+        }
+      ]
+    }
+  ]
+}

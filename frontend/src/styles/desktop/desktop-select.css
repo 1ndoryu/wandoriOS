@@ -1,0 +1,40 @@
+/* wandori.us — Desktop Select (dropdown nativo del OS)
+ * [018A-82] Reemplaza el <select> del navegador por un dropdown del OS:
+ * botón con el look del campo (.campo-select, borde inferior + flecha token
+ * --color-select-flecha) y panel que reutiliza la receta del menú contextual
+ * (.desktop-context-menu). Sin sombras, radios ni gradientes.
+ * El look base del botón vive en components.css (.campo-select); aquí solo el
+ * comportamiento de botón (alineación, ellipsis) y el panel flotante. */
+
+/* Botón del campo: los botones centran el texto por defecto; el select nativo
+ * alineaba a la izquierda. Ellipsis para valores largos. */
+.campo-select {
+  display: block;
+  width: 100%;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+/* Contenedor relativo para anclar el panel flotante al botón. */
+.campo-select__wrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* Panel de opciones: misma receta del menú contextual del OS, anclado bajo el
+ * botón y ajustado al ancho del campo (el menú de la barra usa el ancho fijo
+ * del token --sistema-menu-contexto-ancho; un select debe calcar el campo). */
+.campo-select__menu.desktop-context-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 9999;
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  max-height: 220px;
+  overflow-y: auto;
+}

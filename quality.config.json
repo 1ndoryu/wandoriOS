@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "maxFindings": 3,
+  "maxReminders": 4,
+  "maxTerminalLines": 20,
+  "roadmapMaxLines": 700,
+  "lockWaitMs": 0,
+  "maxConcurrentStages": 1,
+  "timeoutsMs": {
+    "sentinel": 120000,
+    "varsense": 120000,
+    "rust": 300000,
+    "frontend": 120000,
+    "frontendTest": 300000
+  },
+  "performanceBudgets": {
+    "entryJsGzipBytes": 65000,
+    "entryCssGzipBytes": 16000,
+    "largestChunkGzipBytes": 140000
+  },
+  "stageTimeBudgets": {
+    "sentinel": 3000,
+    "varsense": 6000,
+    "frontend": 12000,
+    "rust": 120000,
+    "docs": 1000,
+    "custom": 1000
+  },
+  "indexRetention": {
+    "maxAgeDays": 7,
+    "maxMiB": 256,
+    "throttleHours": 6
+  },
+  "heavyRun": {
+    "cooldownMinutes": 180,
+    "maxTargetGb": 15,
+    "maxTargetAgeDays": 7,
+    "maxConcurrent": 1
+  },
+  "reportRetention": {
+    "maxAgeDays": 7,
+    "maxWorkspaceMiB": 512,
+    "maxBranchMiB": 128
+  },
+  "fullPatterns": [
+    "Cargo.toml",
+    "Cargo.lock",
+    "frontend/vite.config.ts",
+    "frontend/vitest.config.ts",
+    "sentinel.config.json",
+    "varsense.config.json",
+    "quality.config.json",
+    "quality-tools.json",
+    ".github/",
+    "scripts/quality/",
+    "migrations/"
+  ],
+  "profiles": {
+    "rust": [".rs", "Cargo.toml", "Cargo.lock", "migrations/"],
+    "frontend": ["frontend/"],
+    "css": [".css", ".scss", ".less"],
+    "docs": [".md", "AGENTS.md", "roadmap.md", "Agente/"],
+    "auth": ["auth", "session", "login", "middleware"],
+    "commerce": ["product", "order", "stripe", "checkout", "upload"],
+    "desktop": ["frontend/src/features/desktop/"],
+    "mobile": ["mobile", "responsive"],
+    "workspace": ["workspace", "overlay", "layout"]
+  }
+}

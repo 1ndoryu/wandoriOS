@@ -1,0 +1,110 @@
+/* wandori.us — Componente BOTÓN (receta compartida)
+ * Extraído de components.css [018A-73]: botones texto subrayado por defecto;
+ * dentro de superficies del OS llevan borde 1px. Lucide 1px, tamaño token.
+ * PROHIBIDO: sombras, colores, bordes redondeados, hover effects. */
+
+@layer components {
+
+/* === BOTÓN — Siempre texto subrayado === */
+.boton {
+  display: inline;
+  font-family: inherit;
+  font-size: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--color-texto);
+  line-height: inherit;
+}
+
+.boton:disabled {
+  color: var(--color-texto-deshabilitado);
+  cursor: not-allowed;
+}
+
+.boton-pequeno {
+  font-size: var(--tamano-pequeno);
+}
+
+/* [317A-4] Botones dentro de superficies del OS (ventanas desktop, apps
+ * móviles, modales y confirms) ganan borde 1px para aspecto OS. Fuera de esas
+ * superficies (páginas públicas como checkout/gallery) .boton sigue siendo
+ * texto subrayado sin borde. Los botones de solo icono (.boton-icono) de
+ * toolbars NO heredan este borde (clase distinta, sin superficie). */
+.desktop-window .boton,
+.movilApp .boton,
+.modal-contenido .boton,
+.confirm-contenido .boton {
+  display: inline-block;
+  padding: var(--espacio-xs) var(--espacio-sm);
+  border: var(--borde);
+  line-height: normal;
+}
+
+/* [018A-65] Receta compartida: .boton OS con icono + texto centrados.
+ * La regla de superficie (.desktop-window .boton) fuerza display inline-block
+ * con más especificidad que .boton, así que cualquier botón que combine icono
+ * y texto necesita esta clase (misma especificidad de superficie, definida
+ * después) para recuperar el layout flex centrado. Consumida por account-app;
+ * futuros botones con icono+texto la reutilizan en vez de duplicar display. */
+.desktop-window .boton-con-icono,
+.movilApp .boton-con-icono,
+.modal-contenido .boton-con-icono,
+.confirm-contenido .boton-con-icono {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-sm);
+}
+
+/* [018A-67] El SVG directo de un botón con icono+texto se dimensiona desde
+ * token (misma receta que .boton-icono); sin esto Lucide cae a 24px por
+ * defecto y desborda la línea del botón. Solo `> svg` (hijo directo): los
+ * consumidores que envuelvan el icono en un span (account-app) dimensionan
+ * su envoltorio y no se ven afectados. */
+.desktop-window .boton-con-icono > svg,
+.movilApp .boton-con-icono > svg,
+.modal-contenido .boton-con-icono > svg,
+.confirm-contenido .boton-con-icono > svg {
+  width: var(--sistema-boton-icono-svg-tamano);
+  height: var(--sistema-boton-icono-svg-tamano);
+  stroke-width: var(--sistema-icono-trazo);
+}
+
+/* [317A-4] Los tabs (barra-tabs) son navegación, no botones de acción: aunque
+ * usen la clase .boton, nunca llevan el borde de botón OS. */
+.barra-tabs .boton {
+  display: inline;
+  padding: 0;
+  border: none;
+  line-height: inherit;
+}
+
+/* === BOTON ICONO — Receta compartida para botones de solo icono ===
+ * Para toolbars de apps (article-editor, futuros editores). Lucide 1px,
+ * tamaño desde token; el nombre accesible lo pone el consumidor (aria-label). */
+.boton-icono {
+  display: grid;
+  place-items: center;
+  width: var(--sistema-boton-icono-tamano);
+  height: var(--sistema-boton-icono-tamano);
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--color-texto);
+}
+
+.boton-icono svg {
+  width: var(--sistema-boton-icono-svg-tamano);
+  height: var(--sistema-boton-icono-svg-tamano);
+  stroke-width: var(--sistema-icono-trazo);
+}
+
+.boton-icono:focus-visible {
+  outline: 1px solid var(--color-texto);
+  outline-offset: 2px;
+}
+
+} /* @layer components */

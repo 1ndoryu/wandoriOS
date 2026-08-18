@@ -1,0 +1,223 @@
+/* wandori.us — Design System Variables
+ * Ultra-minimalista B&W. Sin colores, sin sombras, sin bordes redondeados.
+ * Todo se configura desde estas variables.
+ * [Auditoría v2 §3.4] @layer order para gestión de specificity. */
+
+@layer base, components;
+
+:root {
+  /* === COLOR — Solo blanco y negro === */
+  --color-fondo: #dcdcdc;
+  --color-texto: #000000;
+  --color-sidebar-fondo: #1e1e1e;
+  --color-sidebar-texto: #ffffff;
+  --color-borde: #000000;
+  --color-texto-secundario: #555555;
+  --color-texto-deshabilitado: #999999;
+  --color-fondo-overlay: rgba(0, 0, 0, 0.3);
+  --color-seleccion: #000000;
+  --color-seleccion-texto: #ffffff;
+  /* [018A-72] Flecha del .campo-select como token: un data URI no puede
+   * usar currentColor, así que vive aquí y se invierte en el scope oscuro
+   * del OS (blanco). */
+  --color-select-flecha: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%23000' stroke-width='1' fill='none'/%3E%3C/svg%3E");
+
+  /* === BORDES — Siempre 1px, nunca redondeados === */
+  --borde: 1px solid var(--color-borde);
+
+  /* === TIPOGRAFÍA — Estática: JetBrains Mono en todo el OS ===
+   * [297A-29 F1] Se retiró la configuración de fuentes/tamaños del usuario.
+   * Todo el texto usa --fuente-sistema (JetBrains Mono) y tamaños fijos.
+   * Los tokens legacy se conservan como alias para no romper consumidores
+   * del layout clásico; ya no son sobreescritos en runtime. */
+  --fuente-menu: var(--fuente-sistema);
+  --fuente-titulo: var(--fuente-sistema);
+  --fuente-texto: var(--fuente-sistema);
+
+  --tamano-texto: 13px;
+  --tamano-pequeno: 11px;
+  --tamano-grande: 15px;
+  --tamano-titulo: 16px;
+  --tamano-titulo-grande: 20px;
+
+  --linea-altura: 1.6;
+  --linea-altura-titulo: 1.2;
+
+  --menu-size: 13px;
+  --menu-spacing: 0px;
+  --menu-line-height: 1.8;
+  --menu-opacity: 1;
+  --entrada-title-size: 12px;
+  --entrada-size: 13px;
+  --entrada-opacity: 1;
+  --nav-width: 360px;
+  --profile-width: 120px;
+  --profile-height: 120px;
+  --profile-border: var(--borde);
+  --sidebar-sep-height: 16px;
+  --redes-size: 13px;
+  --redes-gap: 8px;
+
+  /* === WANDORI.OS — Macintosh minimalista === */
+  --sistema-fondo: #ffffff;
+  --sistema-superficie: #ffffff;
+  --sistema-texto: #000000;
+  --fuente-sistema: 'JetBrains Mono', ui-monospace, monospace;
+  --fuente-sistema-pixel: var(--fuente-sistema);
+  --sistema-texto-tamano: 13px;
+  --sistema-barra-alto: 34px;
+  --sistema-tareas-alto: 38px;
+  --sistema-tarea-ancho: 180px;
+  --sistema-tarea-ancho-mobile: 132px;
+  --sistema-menu-contexto-ancho: 180px;
+  --sistema-menu-contexto-submenu-ancho: 280px;
+  --sistema-menu-contexto-texto-tamano: 11px;
+  --sistema-finder-ancho: 620px;
+  --sistema-finder-alto: 500px;
+  --sistema-finder-documento-tamano: 48px;
+  /* [018A-80] Icono del grid del Finder: un poco más pequeño que el documento
+   * (40px) para una cuadrícula más densa y columnas automáticas. */
+  --sistema-finder-icono-tamano: 40px;
+  --sistema-ventana-ancho-default: 640px;
+  --sistema-ventana-alto-default: 480px;
+  --sistema-drop-target-fondo: rgba(0, 0, 0, 0.05);
+  --sistema-drop-hover-fondo: rgba(0, 0, 0, 0.03);
+  --sistema-reader-ancho: 680px;
+  --sistema-reader-imagen-alto: 320px;
+  --sistema-titulo-alto: 28px;
+  --sistema-control-tamano: 18px;
+  --sistema-control-icono-tamano: 12px;
+  /* [297A-18] Botón de tema del OS: 1px mayor que los controles de ventana. */
+  --sistema-tema-boton-tamano: 19px;
+  --sistema-tema-boton-icono-tamano: 13px;
+  /* [317A-3] Botón de solo icono (toolbars de apps): caja y SVG. */
+  --sistema-boton-icono-tamano: 20px;
+  --sistema-boton-icono-svg-tamano: 14px;
+  --sistema-logo-tamano: 14px;
+  --sistema-escritorio-alto-min: 560px;
+  --sistema-escritorio-alto-mobile: 680px;
+  --sistema-perfil-ancho: 470px;
+  --sistema-perfil-ancho-tablet: 420px;
+  --sistema-perfil-foto-min: 88px;
+  --sistema-perfil-foto-max: 160px;
+  --sistema-perfil-foto-mobile: 96px;
+  --sistema-contenido-ancho: 720px;
+  --sistema-ventana-ancho-min: 240px;
+  --sistema-icono-celda: 88px;
+  --sistema-icono-celda-mobile: 72px;
+  /* [297A-20] Altura uniforme de fila del snap-grid del escritorio.
+   * Las filas fijas hacen que la geometría calculada (getGridMetrics) coincida
+   * exactamente con la colocación real del CSS grid. */
+  --sistema-icono-fila: 64px;
+  --sistema-icono-ancho: 44px;
+  --sistema-icono-alto: 32px;
+  --sistema-icono-trazo: 1;
+  /* [297A-20] Posición opcional del snap-grid; TypeScript las sobreescribe
+   * solo para nodos con posición explícita. */
+  --icono-col: auto;
+  --icono-row: auto;
+  --sistema-iconos-reserva: 220px;
+  --sistema-iconos-reserva-tablet: 190px;
+  --sistema-iconos-offset-mobile: 330px;
+  --sistema-iconos-offset-mobile-pequeno: 390px;
+  --altoCabeceraSistemaMovil: 52px;
+  --altoNavegacionSistemaMovil: 58px;
+  --areaControlSistemaMovil: 44px;
+  --tamanoCeldaSistemaMovil: 64px;
+  --tamanoIconoSistemaMovil: 30px;
+  --tamanoFotoSistemaMovil: 132px;
+  --altoMediaSistemaMovil: 184px;
+  --anchoContenidoSistemaMovil: 420px;
+  --sistema-trama-tamano: 8px;
+  --sistema-nombre-espaciado: 0.08em;
+  /* === VENTANAS — Posición dinámica (seteada por window-manager) === */
+  --win-x: 0px;
+  --win-y: 0px;
+  --win-w: 640px;
+  --win-h: 480px;
+
+  --sistema-borde: 1px solid var(--sistema-texto);
+  --sistema-borde-doble: 1px solid var(--sistema-texto);
+  --sistema-trama-escritorio: radial-gradient(circle, rgba(0, 0, 0, 0.12) 0.5px, transparent 0.75px);
+  --sistema-trama-minimizada: repeating-linear-gradient(135deg, transparent 0, transparent 3px, var(--sistema-texto) 3px, var(--sistema-texto) 4px);
+
+  /* [297A-18] Semántica OS: selección e inversión. Auto-invierten en oscuro. */
+  --sistema-inverso-fondo: #000000;
+  --sistema-inverso-texto: #ffffff;
+  --sistema-texto-secundario: #555555;
+  --sistema-texto-deshabilitado: #999999;
+
+  --peso-normal: 400;
+  --peso-medio: 500;
+
+  /* === ESPACIADO === */
+  --espacio-xs: 4px;
+  --espacio-sm: 8px;
+  --espacio-md: 16px;
+  --espacio-lg: 24px;
+  --espacio-xl: 32px;
+  --espacio-2xl: 48px;
+  --espacio-3xl: 64px;
+
+  /* [018A-45] El layout conserva solo tokens con consumidores activos;
+   * los aliases del sidebar clásico y la transición no se reintroducen. */
+  /* === LAYOUT === */
+  --contenido-max: 720px;
+
+  /* === Z-INDEX === */
+  --z-modal: 1000;
+  --z-toast: 2000;
+  --z-sistema-iconos: 1;
+  --z-sistema-ventana: 10;
+  --z-sistema-barra: 20;
+}
+
+/* [297A-18] Tema oscuro — Invierte los tokens del chrome del OS (--sistema-*).
+ * La navegación exterior y las páginas legacy conservan su identidad clara:
+ * son "documentos" que se abren dentro del shell y no forman parte del OS.
+ * --sistema-borde / --sistema-borde-doble / --sistema-trama-minimizada se
+ * auto-invierten vía var(--sistema-texto); no necesitan override. */
+[data-tema='oscuro'] {
+  --sistema-fondo: #000000;
+  --sistema-superficie: #000000;
+  --sistema-texto: #ffffff;
+  --sistema-texto-secundario: rgba(255, 255, 255, 0.7);
+  --sistema-texto-deshabilitado: rgba(255, 255, 255, 0.4);
+  --sistema-inverso-fondo: #ffffff;
+  --sistema-inverso-texto: #000000;
+  --sistema-drop-target-fondo: rgba(255, 255, 255, 0.1);
+  --sistema-drop-hover-fondo: rgba(255, 255, 255, 0.06);
+  --sistema-trama-escritorio: radial-gradient(circle, rgba(255, 255, 255, 0.16) 0.5px, transparent 0.75px);
+}
+
+/* [297A-18] Contenido de apps del OS: hereda contexto de tema oscuro.
+ * Finder/Reader/Trash ya usan --sistema-*; Profile, Settings, About, Admin y
+ * Projects renderizan componentes compartidos
+ * con las páginas legacy (que usan --color-*). Para que el dark mode sea
+ * legible sin migrar cada componente (lo que rompería las páginas legacy),
+ * se redefine el juego de tokens exteriores dentro del alcance del OS:
+ *   - desktop: ventanas de apps (.desktop-windows-container .desktop-window);
+ *     el content window legacy (.desktop-content-window) vive fuera de ese
+ *     contenedor y conserva su identidad clara.
+ *   - móvil: launcher y apps (.movilApp, .movilLauncher); el router outlet
+ *     legacy queda excluido. */
+[data-tema='oscuro'] .desktop-windows-container .desktop-window,
+[data-tema='oscuro'] .movilOs .movilApp,
+[data-tema='oscuro'] .movilOs .movilLauncher {
+  --color-texto: #ffffff;
+  --color-texto-secundario: rgba(255, 255, 255, 0.7);
+  --color-texto-deshabilitado: rgba(255, 255, 255, 0.4);
+  --color-borde: #ffffff;
+  /* [018A-71] --borde resuelve su var(--color-borde) interno donde se
+   * DECLARA (:root, siempre negro), no donde se usa; por eso el override
+   * de --color-borde de arriba no invertía los bordes de los campos legacy
+   * (input/textarea/select) dentro de ventanas del OS en modo oscuro.
+   * Redefinir --borde en este scope lo computa blanco aquí y lo hereda a
+   * todos sus descendientes. */
+  --borde: 1px solid var(--color-borde);
+  /* [018A-72] Flecha del select en blanco para modo oscuro. */
+  --color-select-flecha: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%23fff' stroke-width='1' fill='none'/%3E%3C/svg%3E");
+  --color-seleccion: #ffffff;
+  --color-seleccion-texto: #000000;
+  --color-fondo: #000000;
+}

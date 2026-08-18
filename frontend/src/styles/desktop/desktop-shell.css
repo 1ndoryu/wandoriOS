@@ -1,0 +1,327 @@
+/* [297A-2] Macintosh minimalista: estructura espacial clásica con escala moderna.
+ * Toda decisión visual consume tokens centrales; no hay lógica ni animación. */
+
+.columna-derecha {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100vh;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: var(--sistema-fondo);
+}
+
+.desktop-shell {
+  display: grid;
+  grid-template-rows: var(--sistema-barra-alto) 1fr var(--sistema-tareas-alto);
+  width: 100%;
+  height: 100%;
+  min-height: var(--sistema-escritorio-alto-min);
+  overflow: hidden;
+  color: var(--sistema-texto);
+  background: var(--sistema-fondo);
+  font-family: var(--fuente-sistema);
+  font-size: var(--sistema-texto-tamano);
+}
+
+.desktop-workspace {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background-color: var(--sistema-fondo);
+  background-image: var(--sistema-trama-escritorio);
+  background-size: var(--sistema-trama-tamano) var(--sistema-trama-tamano);
+}
+
+.desktop-icon-grid {
+  position: absolute;
+  top: var(--espacio-xl);
+  right: var(--espacio-lg);
+  bottom: var(--espacio-xl);
+  /* [297A-20] left + direction rtl: el grid cubre TODO el escritorio y la
+   * columna 0 queda a la derecha (diseño inicial). Las celdas libres hacia
+   * la izquierda son las posiciones a las que el usuario puede arrastrar. */
+  left: var(--espacio-lg);
+  direction: rtl;
+  z-index: var(--z-sistema-iconos);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, var(--sistema-icono-celda));
+  /* [297A-20] Filas uniformes: la geometría real coincide con la calculada por
+   * getGridMetrics. Antes (max-content) las filas vacías colapsaban a 0px y el
+   * icono aterrizaba fuera de la celda que mostraba el highlight. */
+  grid-auto-rows: var(--sistema-icono-fila);
+  /* dense rellena los huecos con los iconos sin posición explícita,
+   * mientras los posicionados conservan su celda exacta. */
+  grid-auto-flow: dense;
+  gap: var(--espacio-xl) var(--espacio-md);
+  /* [058A-1] Distribución del espacio libre y centrado del contenido de cada
+   * celda (solicitado por el usuario). Con auto-fill el eje horizontal queda
+   * lleno y el sobrante se reparte entre columnas (columnGapEffectivo).
+   * [018A-97 F6] El VERTICAL ya NO reparte el sobrante: con align-content:
+   * space-between el navegador reparte entre las filas MATERIALIZADAS por el
+   * contenido (cambian en cada drop) y la geometría JS (que asume filas fijas
+   * por altura) divergía ~675px — el icono aterrizaba lejos del highlight y
+   * desplazaba ocupantes al caer en celdas equivocadas. Con `start` las filas
+   * son deterministas desde arriba (row * (fila + gap)) y coinciden 1:1 con
+   * getGridMetrics/getCellAt; es el mismo criterio que el Finder (018A-93). */
+  justify-content: space-between;
+  align-content: start;
+  align-items: center;
+  justify-items: center;
+}
+
+/* [297A-20] Icono anclado a una celda snap (col/row 1-based vía custom properties).
+ * Con direction: rtl, col 1 = columna derecha; col creciente = hacia la izquierda. */
+.desktop-icon--posicionado {
+  grid-column: var(--icono-col);
+  grid-row: var(--icono-row);
+}
+
+.desktop-icon {
+  /* [297A-20] El grid es rtl para anclar la col 0 a la derecha, pero el
+   * contenido del icono (flex columna, texto) vuelve a ltr para no invertirse. */
+  direction: ltr;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espacio-sm);
+  min-width: 0;
+  text-align: center;
+  font-family: var(--fuente-sistema-pixel);
+}
+
+.desktop-icon--interactive {
+  width: var(--sistema-icono-celda);
+  color: inherit;
+  cursor: pointer;
+}
+
+.desktop-icon__pictogram {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--sistema-icono-ancho);
+  height: var(--sistema-icono-alto);
+  color: var(--sistema-texto);
+}
+
+.desktop-icon__pictogram--lucide {
+  background: transparent;
+}
+
+.desktop-icon__pictogram--lucide svg {
+  width: 100%;
+  height: 100%;
+  stroke-width: var(--sistema-icono-trazo);
+}
+
+.desktop-icon__label {
+  max-width: var(--sistema-icono-celda);
+  padding: 0 var(--espacio-xs);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background: var(--sistema-superficie);
+}
+
+.desktop-icon--selected .desktop-icon__label {
+  color: var(--sistema-inverso-texto);
+  background: var(--sistema-inverso-fondo);
+}
+
+/* [018A-97] La rejilla roja de debug (Ctrl+Shift+G) y sus clases
+ * .desktop-icon-grid--depurar/__debug/__debug-celda se retiraron junto con
+ * debug-grid-overlay.ts: el DoD del plan 018A-97 exige sin código de
+ * depuración en producción. */
+
+/* [Plan 297A-11 §9.4] Icon drag states */
+.desktop-icon--dragging {
+  opacity: 0.4;
+}
+
+/* [058A-4] Banda de selección múltiple (rubber band) estilo Windows: rectángulo
+ * arrastrado desde el fondo del grid. Monocromo con tokens del sistema; relleno
+ * translúcido con --sistema-drop-target-fondo (misma receta que el drop target
+ * de arrastre). Se posiciona respecto al contenedor que la contiene (el grid
+ * debe ser su containing block: absolute o relative). */
+.desktop-selection-band {
+  position: absolute;
+  z-index: 3;
+  border: 1px solid var(--sistema-texto);
+  background: var(--sistema-drop-target-fondo);
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+/* [058A-4] Feedback provisional de la banda sobre ítems intersectados: mismo
+ * patrón visual que --selected (--sistema-inverso-*) pero SIN tocar el store;
+ * al soltar la banda aplica la selección real y estas clases se eliminan.
+ * Comparte receta entre el escritorio y el Finder. */
+.desktop-icon--banded .desktop-icon__label,
+.desktop-finder__item--banded .desktop-finder__label {
+  color: var(--sistema-inverso-texto);
+  background: var(--sistema-inverso-fondo);
+}
+
+.desktop-icon--ghost {
+  opacity: 0.7;
+  pointer-events: none;
+  background: var(--sistema-superficie);
+  border: 1px dashed var(--sistema-texto);
+}
+
+.desktop-icon-drop-target {
+  position: absolute;
+  pointer-events: none;
+  border: 1px dashed var(--sistema-texto);
+  background: var(--sistema-drop-target-fondo);
+  transition: left 0.1s, top 0.1s;
+}
+
+/* [Auditoría v2] Drop hover — feedback visual al arrastrar sobre un target válido */
+.desktop-icon--drop-hover {
+  outline: 2px dashed var(--sistema-texto);
+  outline-offset: 2px;
+  background: var(--sistema-drop-hover-fondo);
+}
+
+/* [Auditoría v2] Finder item dragging state */
+.desktop-finder__item--dragging {
+  opacity: 0.4;
+}
+
+.desktop-taskbar {
+  position: relative;
+  z-index: var(--z-sistema-barra);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: stretch;
+  min-width: 0;
+  border-top: var(--sistema-borde);
+  background: var(--sistema-superficie);
+}
+
+.desktop-taskbar__nav-control,
+.desktop-taskbar__task {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.desktop-taskbar__nav-control,
+.desktop-taskbar__activate {
+  gap: var(--espacio-sm);
+  padding: 0 var(--espacio-sm);
+}
+
+.desktop-taskbar__nav-control {
+  border-right: var(--sistema-borde);
+  border-top: 0;
+  border-bottom: 0;
+  border-left: 0;
+  border-radius: 0;
+  background: var(--sistema-superficie);
+  color: var(--sistema-texto);
+  font-family: var(--fuente-sistema);
+  font-weight: var(--peso-medio);
+  opacity: 1;
+}
+
+.desktop-taskbar__tasks {
+  display: flex;
+  align-items: stretch;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.desktop-taskbar__task {
+  width: min(var(--sistema-tarea-ancho), 40%);
+  padding-right: 0;
+  border-right: var(--sistema-borde);
+}
+
+.desktop-taskbar__activate {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  flex: 1 1 auto;
+  align-self: stretch;
+  color: inherit;
+  font-family: var(--fuente-sistema);
+}
+
+.desktop-taskbar__task--active {
+  color: var(--sistema-inverso-texto);
+  background: var(--sistema-inverso-fondo);
+}
+
+.desktop-taskbar__task--minimized {
+  background-image: var(--sistema-trama-minimizada);
+  background-position: bottom;
+  background-repeat: repeat-x;
+  background-size: var(--espacio-sm) var(--espacio-sm);
+}
+
+.desktop-taskbar__icon {
+  flex: 0 0 auto;
+  width: var(--espacio-md);
+  height: var(--espacio-md);
+  stroke-width: var(--sistema-icono-trazo);
+}
+
+.desktop-taskbar__label {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.desktop-taskbar__close {
+  display: grid;
+  place-items: center;
+  align-self: stretch;
+  flex: 0 0 var(--sistema-titulo-alto);
+  width: var(--sistema-titulo-alto);
+  padding: 0;
+  border-top: 0;
+  border-right: 0;
+  border-bottom: 0;
+  border-left: 1px solid currentColor;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  opacity: 1;
+}
+
+.desktop-taskbar__close svg {
+  width: var(--sistema-control-icono-tamano);
+  height: var(--sistema-control-icono-tamano);
+  stroke-width: var(--sistema-icono-trazo);
+}
+
+.desktop-profile-window {
+  top: clamp(var(--espacio-xl), 9vh, var(--espacio-3xl));
+  left: clamp(var(--espacio-lg), 7%, var(--espacio-3xl));
+  width: min(var(--sistema-perfil-ancho), calc(100% - var(--sistema-iconos-reserva)));
+  height: clamp(200px, 30vh, 400px);
+}
+
+.desktop-content-window {
+  top: var(--espacio-2xl);
+  left: var(--espacio-2xl);
+  width: min(var(--sistema-contenido-ancho), calc(100% - var(--espacio-3xl)));
+  height: calc(100% - var(--espacio-3xl) - var(--espacio-xl));
+}
+
+.desktop-content-window .desktop-window__body {
+  height: calc(100% - var(--sistema-titulo-alto));
+  overflow: auto;
+}
+
+.desktop-content-window .contenido-principal {
+  min-height: 100%;
+  padding: var(--espacio-xl);
+}

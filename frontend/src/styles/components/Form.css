@@ -1,0 +1,95 @@
+/* wandori.us — Componentes de FORMULARIO (input, textarea, select)
+ * Extraído de components.css [018A-73]. Inputs = 1px border. */
+
+@layer components {
+
+/* === INPUT === */
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-sm);
+  width: 100%;
+}
+
+.campo-etiqueta {
+  font-family: var(--fuente-menu);
+  font-size: var(--tamano-texto);
+  font-weight: 600;
+  /* [317A-4] Labels de formulario con primera letra en mayúscula. Se usa
+   * ::first-letter (no text-transform: capitalize) para que solo la primera
+   * letra de la frase suba ("Imagen de portada", nunca "Imagen De Portada"). */
+  display: inline-block;
+}
+
+.campo-etiqueta::first-letter {
+  text-transform: uppercase;
+}
+
+.campo-entrada {
+  width: 100%;
+  padding: var(--espacio-sm) 0;
+  border: none;
+  border-bottom: var(--borde);
+  font-family: var(--fuente-texto);
+  font-size: var(--tamano-texto);
+  background: transparent;
+  outline: none;
+}
+
+.campo-entrada::placeholder {
+  color: var(--color-texto-deshabilitado);
+}
+
+.campo-entrada:focus {
+  border-bottom-width: 2px;
+}
+
+.campo-error .campo-entrada {
+  border-bottom-color: var(--color-texto);
+}
+
+.campo-mensaje-error {
+  font-size: var(--tamano-pequeno);
+  color: var(--color-texto-secundario);
+}
+
+/* === TEXTAREA === */
+.campo-textarea {
+  width: 100%;
+  padding: var(--espacio-sm);
+  border: var(--borde);
+  font-family: var(--fuente-texto);
+  font-size: var(--tamano-texto);
+  background: transparent;
+  outline: none;
+  resize: vertical;
+  min-height: 120px;
+  line-height: var(--linea-altura);
+}
+
+.campo-textarea:focus {
+  border-width: 2px;
+}
+
+/* === SELECT === */
+.campo-select {
+  width: 100%;
+  padding: var(--espacio-sm) 0;
+  border: none;
+  border-bottom: var(--borde);
+  font-family: var(--fuente-texto);
+  font-size: var(--tamano-texto);
+  background: transparent;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  /* [018A-72] Flecha vía token --color-select-flecha para invertir en oscuro. */
+  background-image: var(--color-select-flecha);
+  background-repeat: no-repeat;
+  background-position: right 0 center;
+  /* [297A-26] Reserva para la flecha SVG (--espacio-md + --espacio-xs). */
+  padding-right: calc(var(--espacio-md) + var(--espacio-xs));
+}
+
+} /* @layer components */

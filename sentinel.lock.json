@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-12T02:57:37.970Z",
+  "runtime": {
+    "status": "project-adapter",
+    "version": "1.0.0-local",
+    "commit": "repo-scripts",
+    "artifactSha256": null,
+    "identitySha256": "3ad54a78ccec530199dceeed2aaa0cb8cf4772d8ee3002ccf317f71afdd616aa"
+  },
+  "analyzers": {
+    "sentinel": {
+      "version": "0.7.4",
+      "protocolVersion": 1,
+      "commit": "0349485c121784513c7ecef8a8de1535e841a5ae",
+      "sha256": "38273e7f56c9cc56adc81c4e4e4cbcafa28d74e0d027edf38b6a057e015147f5",
+      "patchSha256": null
+    },
+    "varsense": {
+      "version": "2.2.1",
+      "protocolVersion": 1,
+      "commit": "88f281f94e6febd02a386b7ed03d30d285eb82e1",
+      "sha256": "82f9a0da69a79a7e87c81ff3a05cc4d1b3651d97a981054a74c79b4ce8b2708c",
+      "patchSha256": null,
+      "capabilities": {
+        "filesFrom": true,
+        "persistentIndex": true
+      }
+    }
+  }
+}

@@ -1,0 +1,108 @@
+/* wandori.us — Componentes MODAL y CONFIRMACIÓN
+ * Extraído de components.css [018A-73]. Modales = overlay + panel. */
+
+@layer components {
+
+/* === MODAL === */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--color-fondo-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-modal);
+  padding: var(--espacio-md);
+}
+
+.modal-contenido {
+  background: var(--color-fondo);
+  border: var(--borde);
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--espacio-md) var(--espacio-lg);
+  border-bottom: var(--borde);
+}
+
+.modal-titulo {
+  font-family: var(--fuente-titulo);
+  font-size: var(--tamano-grande);
+  font-weight: var(--peso-normal);
+}
+
+.modal-cerrar {
+  font-family: var(--fuente-menu);
+  font-size: var(--tamano-pequeno);
+  text-decoration: none;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: var(--color-texto);
+}
+
+.modal-cuerpo {
+  padding: var(--espacio-lg);
+}
+
+.modal-pie {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--espacio-md);
+  padding: var(--espacio-md) var(--espacio-lg);
+  border-top: var(--borde);
+}
+
+/* [028A-5] Acciones y feedback dentro del cuerpo de un modal (patrón común
+ * del sistema: fila de botones + línea de estado). */
+.modal-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--espacio-md);
+}
+
+.modal-feedback {
+  margin: 0;
+  min-height: 1.25em;
+  font-size: var(--tamano-pequeno);
+  color: var(--sistema-texto-secundario);
+}
+
+/* === CONFIRMACIÓN === */
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--color-fondo-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: calc(var(--z-modal) + 1);
+}
+
+.confirm-contenido {
+  background: var(--color-fondo);
+  border: var(--borde);
+  padding: var(--espacio-lg);
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+}
+
+.confirm-mensaje {
+  margin-bottom: var(--espacio-lg);
+}
+
+.confirm-acciones {
+  display: flex;
+  justify-content: center;
+  gap: var(--espacio-lg);
+}
+
+} /* @layer components */

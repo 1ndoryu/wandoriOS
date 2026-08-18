@@ -1,0 +1,253 @@
+/* wandori.us — Layout
+ * Dos columnas: nav 20% | perfil + contenido 80%.
+ * Grid, no fixed positioning. Sin subrayados en links.
+ * Responsive: se apilan en mobile.
+ * [Auditoría v3 §2.4] @layer components. */
+
+@layer components {
+
+#app {
+  display: grid;
+  grid-template-columns: var(--nav-width) 1fr;
+  min-height: 100vh;
+}
+
+/* === SIDEBAR — Solo menu de navegacion === */
+.sidebar {
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: var(--espacio-2xl) 0 0 var(--espacio-xl);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  background: var(--color-sidebar-fondo);
+  color: var(--color-sidebar-texto);
+  padding-right: 60px;
+}
+
+/* Navegacion del menu */
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espacio-sm);
+  width: 100%;
+}
+
+.sidebar-nav-link {
+  font-family: var(--fuente-menu);
+  font-size: var(--menu-size);
+  text-decoration: none;
+  text-transform: uppercase;
+  display: block;
+  padding: var(--espacio-xs) 0;
+  color: var(--color-sidebar-texto);
+  letter-spacing: var(--menu-spacing);
+  line-height: var(--menu-line-height);
+  opacity: var(--menu-opacity);
+}
+
+.sidebar-nav-link.activo {
+  font-weight: var(--peso-medio);
+}
+
+/* Entradas en el sidebar */
+.sidebar-separador {
+  width: 100%;
+  border: none;
+  height: var(--sidebar-sep-height);
+}
+
+.sidebar-entradas {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+  width: 100%;
+}
+
+.sidebar-entrada-link {
+  font-family: var(--fuente-menu);
+  font-size: var(--entrada-title-size);
+  text-decoration: none;
+  text-transform: lowercase;
+  display: block;
+  padding: var(--espacio-xs) 0;
+  color: var(--color-sidebar-texto);
+  opacity: var(--entrada-opacity);
+}
+
+.sidebar-entrada-link.activo {
+  font-weight: var(--peso-medio);
+}
+
+/* === COLUMNA DERECHA — Perfil + Contenido === */
+.columna-derecha {
+    display: flex;
+    flex-direction: column;
+    padding: var(--espacio-2xl) var(--espacio-xl);
+    width: 100%;
+    height: 100%;
+    margin: auto;
+    place-content: center;
+    justify-content: center;
+}
+
+/* Profile centrado cuando no hay entradas */
+.columna-derecha--sin-profile .contenido-principal {
+  display: flex;
+  justify-content: center;
+}
+
+/* === PROFILE — Foto, nombre, redes === */
+.profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espacio-lg);
+  margin-bottom: var(--espacio-3xl);
+}
+
+.profile-foto {
+  width: var(--profile-width);
+  height: var(--profile-height);
+  border: var(--profile-border);
+  object-fit: cover;
+}
+
+.profile-foto-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--sistema-finder-documento-tamano);
+  font-family: var(--fuente-titulo);
+}
+
+.profile-foto[hidden] {
+  display: none;
+}
+
+.profile-nombre {
+  font-family: var(--fuente-menu);
+  font-size: var(--tamano-titulo);
+  font-weight: var(--peso-normal);
+  letter-spacing: 0.1em;
+  text-transform: lowercase;
+}
+
+.profile-redes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--redes-gap);
+}
+
+.profile-redes a {
+  font-family: var(--fuente-menu);
+  font-size: var(--redes-size);
+  text-decoration: none;
+  text-transform: lowercase;
+  color: var(--color-texto);
+}
+
+.profile-redes--stacked {
+  flex-direction: column;
+  align-items: center;
+}
+
+/* === CONTENIDO PRINCIPAL === */
+.contenido-principal {
+  flex: 1;
+}
+
+/* === CHECKBOX MINIMALISTA B&W === */
+.checkbox-personalizado {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-sm);
+  cursor: pointer;
+  font-family: var(--fuente-menu);
+  font-size: var(--tamano-texto);
+}
+
+.checkbox-personalizado input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border: var(--borde);
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.checkbox-personalizado input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 5px;
+  width: 4px;
+  height: 8px;
+  border: solid var(--color-texto);
+  border-width: 0 1px 1px 0;
+  transform: rotate(45deg);
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  #app {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: relative;
+    height: auto;
+    min-height: auto;
+    justify-content: center;
+    align-items: center;
+    padding: var(--espacio-lg) var(--espacio-md);
+    border-bottom: var(--borde);
+    overflow-y: visible;
+  }
+
+  .sidebar-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: var(--espacio-md);
+  }
+
+  .sidebar-entradas {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--espacio-sm);
+  }
+
+  .columna-derecha {
+    padding: var(--espacio-lg) var(--espacio-md);
+    max-width: 100%;
+  }
+
+  .profile {
+    align-items: center;
+  }
+
+  .profile-redes {
+    justify-content: center;
+  }
+
+  .profile-foto {
+    --profile-width: 80px;
+    --profile-height: 80px;
+  }
+
+}
+
+} /* @layer components */
