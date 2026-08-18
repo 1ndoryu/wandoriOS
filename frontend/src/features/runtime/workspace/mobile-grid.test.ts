@@ -99,4 +99,40 @@ describe('mobile-grid', () => {
     ];
     expect(planMobilePlacement(nodes, 'nested', { col: 0, row: 0 }, 3).moves).toEqual([]);
   });
+
+  it('no produce moves al soltar en la misma celda (no-op)', () => {
+    const nodes = [
+      node('a', { col: 0, row: 0 }),
+      node('b', { col: 1, row: 0 }),
+      node('c', { col: 2, row: 0 }),
+    ];
+    expect(planMobilePlacement(nodes, 'a', { col: 0, row: 0 }, 3).moves).toEqual([]);
+    expect(planMobilePlacement(nodes, 'b', { col: 1, row: 0 }, 3).moves).toEqual([]);
+  });
+
+  it('no produce moves para un nodo ya colocado al final (no-op en la última celda)', () => {
+    const nodes = [
+      node('a', { col: 0, row: 0 }),
+      node('b', { col: 1, row: 0 }),
+      node('c', { col: 2, row: 0 }),
+      node('d', { col: 0, row: 1 }),
+    ];
+    expect(planMobilePlacement(nodes, 'd', { col: 0, row: 1 }, 3).moves).toEqual([]);
+  });
+
+  it('compacta al final si la celda destino está más allá del alto actual', () => {
+    /* El plan nunca crea huecos: una celda fuera del alto se interpreta como
+     * "al final" del orden y se compacta sin filas vacías. */
+    const nodes = [
+      node('a', { col: 0, row: 0 }),
+      node('b', { col: 1, row: 0 }),
+      node('c', { col: 2, row: 0 }),
+    ];
+    const plan = planMobilePlacement(nodes, 'a', { col: 2, row: 2 }, 3);
+    expect(plan.moves).toEqual([
+      { nodeId: 'b', mobilePosition: { col: 0, row: 0 } },
+      { nodeId: 'c', mobilePosition: { col: 1, row: 0 } },
+      { nodeId: 'a', mobilePosition: { col: 2, row: 0 } },
+    ]);
+  });
 });

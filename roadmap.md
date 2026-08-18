@@ -223,9 +223,17 @@ el checkout compartido (incidente del 14-ago entre 138A-14 y 138A-15 en
 
 **Depende de:** 297A-12 y overlay.
 
-- [ ] Validar visual/E2E 320/360/390/768+, foco y teclado.
-- [ ] Confirmar long press, colisiones, reload/sync, persistencia de `mobilePosition` y transición móvil↔tablet.
-- [ ] Verificar que Finder no herede el orden móvil y que move prev/next siga siendo alternativa accesible.
+- [x] **Validación del arrastre con grid** (18-ago): la infraestructura ya existía
+      (icon-drag + snap-grid desktop con `planDesktopPlacement`/group drag, launcher
+      móvil con `bindLongPressDrag` → `planMobilePlacement`). Se añadieron tests:
+      separación de mutaciones (`moveMobileNodesPosition` escribe solo
+      `mobilePosition`, `moveNodesPosition` solo `position`, un move no pisa al otro,
+      lista vacía no muta) y casos de `planMobilePlacement` (no-op en la misma celda
+      y en la última, compactación al final si el destino está fuera del alto).
+- [ ] Pendiente navegador real: gesto táctil de long press→drag en 320/360/390px,
+      drag de escritorio con pointer capture (no simulable con eventos sintéticos),
+      foco/teclado y transición móvil↔tablet con reload/sync.
+- [ ] Verificar que move prev/next siga siendo alternativa accesible al arrastre.
 
 **Gate/salida:** orden móvil compacto y persistente, sin contaminar `position` desktop.
 
