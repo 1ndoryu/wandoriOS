@@ -226,7 +226,7 @@ legacy solo se ejecuta tras la segunda release verde y rollback.
 - [x] Limitar `--full`, `cargo test`, `cargo clippy` y `cargo bench` a una ejecución por proyecto cada 3 horas, con un único proceso pesado simultáneo.
 - [x] Degradar un full bloqueado a `local-light` y dejar la razón, hora de reintento y comando de excepción en el reporte.
 - [x] Interceptar `cargo` a través de `run-with-db` y del shim `cargo.cmd`; los comandos ligeros siguen pasando sin compilar tests.
-- [x] Mantener `C:\tmp\glory-target` bajo cuota estricta de 15 GB y retención de 7 días: la cuota se revisa en cada gate con lock entre agentes, preserva procesos/targets activos y poda automáticamente candidatos seguros; si solo quedan targets activos, reporta `quotaExceeded` sin matar procesos.
+- [x] Mantener `C:\tmp\glory-target` bajo cuota estricta de 7 GB y retención de 7 días: la cuota se revisa en cada gate con lock entre agentes, preserva procesos/targets activos y poda automáticamente candidatos seguros; si solo quedan targets activos, reporta `quotaExceeded` sin matar procesos.
 - [x] Validar el guard con tests unitarios, `quality:test` y limpieza en dry-run; limpiar los targets antiguos detectados (se liberaron aproximadamente 29 GB).
 - [x] Revisar el perfil PowerShell 7/Windows PowerShell y ejecutar `quality:install-guard -InstallProfile` con autorización explícita; backups y rollback quedaron registrados.
 - [x] Bloquear validaciones directas (`npx vitest`, `npm run test:*`, type-check/lint/build y Cargo de validación) desde PowerShell/CMD; todas recomiendan `npm run task:check -- <TareaId>`.

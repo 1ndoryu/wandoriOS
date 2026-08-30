@@ -14,7 +14,7 @@ Evitar que una tarea o un agente lance `cargo test`, `cargo clippy`, `cargo benc
 - Concurrencia: un proceso pesado a la vez por target base.
 - Excepción manual: `--allow-heavy` o `GLORY_QUALITY_ALLOW_HEAVY=1`; debe quedar visible en el reporte.
 - Full bloqueado: se degrada a `local-light` y no deja al agente esperando ni recompilando tests.
-- Targets: cuota estricta de 15 GB, retención de 7 días y comprobación en cada gate, con lock entre agentes; limpieza únicamente bajo una raíz validada `*/tmp/glory-target`, preservando marcadores, procesos cargados y escrituras recientes. Si los targets activos por sí solos superan la cuota, se informa el bloqueo sin matar procesos.
+- Targets: cuota estricta de 7 GB, retención de 7 días y comprobación en cada gate, con lock entre agentes; limpieza únicamente bajo una raíz validada `*/tmp/glory-target`, preservando marcadores, procesos cargados y escrituras recientes. Si los targets activos por sí solos superan la cuota, se informa el bloqueo sin matar procesos.
 - `cargo test 2>&1`: se clasifica como el mismo `cargo test`; la redirección no cambia el coste.
 - `npx vitest`, `vitest`, `npm test`, `npm run test:*`, `npm run type-check`, `npm run lint`, `npm run build` y validaciones Cargo directas se bloquean dentro de un workspace Glory.
 - El mensaje de bloqueo siempre recomienda `npm run task:check -- <TareaId>`; desarrollo, `task:check`, `quality:*` y comandos fuera del workspace siguen permitidos.

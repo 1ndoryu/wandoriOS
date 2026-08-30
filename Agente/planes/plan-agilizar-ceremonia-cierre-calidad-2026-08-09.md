@@ -192,7 +192,7 @@ Reducir el overhead de cierre por tipo de tarea, sin debilitar la evidencia ni e
   emite `docs-fast` en CI.
 - Cambios a `scripts/quality/` y `quality.config.json` se cierran con gate full (self-gate por
   `fullPatterns`), nunca con fast path.
-- Cuota de targets de Cargo (`C:\tmp\glory-target`, 15 GB/7 días) se sigue comprobando: docs-fast
+- Cuota de targets de Cargo (`C:\tmp\glory-target`, 7 GB/7 días) se sigue comprobando: docs-fast
   solo salta retención/índices o deja `quotaCheckAt` para la siguiente tarea código/full.
 - Caché compartida entre worktrees exige lock de escritura por rama (no probado aún): si no se
   puede garantizar, se mantiene caché local y F6 documenta "cold" sin atribuir reuso.
