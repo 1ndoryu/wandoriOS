@@ -1,3 +1,7 @@
+/* sentinel-disable-file css-especificacion-diseno-local
+ * [por que] Biblioteca de media del OS consumidor con tokens del sistema en
+ * variables.css; no duplica recetas glory.
+ */
 /* [297A-14 F4] Biblioteca de media — grid de assets con tokens del sistema.
  * Chrome monocromo; el contenido multimedia conserva su color.
  * [018A-71] Sin toolbar de contenido: el control de vista vive en el app

@@ -1,3 +1,8 @@
+/* sentinel-disable-file css-adhoc-button-style
+ * sentinel-disable-file css-especificacion-diseno-local
+ * [por que] Capa de presentacion del OS consumidor (wandori.us): notificaciones
+ * del shell con su design system en variables.css; no duplican recetas glory.
+ */
 /* wandori.us — Popover de novedades + etiqueta de estado
  * Extraído de components.css [018A-73]. */
 

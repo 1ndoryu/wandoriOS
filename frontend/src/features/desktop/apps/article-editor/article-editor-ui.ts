@@ -1,3 +1,8 @@
+/* sentinel-disable-file mixed-barrel-logic
+ * [por que] El re-export de createCoverField es API publica del editor
+ * (article-editor.ts lo importa desde aqui); mezclar re-export con la UI
+ * del modulo es intencional y documentado.
+ */
 /* wandori.us — Article Editor UI
  * Toolbar de formato y campo de portada del editor de artículos.
  * [297A-14 F5] Extraídos de article-editor.ts (SRP + límite 300 líneas).

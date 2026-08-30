@@ -1,3 +1,7 @@
+/* sentinel-disable-file css-especificacion-diseno-local
+ * [por que] Barra de menu global del OS consumidor con design system propio en
+ * variables.css; no duplica recetas glory.
+ */
 /* [297A-2] Barra global y menús contextuales del sistema.
  * La fase visual mantiene Archivo abierto para validar la jerarquía de dos niveles. */
 

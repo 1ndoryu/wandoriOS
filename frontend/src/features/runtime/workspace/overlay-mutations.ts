@@ -4,6 +4,7 @@
 import type { GridPosition, NodeId, WorkspaceNode, ResolvedNode, ResolvedWorkspace } from './types';
 
 import { overlayStore, workspaceStore, releaseStore, EMPTY_OVERLAY } from './stores';
+import { logger } from '../../../services/logger';
 
 /* [038A-2] Nodos del sistema que nunca se pueden tumbar: misma lista canónica
  * que el guard del backend (`SYSTEM_NODE_IDS` en release_validation.rs) y que
@@ -96,7 +97,7 @@ export function tombstoneNode(nodeId: NodeId): void {
    * Papelera (o admin/settings/profile/about) dejaría el OS sin
    * recuperación aunque el release lo conserve. No-op silencioso con aviso. */
   if (isSystemNode(nodeId)) {
-    console.warn(`[038A-2] No se puede eliminar el nodo de sistema «${nodeId}»`);
+    logger.warn(`[038A-2] No se puede eliminar el nodo de sistema «${nodeId}»`);
     return;
   }
   overlayStore.update((prev) => ({
@@ -125,7 +126,7 @@ export function tombstoneSubtree(nodeId: NodeId): void {
   /* [038A-2] Misma protección que tombstoneNode: una carpeta de sistema (o
    * cualquiera cuyo subárbol la incluya) no se puede tumbar desde la UI. */
   if (isSystemNode(nodeId)) {
-    console.warn(`[038A-2] No se puede eliminar el nodo de sistema «${nodeId}»`);
+    logger.warn(`[038A-2] No se puede eliminar el nodo de sistema «${nodeId}»`);
     return;
   }
   overlayStore.update((prev) => {
@@ -134,7 +135,7 @@ export function tombstoneSubtree(nodeId: NodeId): void {
     /* [038A-2] Si el subárbol contiene un nodo de sistema (p. ej. intentar
      * borrar «desktop»), aborta: nunca se puede arrastrar un nodo protegido. */
     if (ids.some(isSystemNode)) {
-      console.warn(`[038A-2] El subárbol de «${nodeId}» contiene un nodo de sistema`);
+      logger.warn(`[038A-2] El subárbol de «${nodeId}» contiene un nodo de sistema`);
       return prev;
     }
     const tombstones = Array.from(new Set([...prev.tombstones, ...ids]));

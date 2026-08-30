@@ -5,6 +5,7 @@
  * líneas del archivo: la gestión sobre una carpeta es un dominio propio. */
 
 import { CommandRegistry, type CommandContext, type CommandResult } from '../command-registry';
+import { logger } from '../../../services/logger';
 import {
   tombstoneNode,
   tombstoneSubtree,
@@ -150,7 +151,7 @@ CommandRegistry.register({
      * isAvailable (atajos, programas, integraciones). */
     for (const nodeId of nodeIds) {
       if (isSystemNode(nodeId)) {
-        console.warn(`[038A-2] No se puede eliminar el nodo de sistema «${nodeId}»`);
+        logger.warn(`[038A-2] No se puede eliminar el nodo de sistema «${nodeId}»`);
         return { status: 'failure', reason: 'system node' };
       }
     }

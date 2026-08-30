@@ -1,3 +1,7 @@
+// sentinel-disable-file sqlx-query-sin-macro sqlx-query-as-sin-macro
+// [por que] sqlx 0.8 sin feature "macros" y sin DB en compile-time (sin
+// .sqlx cache ni DATABASE_URL de build): convertir a query!/query_as!
+// romperia el build. Restriccion documentada en PLAN-corregir-1408.md §5.
 use std::collections::HashMap;
 
 use sqlx::PgPool;

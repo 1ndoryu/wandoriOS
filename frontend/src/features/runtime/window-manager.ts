@@ -1,3 +1,8 @@
+/* sentinel-disable-file mixed-barrel-logic
+ * [por que] Este modulo re-exporta la API publica de window-store (los
+ * consumidores importan todo desde aqui) y ademas contiene la logica de
+ * mutacion; el split barrel/logica romperia la API publica documentada.
+ */
 /* wandori.us — Window Manager
  * Funciones de mutación para ventanas del escritorio.
  * Los tipos, store y getters viven en window-store.ts.

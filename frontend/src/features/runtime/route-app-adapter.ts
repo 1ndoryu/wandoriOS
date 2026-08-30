@@ -1,3 +1,8 @@
+/* sentinel-disable-file mixed-barrel-logic
+ * [por que] El re-export de setMobileOpenHandler es API publica del adapter
+ * (los consumidores lo importan desde aqui); mezclar re-export con la
+ * logica del adapter es intencional y documentado.
+ */
 /* wandori.us — Route App Adapter
  * Conecta el router existente con el AppRegistry y WindowManager.
  * Registra un interceptor de rutas: cuando el router navega a una ruta

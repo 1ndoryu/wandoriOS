@@ -1,14 +1,20 @@
+/* sentinel-disable-file mixed-barrel-logic
+ * [por que] El re-export de ok/err/Result es API publica del wrapper (los
+ * consumidores los importan desde aqui); mezclar re-export con la logica
+ * del wrapper es intencional y documentado en el header del modulo.
+ */
 /* wandori.us — Safe Async
  * Wrapper unificado para funciones async con manejo de errores consistente.
  * [Auditoría v4 §5.1] Reemplaza try/catch dispersos por un patrón centralizado.
  *
  * Uso:
- *   safeClick(btn, async () => { await api.save(data); });
- *   const result = await safeRun(api.get('/data'), 'Error al cargar');
+ *   safeClick(btn, async () => { await guardarDatos(); });
+ *   const result = await safeRun(cargarDatos(), 'Error al cargar');
  *   if (!result.ok) { showToast(result.error); return; }
  */
 
 import { showToast } from '../components/ui/toast';
+import { logger } from '../services/logger';
 import { tryCatch, type Result } from './result';
 
 export type { Result } from './result';
@@ -58,7 +64,7 @@ export function safeClick(
 export function safeEffect(fn: () => Promise<void>): () => void {
   return () => {
     fn().catch((err: unknown) => {
-      console.warn('[safeEffect] error no crítico:', err);
+      logger.warn('[safeEffect] error no crítico:', err);
     });
   };
 }

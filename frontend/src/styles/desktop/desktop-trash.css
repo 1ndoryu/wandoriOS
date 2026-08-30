@@ -1,3 +1,7 @@
+/* sentinel-disable-file css-especificacion-diseno-local
+ * [por que] Papelera del OS consumidor con design system propio en variables.css;
+ * no duplica recetas glory.
+ */
 /* wandori.us — Papelera (Trash) App
  * Estilos para la lista de papelera del workspace.
  * Las acciones (Vaciar, Restaurar) viven en el app toolbar declarativo.

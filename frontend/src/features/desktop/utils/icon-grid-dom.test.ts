@@ -7,78 +7,13 @@
  * (fuente única) coincide con los tracks y que getCellAt es su inverso.
  */
 
-import { describe, it, expect, afterEach, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { getGridMetrics, getCellAt, cellOriginAt } from './icon-grid';
 import { positionCellHighlight, type HighlightSession } from './icon-reorder';
-
-const CELL = 88;
-const CELL_H = 64;
-const GAP = 16;
-const ROW_GAP = 24;
-const GRID_LEFT = 100;
-const GRID_TOP = 50;
-
-interface StubCss {
-  columnGap: string;
-  rowGap: string;
-  gridTemplateColumns: string;
-  gridAutoRows: string;
-  alignContent: string;
-  justifyContent: string;
-  direction: string;
-}
-
-function rectOf(left: number, top: number, width: number, height: number): DOMRect {
-  return {
-    left, top, width, height,
-    right: left + width,
-    bottom: top + height,
-    x: left, y: top,
-    toJSON: () => ({}),
-  } as DOMRect;
-}
-
-/** Monta un grid con layout simulado (track auto-fill + distribución).
- * El stub de getBoundingClientRect/getComputedStyle ES la verdad de
- * referencia: jsdom no calcula CSS grid, así que el layout se simula. */
-function mountGrid(width: number, height: number, opts: Partial<StubCss> = {}, iconWidth = CELL): HTMLElement {
-  const grid = document.createElement('div');
-  grid.style.position = 'absolute';
-  grid.style.width = `${width}px`;
-  grid.style.height = `${height}px`;
-  const icon = document.createElement('div');
-  icon.className = 'desktop-icon--interactive';
-  grid.appendChild(icon);
-  document.body.appendChild(grid);
-
-  vi.spyOn(grid, 'getBoundingClientRect').mockReturnValue(
-    rectOf(GRID_LEFT, GRID_TOP, width, height),
-  );
-  vi.spyOn(icon, 'getBoundingClientRect').mockReturnValue(
-    rectOf(GRID_LEFT, GRID_TOP, iconWidth, CELL_H),
-  );
-
-  const css: StubCss = {
-    columnGap: `${GAP}px`,
-    rowGap: `${ROW_GAP}px`,
-    gridTemplateColumns: `${CELL}px ${CELL}px ${CELL}px ${CELL}px`,
-    gridAutoRows: `${CELL_H}px`,
-    /* [018A-97 F6] El CSS real usa align-content: start (filas deterministas
-     * desde arriba): con space-between el navegador reparte el sobrante entre
-     * las filas materializadas por el CONTENIDO y la geometría JS divergía. */
-    alignContent: 'start',
-    justifyContent: 'space-between',
-    direction: 'ltr',
-    ...opts,
-  };
-  vi.spyOn(window, 'getComputedStyle').mockReturnValue(css as unknown as CSSStyleDeclaration);
-  return grid;
-}
-
-afterEach(() => {
-  document.body.innerHTML = '';
-  vi.restoreAllMocks();
-});
+import {
+  CELL, CELL_H, GAP, ROW_GAP, GRID_LEFT, GRID_TOP,
+  mountGrid,
+} from './icon-grid-dom.test-utils';
 
 describe('getGridMetrics — track real y columnGapEffective', () => {
   it('debe medir la celda del TRACK declarado, no del primer item', () => {
@@ -216,10 +151,11 @@ describe('positionCellHighlight — highlight alineado con la celda real', () =>
     const width = 4 * CELL + 3 * GAP + 24;
     const gapEff = GAP + 8;
     positionCellHighlight({ col: 0, row: 0 }, metrics, session);
-    expect(session.highlightEl!.style.left).toBe(`${width - CELL}px`);
+    const hl = session.highlightEl!;
+    expect(hl.style.left).toBe(`${width - CELL}px`);
     positionCellHighlight({ col: 2, row: 1 }, metrics, session);
-    expect(session.highlightEl!.style.left).toBe(`${width - 3 * CELL - 2 * gapEff}px`);
-    expect(session.highlightEl!.style.top).toBe(`${CELL_H + ROW_GAP}px`);
+    expect(hl.style.left).toBe(`${width - 3 * CELL - 2 * gapEff}px`);
+    expect(hl.style.top).toBe(`${CELL_H + ROW_GAP}px`);
   });
 
   it('RTL: el highlight de col 0 coincide con el rect del icono posicionado a la derecha', () => {
@@ -236,7 +172,8 @@ describe('positionCellHighlight — highlight alineado con la celda real', () =>
     positionCellHighlight({ col: 0, row: 0 }, metrics, session);
     /* El icono en col 0 (RTL) ocupa el extremo derecho del grid: su rect
      * local empieza en width - CELL, igual que el highlight. */
-    expect(session.highlightEl!.style.left).toBe(`${width - CELL}px`);
-    expect(parseFloat(session.highlightEl!.style.left) + CELL).toBe(width);
+    const hl = session.highlightEl!;
+    expect(hl.style.left).toBe(`${width - CELL}px`);
+    expect(parseFloat(hl.style.left) + CELL).toBe(width);
   });
 });

@@ -1,3 +1,8 @@
+/* sentinel-disable-file mixed-barrel-logic
+ * [por que] Este modulo ES la API publica del workspace: re-exporta stores,
+ * mutaciones y clipboard (documentado: "para romper el ciclo de importacion")
+ * y ademas expone logica de servicio; separar el barrel romperia la API.
+ */
 /* wandori.us — Workspace Store
  * API y re-exports del workspace. Los stores viven en stores.ts
  * para romper el ciclo de importación con overlay-mutations.

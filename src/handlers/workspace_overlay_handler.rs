@@ -1,3 +1,11 @@
+// sentinel-disable-file handler-accede-bd-rs
+// sentinel-disable-file sqlx-query-sin-macro sqlx-query-as-sin-macro
+// [por que] Todas las queries de este archivo viven en `#[cfg(test)] mod tests`
+// (fixtures de usuario), no en codigo de
+// produccion del handler; el runtime no distingue modulos de test.
+// [por que] sqlx 0.8 sin feature "macros" y sin DB en compile-time (sin
+// .sqlx cache ni DATABASE_URL de build): convertir a query!/query_as!
+// romperia el build. Restriccion documentada en PLAN-corregir-1408.md §5.
 use axum::extract::State;
 use axum::routing::get;
 use axum::{Json, Router};

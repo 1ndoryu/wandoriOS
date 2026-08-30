@@ -5,7 +5,10 @@ import { CommandRegistry, type CommandContext } from '../../runtime/command-regi
 import { authStore } from '../../../store';
 import { openDropdownMenu, type DropdownMenuItem } from './dropdown-menu';
 
-export interface DesktopWindowOptions {
+/* [ISP] Subinterfaces cohesivas de la ventana: la estetica/layout no debe
+ * acoplarse a los callbacks de ciclo de vida. DesktopWindowOptions conserva
+ * la API publica identica (interseccion de ambas). */
+export interface DesktopWindowLayout {
   title: string;
   content: HTMLElement;
   className?: string;
@@ -16,10 +19,15 @@ export interface DesktopWindowOptions {
   /* [018A-1] Franja de acciones inferior de la ventana: hija directa de
    * .desktop-window, debajo del body padded. La provee la app. */
   actions?: HTMLElement;
+}
+
+export interface DesktopWindowCallbacks {
   onClose?: () => void;
   onMinimize?: () => void;
   onMaximize?: () => void;
 }
+
+export interface DesktopWindowOptions extends DesktopWindowLayout, DesktopWindowCallbacks {}
 
 function createWindowControl(
   icon: IconNode,

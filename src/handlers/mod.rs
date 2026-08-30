@@ -2,6 +2,7 @@
 
 pub mod articles;
 pub mod auth;
+pub mod auth_totp;
 pub mod dev_mail;
 pub mod download_handler;
 mod health;
@@ -65,11 +66,11 @@ impl utoipa::Modify for SecurityAddon {
         auth::logout,
         auth::list_sessions,
         auth::revoke_session,
-        auth::totp_status,
-        auth::totp_setup,
-        auth::totp_confirm,
-        auth::totp_disable,
-        auth::mfa_verify,
+        auth_totp::totp_status,
+        auth_totp::totp_setup,
+        auth_totp::totp_confirm,
+        auth_totp::totp_disable,
+        auth_totp::mfa_verify,
         dev_mail::list_dev_mail,
         preferences_handler::get_preferences,
         preferences_handler::update_preferences,

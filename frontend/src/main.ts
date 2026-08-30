@@ -32,6 +32,7 @@ import './features/runtime/app-registration';
 import './features/runtime/commands';
 import {initKeyboardShortcuts} from './features/runtime/commands';
 import {CommandRegistry} from './features/runtime/command-registry';
+import { logger } from './services/logger';
 import {initRouteAppAdapter, setMobileOpenHandler, openAppWindow} from './features/runtime/route-app-adapter';
 import {initWindowUrlSync} from './features/runtime/window-url-sync';
 import {initWindowSessionPersistence} from './features/runtime/window-session';
@@ -349,7 +350,7 @@ async function initApp(): Promise<void> {
             .catch((error: unknown) => {
                 /* La transición no debe romper futuros cambios; deja diagnóstico sin
                  * serializar contenido de formularios ni detalles potencialmente sensibles. */
-                console.warn('[presentation] transición cancelada:', error instanceof Error ? error.message : 'error desconocido');
+                logger.warn('[presentation] transición cancelada:', error instanceof Error ? error.message : 'error desconocido');
             });
     };
     mediaQuery.addEventListener('change', onPresentationChange);

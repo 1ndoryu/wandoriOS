@@ -1,3 +1,8 @@
+/* sentinel-disable-file css-especificacion-diseno-local
+ * sentinel-disable-file css-elemento-html-directo
+ * [por que] Capa de presentacion del OS consumidor; los selectores h1-h6 estilan
+ * contenido renderizado (ProseMirror → HTML) que no puede llevar className.
+ */
 /* [297A-2] Contenido visual de Finder y Reader para evaluación previa.
  * El chrome pertenece siempre a desktop-window.css. */
 

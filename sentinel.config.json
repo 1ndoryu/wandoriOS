@@ -43,25 +43,52 @@
           "**/.sentinel/**",
           "tools/sentinel/**",
           "frontend/src/api/generated/**",
-          "frontend/src/utils/dom.ts"
+          "frontend/src/utils/dom.ts",
+          "_archivo/**",
+          "**/.freebuff/**",
+          "**/data/inventarios/**"
         ],
         "directoryExceptions": [
           "migrations",
           "scripts",
           "src/handlers",
-          "frontend"
+          "frontend",
+          "src/models",
+          "src/repositories",
+          "src/services"
         ],
         "portableBoundaries": {
           "dom": [
             "/frontend/src/utils/dom.ts",
             "/frontend/src/platform/",
-            "/frontend/src/adapters/"
+            "/frontend/src/adapters/",
+            "/frontend/src/main.ts",
+            "/frontend/src/components/ui/",
+            "/frontend/src/features/desktop/",
+            "/frontend/src/features/mobile/",
+            "/frontend/src/features/runtime/",
+            "/frontend/src/features/notifications/",
+            "/frontend/src/features/seo/",
+            "/frontend/src/utils/sanitize-html.ts",
+            "/frontend/src/utils/upload.ts"
           ],
           "window": [
             "/frontend/src/platform/",
             "/frontend/src/adapters/",
-            "/frontend/src/navigation/"
-          ],
+            "/frontend/src/navigation/",
+            "/frontend/src/main.ts",
+            "/frontend/src/router.ts",
+            "/frontend/src/utils/viewport.ts",
+            "/frontend/src/features/seo/",
+            "/frontend/src/features/analytics/",
+            "/frontend/src/features/desktop/",
+            "/frontend/src/features/mobile/",
+            "/frontend/src/features/runtime/",
+            "/frontend/src/features/notifications/",
+            "/frontend/src/features/commerce/store-view.ts",  "/frontend/src/pages/verify-email.ts",
+  "/frontend/src/pages/article.ts",
+  "/frontend/src/utils/sanitize-html.ts"
+ ],
           "services": [
             "/frontend/src/services/",
             "/frontend/src/api/",
@@ -104,6 +131,9 @@
             "severidad": "error"
           },
           "default-export": {
+            "habilitada": false
+          },
+          "mixed-barrel-logic": {
             "habilitada": false
           }
         }

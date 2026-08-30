@@ -3,6 +3,7 @@
  * Envía eventos al backend de forma asíncrona sin bloquear la UI. */
 
 import { tryCatch } from '../../utils/result';
+import { logger } from '../../services/logger';
 import { AnalyticsService } from '../../services';
 import type { AnalyticsEvent } from '../../api/types';
 import { canTrackAnalytics } from './consent-store';
@@ -65,7 +66,7 @@ async function flushBatch(): Promise<void> {
     if (!result.ok) {
       /* Analytics nunca bloquea la UI, pero el fallo queda observable y el
        * lote vuelve a la cola para un reintento acotado. */
-      console.warn('[analytics] batch failed', result.error);
+      logger.warn('[analytics] batch failed', result.error);
       eventQueue = [...events, ...eventQueue];
     }
 }

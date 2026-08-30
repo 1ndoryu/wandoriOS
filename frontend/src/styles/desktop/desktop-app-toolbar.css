@@ -1,3 +1,7 @@
+/* sentinel-disable-file css-especificacion-diseno-local
+ * [por que] Toolbar del OS consumidor con design system propio en variables.css;
+ * no duplica recetas glory (el kernel no conoce la estructura del consumidor).
+ */
 /* wandori.us — App Toolbar
  * Barra de herramientas declarativa dentro de cada ventana.
  * Reutiliza el mismo patrón visual que desktop-menu-bar pero a nivel de app.

@@ -9,6 +9,7 @@
 
 import type { IconNode } from 'lucide';
 import { adminOnlyAvailability, type Capability } from './capability';
+import { logger } from '../../services/logger';
 
 /* === Tipos del contrato de comandos === */
 
@@ -102,7 +103,7 @@ class CommandRegistryClass {
   register(command: Command): void {
     if (this.commands.has(command.id)) {
       /* [Plan §2.1] Tests prueban que no se puede registrar duplicado */
-      console.warn(`[CommandRegistry] duplicate registration: ${command.id}`);
+      logger.warn(`[CommandRegistry] duplicate registration: ${command.id}`);
       return;
     }
     this.commands.set(command.id, command);
