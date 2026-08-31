@@ -177,16 +177,9 @@
   font-weight: var(--peso-normal);
 }
 
-.account-app__message,
-.account-app__secondary,
-.account-app__error {
+.account-app__message {
   margin: 0;
   line-height: var(--linea-altura);
-}
-
-.account-app__secondary {
-  color: var(--color-texto-secundario);
-  font-size: var(--tamano-pequeno);
 }
 
 .account-app__form {
@@ -303,14 +296,6 @@
   flex-direction: column;
   gap: var(--espacio-lg);
 }
-
-.font-panel {
-  display: flex;
-  flex-direction: column;
-  gap: var(--espacio-lg);
-}
-
-
 
 /* === ESTADÍSTICAS === */
 .stats-grid {

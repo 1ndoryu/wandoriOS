@@ -137,7 +137,9 @@
   --win-h: 480px;
 
   --sistema-borde: 1px solid var(--sistema-texto);
-  --sistema-borde-doble: 1px solid var(--sistema-texto);
+  /* [308A-6] Idéntico a --sistema-borde por diseño: alias declarado para
+   * preservar el knob (auto-invierte vía --sistema-texto, ver [297A-18]). */
+  --sistema-borde-doble: var(--sistema-borde);
   --sistema-trama-escritorio: radial-gradient(circle, rgba(0, 0, 0, 0.12) 0.5px, transparent 0.75px);
   --sistema-trama-minimizada: repeating-linear-gradient(135deg, transparent 0, transparent 3px, var(--sistema-texto) 3px, var(--sistema-texto) 4px);
 
