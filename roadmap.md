@@ -80,6 +80,11 @@ deshabilitada. Acción propuesta (no ejecutada aquí, sin tocar el gate): evalua
 procede, limpiar los barrels mixtos; requerirá autorización explícita para modificar
 `sentinel.config.json` de WANDORIUS.
 
+**Nota (318A-4, 2026-09-01):** el fix F2 (rutas workspace de components/ui/shared en
+`reactComponentRules`) fue publicado en sentinel v0.7.6 (`fbb580f`) y v0.7.7 (`0559576`); WANDORIUS
+re-pineado a `0559576` (quality-tools.json, lock regenerado, gitlink `tools/sentinel` actualizado).
+Solo doc, sin gate.
+
 ### 138A-16 — Coordinación entre agentes: auditar MD del área de trabajo y conducta-global (pendiente)
 
 **Pendiente de investigación (no iniciar ahora):** auditar todos los MD del
