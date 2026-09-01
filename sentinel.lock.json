@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-01T05:50:49.358Z",
+  "generatedAt": "2026-09-01T06:01:28.292Z",
   "runtime": {
     "status": "project-adapter",
     "version": "1.0.0-local",
@@ -12,8 +12,8 @@
     "sentinel": {
       "version": "0.7.6",
       "protocolVersion": 1,
-      "commit": "4a4a0f94163693813e79c888a0c93252a09d817a",
-      "sha256": "2e3a865394f21267f654adf26905211fd63494c31686b4768b6a192cbacd6391",
+      "commit": "fbb580fde50db48c6c3647d7bf1a7886b19a7427",
+      "sha256": "34dc7739cc13e937b63e91a4d6a7739c82b4bca6841758d323b7fec311b2e370",
       "patchSha256": null,
       "sourcePathEnv": "GLORY_SENTINEL_SOURCE_PATH"
     },
