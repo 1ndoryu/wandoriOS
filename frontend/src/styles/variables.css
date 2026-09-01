@@ -71,7 +71,7 @@
   --sistema-tarea-ancho-mobile: 132px;
   --sistema-menu-contexto-ancho: 180px;
   --sistema-menu-contexto-submenu-ancho: 280px;
-  --sistema-menu-contexto-texto-tamano: 11px;
+  --sistema-menu-contexto-texto-tamano: var(--tamano-pequeno);
   --sistema-finder-ancho: 620px;
   --sistema-finder-alto: 500px;
   --sistema-finder-documento-tamano: 48px;
@@ -115,7 +115,7 @@
   /* [297A-20] Posición opcional del snap-grid; TypeScript las sobreescribe
    * solo para nodos con posición explícita. */
   --icono-col: auto;
-  --icono-row: auto;
+  --icono-row: var(--icono-col);
   --sistema-iconos-reserva: 220px;
   --sistema-iconos-reserva-tablet: 190px;
   --sistema-iconos-offset-mobile: 330px;
@@ -133,8 +133,8 @@
   /* === VENTANAS — Posición dinámica (seteada por window-manager) === */
   --win-x: 0px;
   --win-y: 0px;
-  --win-w: 640px;
-  --win-h: 480px;
+  --win-w: var(--sistema-ventana-ancho-default);
+  --win-h: var(--sistema-ventana-alto-default);
 
   --sistema-borde: 1px solid var(--sistema-texto);
   /* [308A-6] Idéntico a --sistema-borde por diseño: alias declarado para
