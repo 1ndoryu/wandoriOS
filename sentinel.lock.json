@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-12T02:57:37.970Z",
+  "generatedAt": "2026-09-01T05:50:49.358Z",
   "runtime": {
     "status": "project-adapter",
     "version": "1.0.0-local",
@@ -10,22 +10,24 @@
   },
   "analyzers": {
     "sentinel": {
-      "version": "0.7.4",
+      "version": "0.7.6",
       "protocolVersion": 1,
-      "commit": "0349485c121784513c7ecef8a8de1535e841a5ae",
-      "sha256": "38273e7f56c9cc56adc81c4e4e4cbcafa28d74e0d027edf38b6a057e015147f5",
-      "patchSha256": null
+      "commit": "4a4a0f94163693813e79c888a0c93252a09d817a",
+      "sha256": "2e3a865394f21267f654adf26905211fd63494c31686b4768b6a192cbacd6391",
+      "patchSha256": null,
+      "sourcePathEnv": "GLORY_SENTINEL_SOURCE_PATH"
     },
     "varsense": {
       "version": "2.2.1",
       "protocolVersion": 1,
-      "commit": "88f281f94e6febd02a386b7ed03d30d285eb82e1",
-      "sha256": "82f9a0da69a79a7e87c81ff3a05cc4d1b3651d97a981054a74c79b4ce8b2708c",
+      "commit": "303e7f94cbeaddfec73a3d068fd84210dc920763",
+      "sha256": "e1e445094bd758abc584bf1d204796f18c7317cbf63fabc8ca40ecb06ab396a0",
       "patchSha256": null,
       "capabilities": {
         "filesFrom": true,
         "persistentIndex": true
-      }
+      },
+      "sourcePathEnv": "GLORY_VARSENSE_SOURCE_PATH"
     }
   }
 }
