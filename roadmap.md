@@ -73,6 +73,13 @@
 
 ## Pendientes ordenados
 
+### Seguimiento 318A-3 — Evaluar reactivación de `mixed-barrel-logic` (2026-09-01)
+
+Informe del cierre de PROYECTO TASKS (plan 318A-3): este proyecto tiene `mixed-barrel-logic`
+deshabilitada. Acción propuesta (no ejecutada aquí, sin tocar el gate): evaluar su reactivación y, si
+procede, limpiar los barrels mixtos; requerirá autorización explícita para modificar
+`sentinel.config.json` de WANDORIUS.
+
 ### 138A-16 — Coordinación entre agentes: auditar MD del área de trabajo y conducta-global (pendiente)
 
 **Pendiente de investigación (no iniciar ahora):** auditar todos los MD del
