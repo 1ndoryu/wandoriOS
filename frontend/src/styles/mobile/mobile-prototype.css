@@ -22,6 +22,12 @@
     display: none;
   }
 
+  /* [FASE-FINAL] El shell alterna .oculto en el outlet; sin la clase el
+   * outlet se muestra (equivale al display='block' anterior). */
+  .movilOs__routerOutlet:not(.oculto) {
+    display: block;
+  }
+
   .movilMarca {
     width: var(--sistema-logo-tamano);
     height: var(--sistema-logo-tamano);
@@ -196,6 +202,9 @@
   }
 
   .movilLauncher__app--ghost {
+    position: fixed;
+    z-index: 10000;
+    pointer-events: none;
     opacity: 0.8;
     background: var(--sistema-fondo);
     border: var(--sistema-borde);

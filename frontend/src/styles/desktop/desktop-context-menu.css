@@ -21,6 +21,16 @@
   font-size: var(--sistema-menu-contexto-texto-tamano);
 }
 
+/* [FASE-FINAL] Modo fixed de dropdown-menu.ts (positioning==='fixed'): el menú
+ * se ancla al viewport en 0,0 y el script solo ajusta left/top con clamp.
+ * Valores exactos del style.* original. */
+.desktop-context-menu--fixed {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 9999;
+}
+
 .desktop-context-menu__item {
   display: flex;
   align-items: center;

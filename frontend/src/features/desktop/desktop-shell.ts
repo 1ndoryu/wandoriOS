@@ -106,7 +106,7 @@ export function createDesktopShell(
     resizable: true,
   });
   const contentWindow = contentWindowHandle.element;
-  contentWindow.style.display = 'none';
+  contentWindow.classList.add('oculto');
 
   /* Icon grid reactivo */
   const iconGrid = createWorkspaceIconGrid({
@@ -159,9 +159,6 @@ export function createDesktopShell(
 
   /* Window container */
   const windowContainer = createEl('div', { className: 'desktop-windows-container' });
-  windowContainer.style.position = 'absolute';
-  windowContainer.style.inset = '0';
-  windowContainer.style.pointerEvents = 'none';
   workspace.appendChild(windowContainer);
 
   const resizeObserver = new ResizeObserver(() => {
@@ -199,7 +196,6 @@ export function createDesktopShell(
         });
         const el = windowHandle.element;
 
-        el.style.position = 'absolute';
         el.style.setProperty('--win-x', `${win.bounds.x}px`);
         el.style.setProperty('--win-y', `${win.bounds.y}px`);
         el.style.setProperty('--win-w', `${win.bounds.w}px`);

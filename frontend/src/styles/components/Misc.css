@@ -19,6 +19,22 @@
 .border-bottom { border-bottom: var(--borde); }
 .flex-wrap-center { display: flex; flex-wrap: wrap; justify-content: center; }
 
+/* === FASE-FINAL cero-deuda: reemplazos de style.* verificados ===
+ * .fuera-pantalla: truco de portapapeles (textarea temporal invisible para
+ * execCommand('copy')); mismo patrón en media-library.ts y
+ * navigation-commands.ts. Valores exactos del inline original.
+ * .visor-imagen: imagen a ancho completo con borde OS en modal; mismo patrón
+ * en finder-preview.ts y pages/gallery.ts.
+ * .error-carga-app: fallback visual de app-registry.ts ante render roto. */
+.fuera-pantalla { position: fixed; opacity: 0; }
+.visor-imagen { width: 100%; border: var(--borde); }
+.error-carga-app {
+  padding: var(--espacio-xl);
+  color: var(--color-texto-secundario);
+  font-size: var(--tamano-pequeno);
+  font-style: italic;
+ }
+
 /* === BARRA DE PESTAÑAS — Componente universal (Admin y futuras apps) ===
  * Autocontenida: posee su propio gap para que el consumidor no dependa de
  * utilidades externas (regla 9.1: receta compartida en el sistema).

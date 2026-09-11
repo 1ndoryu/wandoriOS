@@ -12,6 +12,12 @@
   min-height: 100vh;
 }
 
+/* [FASE-FINAL] main.ts alterna .sin-barra al ocultar el sidebar: una sola
+ * columna (equivale al gridTemplateColumns='1fr' anterior). */
+#app.sin-barra {
+  grid-template-columns: 1fr;
+}
+
 /* === SIDEBAR — Solo menu de navegacion === */
 .sidebar {
   align-self: start;

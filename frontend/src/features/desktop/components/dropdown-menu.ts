@@ -109,10 +109,7 @@ export function openDropdownMenu(options: DropdownMenuOptions): HTMLElement | nu
   }
 
   if (options.positioning === 'fixed') {
-    menu.style.position = 'fixed';
-    menu.style.left = '0';
-    menu.style.top = '0';
-    menu.style.zIndex = '9999';
+    menu.classList.add('desktop-context-menu--fixed');
   }
 
   document.body.appendChild(menu);

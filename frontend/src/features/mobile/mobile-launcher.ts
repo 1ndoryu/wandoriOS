@@ -174,9 +174,6 @@ export function createMobileLauncher(options: MobileLauncherOptions): MobileLaun
         button.classList.add('movilLauncher__app--arrastrando');
         ghost = button.cloneNode(true) as HTMLElement;
         ghost.classList.add('movilLauncher__app--ghost');
-        ghost.style.position = 'fixed';
-        ghost.style.pointerEvents = 'none';
-        ghost.style.zIndex = '10000';
         document.body.appendChild(ghost);
         const rect = button.getBoundingClientRect();
         ghost.style.left = `${event.clientX - rect.width / 2}px`;

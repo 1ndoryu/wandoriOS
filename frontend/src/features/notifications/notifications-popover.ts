@@ -46,11 +46,10 @@ function formatFecha(iso: string): string {
 
 export function createNotificationsPopover(anchor: HTMLElement): NotificationsPopover {
   const root = createEl('div', {
-    className: 'notificacionesPopover',
+    className: 'notificacionesPopover oculto',
     role: 'dialog',
     ariaLabel: 'Novedades',
   });
-  root.style.display = 'none';
 
   /* [028A-5] La cabecera compacta no reutiliza .boton (superficie OS); consume
    * los tokens de menú del sistema (texto 11px, trazo 1px). */
@@ -168,7 +167,7 @@ export function createNotificationsPopover(anchor: HTMLElement): NotificationsPo
     document.body.appendChild(root);
     anchor.setAttribute('aria-expanded', 'true');
     position();
-    root.style.display = '';
+    root.classList.remove('oculto');
     instalarListeners();
   }
 
@@ -176,7 +175,7 @@ export function createNotificationsPopover(anchor: HTMLElement): NotificationsPo
     if (!abierto) return;
     abierto = false;
     retirarListeners();
-    root.style.display = 'none';
+    root.classList.add('oculto');
     anchor.setAttribute('aria-expanded', 'false');
     root.remove();
   }

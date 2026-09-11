@@ -300,7 +300,7 @@ function createFinderItem(
     const img = createEl('img', {
       className: 'desktop-finder__thumbnail', src: `/api/media/${node.refId}/preview`, alt: node.label, loading: 'lazy',
     });
-    img.onerror = () => { img.style.display = 'none'; };
+    img.onerror = () => { img.classList.add('oculto'); };
     item.appendChild(img);
   } else {
     const iconSvg = createElement(icon);
@@ -397,9 +397,7 @@ function activateNode(
 function openImagePreview(mediaId: string, label: string): void {
   const url = `/api/media/${mediaId}/preview`;
 
-  const fullImg = createEl('img', { src: url, alt: label });
-  fullImg.style.width = '100%';
-  fullImg.style.border = 'var(--borde)';
+  const fullImg = createEl('img', { src: url, alt: label, className: 'visor-imagen' });
 
   const btnDescargar = createEl('button', { className: 'boton', textContent: 'descargar' });
   btnDescargar.addEventListener('click', () => {

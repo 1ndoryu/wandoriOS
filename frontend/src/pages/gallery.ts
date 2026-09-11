@@ -63,9 +63,7 @@ export async function renderGallery(): Promise<HTMLElement> {
     const img = createEl('img', { src: item.url, alt: item.alt_text || '', loading: 'lazy' });
 
     img.addEventListener('click', () => {
-      const fullImg = createEl('img', { src: item.url, alt: item.alt_text || '' });
-      fullImg.style.width = '100%';
-      fullImg.style.border = 'var(--borde)';
+      const fullImg = createEl('img', { src: item.url, alt: item.alt_text || '', className: 'visor-imagen' });
 
       const btnDescargar = createEl('button', { className: 'boton', textContent: 'descargar' });
       btnDescargar.addEventListener('click', () => {

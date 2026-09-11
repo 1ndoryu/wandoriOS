@@ -118,8 +118,7 @@ class AppRegistryClass {
       return await app.render(ctx);
     } catch (err) {
       /* Error de render de app — mostrar fallback visual */
-      const errorEl = createEl('div');
-      errorEl.style.cssText = 'padding:var(--espacio-xl);color:var(--color-texto-secundario);font-size:var(--tamano-pequeno);font-style:italic;';
+      const errorEl = createEl('div', { className: 'error-carga-app' });
       errorEl.textContent = `Error al cargar ${app.title}.`;
       return { element: errorEl };
     }

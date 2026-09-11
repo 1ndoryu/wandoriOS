@@ -46,9 +46,7 @@ async function copyToClipboard(text: string): Promise<boolean> {
     /* fallback abajo */
   }
   try {
-    const ta = createEl('textarea', { value: text });
-    ta.style.position = 'fixed';
-    ta.style.opacity = '0';
+    const ta = createEl('textarea', { value: text, className: 'fuera-pantalla' });
     document.body.appendChild(ta);
     ta.select();
     const ok = document.execCommand('copy');

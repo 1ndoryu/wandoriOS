@@ -142,6 +142,16 @@
   opacity: 0.4;
 }
 
+/* [FASE-FINAL] Contenedor de ventanas: capa absoluta sobre el workspace que no
+ * intercepta eventos; cada ventana reactiva los suyos con inline funcional
+ * (excepción documentada: opt-in por ventana). Valores exactos del
+ * style.* original en desktop-shell.ts. */
+.desktop-windows-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
 /* [058A-4] Banda de selección múltiple (rubber band) estilo Windows: rectángulo
  * arrastrado desde el fondo del grid. Monocromo con tokens del sistema; relleno
  * translúcido con --sistema-drop-target-fondo (misma receta que el drop target
@@ -167,6 +177,8 @@
 }
 
 .desktop-icon--ghost {
+  position: fixed;
+  z-index: 10000;
   opacity: 0.7;
   pointer-events: none;
   background: var(--sistema-superficie);

@@ -106,9 +106,9 @@ export function findDropTarget(
   ghost: HTMLElement | null,
   exclude: HTMLElement | null,
 ): HTMLElement | null {
-  if (ghost) ghost.style.display = 'none';
+  if (ghost) ghost.classList.add('oculto');
   const el = document.elementFromPoint(x, y) as HTMLElement | null;
-  if (ghost) ghost.style.display = '';
+  if (ghost) ghost.classList.remove('oculto');
   if (!el) return null;
   const target = el.closest<HTMLElement>('[data-drop-target="true"]');
   if (!target || target === exclude) return null;

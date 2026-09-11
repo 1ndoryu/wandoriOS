@@ -92,10 +92,6 @@ export function enableDrag(options: {
 
       const ghost = el.cloneNode(true) as HTMLElement;
       ghost.className = 'desktop-icon desktop-icon--ghost';
-      ghost.style.position = 'fixed';
-      ghost.style.pointerEvents = 'none';
-      ghost.style.zIndex = '10000';
-      ghost.style.opacity = '0.7';
       document.body.appendChild(ghost);
 
       const placement = Boolean(onPlaceCell) && window.innerWidth >= DESKTOP_MIN_WIDTH;

@@ -10,8 +10,7 @@ import { reconcileChildren } from '../../../../utils/reconcile';
 export function createTrashPreview(): HTMLElement {
   const container = createEl('div', { className: 'trash-app' });
   const list = createEl('ul', { className: 'trash-app__list' });
-  const emptyMsg = createEl('div', { className: 'trash-app__empty', textContent: 'La papelera está vacía.' });
-  emptyMsg.style.display = 'none';
+  const emptyMsg = createEl('div', { className: 'trash-app__empty oculto', textContent: 'La papelera está vacía.' });
 
   container.append(emptyMsg, list);
 
@@ -19,13 +18,13 @@ export function createTrashPreview(): HTMLElement {
     const tombstoned = getTombstonedNodes();
 
     if (tombstoned.length === 0) {
-      emptyMsg.style.display = '';
-      list.style.display = 'none';
+      emptyMsg.classList.remove('oculto');
+      list.classList.add('oculto');
       return;
     }
 
-    emptyMsg.style.display = 'none';
-    list.style.display = '';
+    emptyMsg.classList.add('oculto');
+    list.classList.remove('oculto');
 
     reconcileChildren(
       list,

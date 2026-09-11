@@ -89,7 +89,7 @@ export function createMobileShell(
     if (entry || legacyContentVisible) clearLauncherResources();
     if (currentView) currentView.remove();
     if (entry) {
-      routerOutlet.style.display = 'none';
+      routerOutlet.classList.add('oculto');
       const contentClass = entry.layout === 'full-bleed'
         ? 'movilApp__contenido movilApp__contenido--fullBleed'
         : 'movilApp__contenido';
@@ -106,11 +106,11 @@ export function createMobileShell(
       currentView = app;
       viewport.prepend(app);
     } else if (legacyContentVisible) {
-      routerOutlet.style.display = 'block';
+      routerOutlet.classList.remove('oculto');
       currentView = routerOutlet;
       viewport.prepend(routerOutlet);
     } else {
-      routerOutlet.style.display = 'none';
+      routerOutlet.classList.add('oculto');
       currentView = renderLauncher();
       viewport.prepend(currentView);
     }

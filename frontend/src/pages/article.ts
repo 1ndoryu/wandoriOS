@@ -111,10 +111,7 @@ async function openCheckoutModal(product: Product): Promise<void> {
   const { createInput } = await import('../components/ui/input');
   const { showToast } = await import('../components/ui/toast');
 
-  const container = createEl('div');
-  container.style.display = 'flex';
-  container.style.flexDirection = 'column';
-  container.style.gap = 'var(--espacio-lg)';
+  const container = createEl('div', { className: 'flex-columna gap-lg' });
 
   const desc = createEl('p', { textContent: product.description || product.name });
   let email = '';

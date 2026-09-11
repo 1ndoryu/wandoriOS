@@ -131,8 +131,8 @@ async function initApp(): Promise<void> {
 
     /* [Plan §2.2] navigation.toggleExternalNav: toggle sidebar */
     showSidebar.subscribe(visible => {
-        sidebar.style.display = visible ? '' : 'none';
-        app.style.gridTemplateColumns = visible ? '' : '1fr';
+        sidebar.classList.toggle('oculto', !visible);
+        app.classList.toggle('sin-barra', !visible);
     });
 
     /* Columna derecha: superficie exclusiva del escritorio */
@@ -221,7 +221,7 @@ async function initApp(): Promise<void> {
         const isHome = path === '/';
         const showEntries = siteConfig.get().showEntriesOnHome;
         const isAppRoute = !!AppRegistry.findByRoute(path);
-        desktop.contentWindow.style.display = isAppRoute || (isHome && !showEntries) ? 'none' : '';
+        desktop.contentWindow.classList.toggle('oculto', isAppRoute || (isHome && !showEntries));
     }
     siteConfig.subscribe(() => updateContenidoVisibility());
     updateContenidoVisibility();

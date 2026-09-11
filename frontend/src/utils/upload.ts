@@ -35,8 +35,7 @@ export async function pickAndUpload(
   articleId?: string,
 ): Promise<UploadResult | null> {
   return new Promise((resolve, reject) => {
-    const input = createEl('input', { type: 'file', accept });
-    input.style.display = 'none';
+    const input = createEl('input', { type: 'file', accept, className: 'oculto' });
 
     function cleanup(): void {
       if (input.parentNode) input.parentNode.removeChild(input);
