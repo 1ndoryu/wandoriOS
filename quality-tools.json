@@ -4,9 +4,9 @@
   "tools": {
     "sentinel": {
       "repository": "https://github.com/1ndoryu/glory-sentinel.git",
-      "sourcePathEnv": "GLORY_SENTINEL_SOURCE_PATH",
-      "commit": "0559576136038741c8c7beb06b9c80b2f73a9ab9",
-      "version": "0.7.7",
+      "sourcePath": "tools/sentinel",
+      "commit": "a3f5607e94eb92bfebbc197ef3836648e176a00e",
+      "version": "0.7.9",
       "outputSchemaVersion": "1",
       "buildScript": "compile",
       "testScript": "test:unit",
@@ -24,8 +24,8 @@
     },
     "varsense": {
       "repository": "https://github.com/1ndoryu/varsense.git",
-      "sourcePathEnv": "GLORY_VARSENSE_SOURCE_PATH",
-      "commit": "544e3c87abfc99cafa46baba1fadb0af9fa7d9d5",
+      "sourcePath": "tools/varsense",
+      "commit": "21d8a704380ea00054c60e1ab9beed9fd565c8d7",
       "version": "2.2.1",
       "outputSchemaVersion": "1",
       "buildScript": "compile",
