@@ -197,3 +197,12 @@ export function createExternalLink(href: string, text: string, className?: strin
     'data-external': 'true',
   });
 }
+
+/** Raíz de montaje para overlays/portales (toasts, modales, menús, popovers).
+ *  [P2-039A-1] Punto único de montaje: hoy es `document.body`; si el shell
+ *  necesita un contenedor propio (p. ej. para aislar stacking contexts o el
+ *  modo embebido), solo cambia aquí. Vive en este módulo porque ya es el
+ *  boundary DOM declarado en `sentinel.config.json` (`utils/dom.ts`). */
+export function obtenerRaizPortales(): HTMLElement {
+  return document.body;
+}

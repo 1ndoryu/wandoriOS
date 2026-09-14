@@ -1,7 +1,7 @@
 /* wandori.us — Toast Notifications
  * Notificaciones minimales B&W. Sin colores, sin sombras. */
 
-import { createEl } from '../../utils/dom';
+import { createEl, obtenerRaizPortales } from '../../utils/dom';
 
 const toasts: HTMLElement[] = [];
 let container: HTMLElement | null = null;
@@ -9,7 +9,7 @@ let container: HTMLElement | null = null;
 function ensureContainer(): HTMLElement {
   if (!container) {
     container = createEl('div', { className: 'toast-contenedor' });
-    document.body.appendChild(container);
+    obtenerRaizPortales().appendChild(container);
   }
   return container;
 }

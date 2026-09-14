@@ -1,7 +1,7 @@
 /* wandori.us — Confirm Dialog
  * Dialogo de confirmacion minimalista B&W. */
 
-import { createEl } from '../../utils/dom';
+import { createEl, obtenerRaizPortales } from '../../utils/dom';
 
 export function showConfirm(message: string): Promise<boolean> {
   return new Promise((resolve) => {
@@ -32,7 +32,7 @@ export function showConfirm(message: string): Promise<boolean> {
       }
     });
 
-    document.body.appendChild(overlay);
+    obtenerRaizPortales().appendChild(overlay);
     btnNo.focus();
   });
 }

@@ -70,9 +70,11 @@ fn decode_base32(input: &str) -> Option<Vec<u8>> {
     Some(out)
 }
 
-fn code_at(secret_bytes: &[u8], counter: u64) -> String {
-    let mut mac =
-        HmacSha1::new_from_slice(secret_bytes).expect("HMAC acepta claves de cualquier tamaño");
+fn code_at(secret_bytes: &[u8], counter: u64) -> Option<String> {
+    /* HMAC acepta claves de longitud arbitraria, así que `new_from_slice` no
+     * puede fallar con este tipo; se trata como fallo CERRADO (sin código
+     * válido) en vez de con un pánico, por si el contrato del tipo cambiara. */
+    let mut mac = HmacSha1::new_from_slice(secret_bytes).ok()?;
     mac.update(&counter.to_be_bytes());
     let digest = mac.finalize().into_bytes();
     let offset = usize::from(digest[19] & 0x0F);
@@ -82,7 +84,7 @@ fn code_at(secret_bytes: &[u8], counter: u64) -> String {
         digest[offset + 2],
         digest[offset + 3],
     ]) & 0x7FFF_FFFF;
-    format!("{:06}", bin_code % 10_u32.pow(CODE_DIGITS))
+    Some(format!("{:06}", bin_code % 10_u32.pow(CODE_DIGITS)))
 }
 
 fn current_counter() -> u64 {
@@ -97,7 +99,7 @@ pub fn current_code(secret_base32: &str) -> String {
     let Some(bytes) = decode_base32(secret_base32) else {
         return String::new();
     };
-    code_at(&bytes, current_counter())
+    code_at(&bytes, current_counter()).unwrap_or_default()
 }
 
 /// Verifica un código de 6 dígitos contra el secreto con ventana de ±1 paso.
@@ -112,7 +114,7 @@ pub fn verify(secret_base32: &str, code: &str) -> bool {
     let counter = current_counter();
     let window = u64::from(WINDOW);
     (counter.saturating_sub(window)..=counter.saturating_add(window))
-        .any(|step| code_at(&bytes, step) == code)
+        .any(|step| code_at(&bytes, step).as_deref() == Some(code))
 }
 
 /// URI de aprovisionamiento `otpauth://` para apps autenticadoras.

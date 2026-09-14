@@ -5,7 +5,7 @@
  * [Auditoría v2] */
 
 import { createElement, type IconNode } from 'lucide';
-import { createEl } from '../../../utils/dom';
+import { createEl, obtenerRaizPortales } from '../../../utils/dom';
 import { getViewport } from '../../../utils/viewport';
 import { formatShortcut } from '../../../utils/format-shortcut';
 
@@ -112,7 +112,7 @@ export function openDropdownMenu(options: DropdownMenuOptions): HTMLElement | nu
     menu.classList.add('desktop-context-menu--fixed');
   }
 
-  document.body.appendChild(menu);
+  obtenerRaizPortales().appendChild(menu);
 
   if (options.positioning === 'fixed' && options.x !== undefined && options.y !== undefined) {
     const rect = menu.getBoundingClientRect();

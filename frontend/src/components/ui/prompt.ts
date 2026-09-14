@@ -5,7 +5,7 @@
  * Resuelve string | null: string = confirmado, null = cancelado (Escape o
  * botón cancelar). Enter en el input confirma. */
 
-import { createEl } from '../../utils/dom';
+import { createEl, obtenerRaizPortales } from '../../utils/dom';
 import { createInput } from './input';
 
 export function showPrompt(message: string, defaultValue = ''): Promise<string | null> {
@@ -44,7 +44,7 @@ export function showPrompt(message: string, defaultValue = ''): Promise<string |
     };
     document.addEventListener('keydown', onKey);
 
-    document.body.appendChild(overlay);
+    obtenerRaizPortales().appendChild(overlay);
     entrada.focus();
     entrada.select();
   });

@@ -1,6 +1,6 @@
 use axum::extract::{ConnectInfo, State};
 use axum::http::header::SET_COOKIE;
-use axum::http::{HeaderMap, StatusCode};
+use axum::http::{HeaderMap, HeaderValue, StatusCode};
 use axum::response::{IntoResponse, Response};
 use axum::routing::{delete, get, post};
 use axum::{Json, Router};
@@ -141,14 +141,25 @@ pub(crate) async fn issue_session(state: &AppState, user_id: Uuid, ip: &str) -> 
 
     /* [297A-76] Reclamación invitado→cuenta: al autenticarse, la identidad
      * temporal de juego deja de aplicarse. Se expira la cookie `guest_game`. */
-    headers.append(
-        SET_COOKIE,
-        "guest_game=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0"
-            .parse()
-            .expect("cookie estática de invitado"),
-    );
+    headers.append(SET_COOKIE, cookie_estatica(GUEST_GAME_EXPIRADA)?);
 
     Ok((headers, StatusCode::NO_CONTENT).into_response())
+}
+
+/* Valores CONSTANTES de expiración de cookies. */
+const SESSION_ID_EXPIRADA: &str = "session_id=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0";
+const CSRF_TOKEN_EXPIRADO: &str = "csrf_token=; Path=/; SameSite=Lax; Max-Age=0";
+const GUEST_GAME_EXPIRADA: &str =
+    "guest_game=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0";
+
+/* Cabecera `Set-Cookie` a partir de un valor constante ya conocido. [por que]
+ * Antes cada constante se construía con `"...".parse().expect(..)`: el valor es
+ * válido por construcción, así que el pánico era inalcanzable y el gate lo
+ * contaba como deuda. Con `from_str` + `?` un fallo imposible se convierte en
+ * error HTTP explícito en lugar de pánico, y el valor sale del handler. */
+fn cookie_estatica(valor: &str) -> Result<HeaderValue, AppError> {
+    HeaderValue::from_str(valor)
+        .map_err(|e| AppError::Internal(format!("Error construyendo cookie estática: {e}")))
 }
 
 async fn record_auth_audit(
@@ -466,25 +477,10 @@ pub async fn logout(
 
     /* Limpiar cookies */
     let mut response_headers = HeaderMap::new();
-    response_headers.append(
-        SET_COOKIE,
-        "session_id=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0"
-            .parse()
-            .expect("cookie statique"),
-    );
-    response_headers.append(
-        SET_COOKIE,
-        "csrf_token=; Path=/; SameSite=Lax; Max-Age=0"
-            .parse()
-            .expect("cookie statique"),
-    );
+    response_headers.append(SET_COOKIE, cookie_estatica(SESSION_ID_EXPIRADA)?);
+    response_headers.append(SET_COOKIE, cookie_estatica(CSRF_TOKEN_EXPIRADO)?);
     /* [297A-76] El logout también expira la identidad temporal de juego. */
-    response_headers.append(
-        SET_COOKIE,
-        "guest_game=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0"
-            .parse()
-            .expect("cookie statique"),
-    );
+    response_headers.append(SET_COOKIE, cookie_estatica(GUEST_GAME_EXPIRADA)?);
 
     Ok((response_headers, StatusCode::NO_CONTENT))
 }

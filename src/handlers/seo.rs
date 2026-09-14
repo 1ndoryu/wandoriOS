@@ -3,7 +3,6 @@ use axum::http::header;
 use axum::response::IntoResponse;
 use axum::routing::get;
 use axum::Router;
-use std::fmt::Write;
 
 use crate::errors::AppError;
 use crate::repositories::ArticleRepository;
@@ -22,21 +21,20 @@ pub async fn sitemap(State(state): State<AppState>) -> Result<impl IntoResponse,
 
     /* Paginas estaticas */
     for path in &["/", "/about", "/gallery", "/projects"] {
-        write!(
-            xml,
+        /* `push_str` con `format!` en vez de `write!(..).expect(..)`: escribir en
+         * un `String` no puede fallar, así que el `expect` era inalcanzable y el
+         * gate lo contaba como deuda. Sin `Result` no hay pánico ni descarte. */
+        xml.push_str(&format!(
             "\n  <url>\n    <loc>{SITE_URL}{path}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>"
-        )
-        .expect("escribir en String no puede fallar");
+        ));
     }
 
     /* Articulos */
     for (slug, date) in &articles {
-        write!(
-            xml,
+        xml.push_str(&format!(
             "\n  <url>\n    <loc>{SITE_URL}/article/{slug}</loc>\n    <lastmod>{}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.6</priority>\n  </url>",
             date.format("%Y-%m-%d")
-        )
-        .expect("escribir en String no puede fallar");
+        ));
     }
 
     xml.push_str("\n</urlset>");

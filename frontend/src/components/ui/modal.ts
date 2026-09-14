@@ -1,7 +1,7 @@
 /* wandori.us — Modal
  * Modal overlay B&W. Cierra con click fuera o Escape. */
 
-import { createEl } from '../../utils/dom';
+import { createEl, obtenerRaizPortales } from '../../utils/dom';
 
 export interface ModalOptions {
   titulo?: string;
@@ -40,7 +40,7 @@ export function createModal(options: ModalOptions): { close: () => void } {
   modal.style.maxWidth = ancho;
 
   const overlay = createEl('div', { className: 'modal-overlay' }, modal);
-  document.body.appendChild(overlay);
+  obtenerRaizPortales().appendChild(overlay);
   document.body.style.overflow = 'hidden';
 
   let closed = false;
