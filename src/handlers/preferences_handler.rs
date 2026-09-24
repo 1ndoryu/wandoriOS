@@ -136,6 +136,9 @@ mod tests {
             auth_action_rate_limit: Arc::new(Mutex::new(
                 HashMap::<String, (u8, std::time::Instant)>::new(),
             )),
+            api_rate_limit: Arc::new(Mutex::new(
+                HashMap::<String, (u32, std::time::Instant)>::new(),
+            )),
             dev_mailbox: Arc::new(Mutex::new(Vec::new())),
         }
     }

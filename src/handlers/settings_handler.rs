@@ -12,6 +12,7 @@ use crate::models::settings::{
     AnalyticsRetentionRequest, AnalyticsRetentionResponse, AnalyticsStats, TrackEventsRequest,
     UpdateSettingsRequest,
 };
+use crate::rate_limit::{check_api_rate_limit, clave_ip, CUOTA_ANALYTICS, CUOTA_ESCRITURA};
 use crate::services::settings_svc::{AnalyticsService, SettingsService};
 use crate::AppState;
 
@@ -41,9 +42,16 @@ pub async fn get_settings(
 )]
 pub async fn update_settings(
     State(state): State<AppState>,
-    _auth: AdminUser,
+    auth: AdminUser,
     Json(req): Json<UpdateSettingsRequest>,
 ) -> Result<StatusCode, AppError> {
+    /* [249A-1] Rate limit de escritura por usuario. */
+    check_api_rate_limit(
+        &state.api_rate_limit,
+        "ajustes",
+        &auth.user_id.to_string(),
+        &CUOTA_ESCRITURA,
+    )?;
     SettingsService::update_batch(&state.pool, &req.settings).await?;
     Ok(StatusCode::NO_CONTENT)
 }
@@ -60,6 +68,14 @@ pub async fn track_events(
     headers: axum::http::HeaderMap,
     Json(req): Json<TrackEventsRequest>,
 ) -> Result<StatusCode, AppError> {
+    /* [249A-1] Rate limit de analytics por IP (endpoint publico de alto
+     * volumen; la clave reutiliza x-forwarded-for / x-real-ip). */
+    check_api_rate_limit(
+        &state.api_rate_limit,
+        "analytics",
+        &clave_ip(&headers),
+        &CUOTA_ANALYTICS,
+    )?;
     /* El servidor es la última frontera: sin consentimiento explícito no
      * almacena nada aunque un cliente manipule su JavaScript. */
     let consent_granted = headers
@@ -112,9 +128,16 @@ pub async fn track_events(
 )]
 pub async fn purge_analytics(
     State(state): State<AppState>,
-    _auth: AdminUser,
+    auth: AdminUser,
     Json(req): Json<AnalyticsRetentionRequest>,
 ) -> Result<Json<AnalyticsRetentionResponse>, AppError> {
+    /* [249A-1] Rate limit de escritura por usuario. */
+    check_api_rate_limit(
+        &state.api_rate_limit,
+        "ajustes",
+        &auth.user_id.to_string(),
+        &CUOTA_ESCRITURA,
+    )?;
     req.validate()
         .map_err(|error| AppError::Validation(error.to_string()))?;
     let (deleted, cutoff) =

@@ -19,8 +19,11 @@ pub enum AppError {
     #[error("Prohibido: {0}")]
     Forbidden(String),
 
-    #[error("Demasiadas solicitudes: {0}")]
-    TooManyRequests(String),
+    #[error("Demasiadas solicitudes: {mensaje}")]
+    TooManyRequests {
+        mensaje: String,
+        reintento_secs: u64,
+    },
 
     #[error("Conflicto: {0}")]
     Conflict(String),
@@ -67,10 +70,10 @@ impl IntoResponse for AppError {
                 "Credenciales inválidas o ausentes".to_string(),
             ),
             Self::Forbidden(msg) => (StatusCode::FORBIDDEN, "forbidden", msg.clone()),
-            Self::TooManyRequests(msg) => (
+            Self::TooManyRequests { mensaje, .. } => (
                 StatusCode::TOO_MANY_REQUESTS,
                 "too_many_requests",
-                msg.clone(),
+                mensaje.clone(),
             ),
             Self::Conflict(msg) => (StatusCode::CONFLICT, "conflict", msg.clone()),
             Self::Internal(msg) => {
@@ -112,6 +115,13 @@ impl IntoResponse for AppError {
             details,
         };
 
-        (status, Json(body)).into_response()
+        let mut respuesta = (status, Json(body)).into_response();
+        /* [249A-1] Los clientes automatizados necesitan Retry-After. */
+        if let Self::TooManyRequests { reintento_secs, .. } = self {
+            if let Ok(valor) = reintento_secs.to_string().parse() {
+                respuesta.headers_mut().insert("retry-after", valor);
+            }
+        }
+        respuesta
     }
 }

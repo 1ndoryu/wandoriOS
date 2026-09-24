@@ -3,6 +3,13 @@
  * (article-editor.ts lo importa desde aqui); mezclar re-export con la UI
  * del modulo es intencional y documentado.
  */
+/* sentinel-disable-file html-sin-origen-declarado
+ * [249A-2] Productor declarado: los insertContent de audio/video interpolan
+ * SOLO la URL devuelta por pickAndUpload (storage propio) y pasan por
+ * urlSeguraParaMedia() (solo http/https, sin comillas/<>`/espacios) antes
+ * de interpolar. La allowlist no llega por el path del gate, asi que el
+ * waiver file-level es la via sancionada por la propia regla.
+ */
 /* wandori.us — Article Editor UI
  * Toolbar de formato y campo de portada del editor de artículos.
  * [297A-14 F5] Extraídos de article-editor.ts (SRP + límite 300 líneas).
@@ -16,6 +23,16 @@ import type { EditorInstance } from './article-editor-types';
 /* [317A-3] La toolbar usa iconos Lucide de 1px (receta .boton-icono) con
  * nombre accesible por aria-label, en lugar de texto. */
 import { createElement, Bold, Italic, Code, Heading2, Heading3, List, ListOrdered, Quote, SeparatorHorizontal, Image, AudioLines, Video, type IconNode } from 'lucide';
+
+/** [249A-2] Valida una URL de media antes de interpolarla en HTML para
+ * insertContent: solo http/https y sin caracteres que rompan el atributo
+ * src (`"`, `<`, `>`, backtick, espacios). La URL viene del storage propio
+ * (pickAndUpload), pero la defensa no confia en el origen. */
+export function urlSeguraParaMedia(url: string): string | null {
+  if (!/^(https?:\/\/)/i.test(url)) return null;
+  if (/["<>'`\\\s]/.test(url)) return null;
+  return url;
+}
 
 /** Barra de formato del editor (negrita, listas, media, etc.). */
 export function createToolbar(
@@ -59,7 +76,8 @@ export function createToolbar(
       action: () => {
         void safeRun(pickAndUpload('audio/*', getArticleId()), 'error al subir audio').then(result => {
           if (isActive() && result.ok && result.value) {
-            editor.chain().focus().insertContent(`<audio controls src="${result.value.url}"></audio>`).run();
+            const src = urlSeguraParaMedia(result.value.url);
+            if (src) editor.chain().focus().insertContent(`<audio controls src="${src}"></audio>`).run();
           }
         });
       },
@@ -70,7 +88,8 @@ export function createToolbar(
       action: () => {
         void safeRun(pickAndUpload('video/*', getArticleId()), 'error al subir video').then(result => {
           if (isActive() && result.ok && result.value) {
-            editor.chain().focus().insertContent(`<video controls src="${result.value.url}" style="width:100%"></video>`).run();
+            const src = urlSeguraParaMedia(result.value.url);
+            if (src) editor.chain().focus().insertContent(`<video controls src="${src}" style="width:100%"></video>`).run();
           }
         });
       },

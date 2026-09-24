@@ -8,6 +8,7 @@ use validator::Validate;
 use crate::errors::AppError;
 use crate::middleware::AuthUser;
 use crate::models::{CreateNoteRequest, Note, PaginatedNotes, PaginationParams, UpdateNoteRequest};
+use crate::rate_limit::{check_api_rate_limit, CUOTA_ESCRITURA};
 use crate::services::NoteService;
 use crate::AppState;
 
@@ -28,6 +29,13 @@ pub async fn create_note(
     auth: AuthUser,
     Json(req): Json<CreateNoteRequest>,
 ) -> Result<(StatusCode, Json<Note>), AppError> {
+    /* [249A-1] Rate limit de escritura por usuario. */
+    check_api_rate_limit(
+        &state.api_rate_limit,
+        "notas",
+        &auth.user_id.to_string(),
+        &CUOTA_ESCRITURA,
+    )?;
     req.validate()
         .map_err(|e| AppError::Validation(e.to_string()))?;
 

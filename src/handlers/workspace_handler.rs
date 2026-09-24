@@ -10,6 +10,7 @@ use crate::models::workspace::{
     PublishReleaseRequest, ReleaseControlResponse, ReleaseListItem, ReleaseValidationResponse,
     WorkspaceRelease, WorkspaceReleasePublic,
 };
+use crate::rate_limit::{check_api_rate_limit, CUOTA_ESCRITURA};
 use crate::services::workspace_svc::WorkspaceService;
 use crate::AppState;
 
@@ -99,6 +100,13 @@ pub async fn publish_release(
     admin: AdminUser,
     Json(req): Json<PublishReleaseRequest>,
 ) -> Result<(axum::http::StatusCode, Json<WorkspaceRelease>), AppError> {
+    /* [249A-1] Rate limit de escritura por usuario. */
+    check_api_rate_limit(
+        &state.api_rate_limit,
+        "workspace",
+        &admin.user_id.to_string(),
+        &CUOTA_ESCRITURA,
+    )?;
     let release = WorkspaceService::publish(&state.pool, req.tree, admin.user_id).await?;
     Ok((axum::http::StatusCode::CREATED, Json(release)))
 }
@@ -139,9 +147,16 @@ pub async fn get_workspace_control(
 )]
 pub async fn validate_release(
     State(state): State<AppState>,
-    _admin: AdminUser,
+    admin: AdminUser,
     Path(version): Path<i32>,
 ) -> Result<Json<ReleaseValidationResponse>, AppError> {
+    /* [249A-1] Rate limit de escritura por usuario. */
+    check_api_rate_limit(
+        &state.api_rate_limit,
+        "workspace",
+        &admin.user_id.to_string(),
+        &CUOTA_ESCRITURA,
+    )?;
     let validation = WorkspaceService::validate_version(&state.pool, version).await?;
     Ok(Json(validation))
 }
@@ -166,10 +181,17 @@ pub async fn validate_release(
 )]
 pub async fn activate_release(
     State(state): State<AppState>,
-    _admin: AdminUser,
+    admin: AdminUser,
     Path(version): Path<i32>,
     Query(query): Query<ActivateReleaseQuery>,
 ) -> Result<Json<WorkspaceRelease>, AppError> {
+    /* [249A-1] Rate limit de escritura por usuario. */
+    check_api_rate_limit(
+        &state.api_rate_limit,
+        "workspace",
+        &admin.user_id.to_string(),
+        &CUOTA_ESCRITURA,
+    )?;
     let release =
         WorkspaceService::activate_version(&state.pool, version, query.force.unwrap_or(false))
             .await?;

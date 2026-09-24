@@ -245,6 +245,9 @@ pub fn create_router(pool: sqlx::PgPool, config: crate::config::AppConfig) -> Ro
         auth_action_rate_limit: std::sync::Arc::new(std::sync::Mutex::new(
             std::collections::HashMap::new(),
         )),
+        api_rate_limit: std::sync::Arc::new(
+            std::sync::Mutex::new(std::collections::HashMap::new()),
+        ),
         dev_mailbox: std::sync::Arc::new(std::sync::Mutex::new(Vec::new())),
     };
     create_router_with_state(state)

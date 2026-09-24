@@ -1,3 +1,11 @@
+/* sentinel-disable-file html-sin-origen-declarado
+ * [249A-2] tiptapToHtml es productor declarado: convierte TipTap JSON a HTML
+ * y su UNICO consumo pasa por appendSanitizedHtml (linea 82, sanitizador).
+ * La allowlist htmlProductoresPermitidos no llega por el path del gate
+ * (analyzeDocument no propaga config), asi que el waiver file-level es la
+ * via sancionada por la propia regla. No interpolar input sin sanitizar
+ * aqui: cualquier cambio de consumo debe mantener el sanitizador.
+ */
 /* wandori.us — Article Page
  * Renderiza un articulo individual a partir de su slug.
  * [Auditoría v4 §1.2] Migrado a createEl(). */

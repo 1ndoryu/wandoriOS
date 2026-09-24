@@ -9,6 +9,7 @@ pub mod errors;
 pub mod handlers;
 pub mod middleware;
 pub mod models;
+pub mod rate_limit;
 pub mod repositories;
 pub mod services;
 
@@ -17,6 +18,7 @@ use std::sync::Arc;
 
 use crate::handlers::auth::{AuthActionRateLimit, LoginRateLimit};
 use crate::handlers::dev_mail::DevMailbox;
+use crate::rate_limit::ApiRateLimit;
 
 /// Estado compartido de la aplicacion — accesible desde handlers y middleware
 #[derive(Clone)]
@@ -32,6 +34,8 @@ pub struct AppState {
     pub login_rate_limit: Arc<LoginRateLimit>,
     /// Rate limit independiente para registro y recuperación por IP
     pub auth_action_rate_limit: Arc<AuthActionRateLimit>,
+    /// [249A-1] Rate limit por (ambito, clave) para POST fuera de auth
+    pub api_rate_limit: Arc<ApiRateLimit>,
     /// [297A-13] Buzón de correo mockeado en desarrollo (fail-closed en prod)
     pub dev_mailbox: Arc<DevMailbox>,
 }

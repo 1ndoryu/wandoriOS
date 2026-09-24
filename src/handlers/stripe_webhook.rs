@@ -1,3 +1,11 @@
+/* sentinel-disable-file ruta-post-sin-rate-limit
+ * [249A-1] Exencion tecnica, no deuda: este POST es el webhook de Stripe y
+ * NO debe llevar rate limit por IP — Stripe reintenta desde IPs compartidas
+ * en rafagas y un 429 retrasaria la entrega de compras. La proteccion real
+ * es la firma HMAC-SHA256 con timestamp (verify_stripe_signature) + el
+ * procesamiento idempotente (StripeEventRepository + guard delivered_at en
+ * handle_completed): un evento reenviado no duplica efectos.
+ */
 /* wandori.us — Stripe Webhook Handler
  * Verifica la firma HMAC-SHA256 de Stripe y procesa eventos de pago.
  * Evento principal: checkout.session.completed → marca orden como pagada y

@@ -406,12 +406,6 @@ primer icono real (1086px) con RTL+space-between, `getCellAt` inverso exacto, y
 
 **Gate/salida:** Configuración sigue funcionando durante la migración y una nueva acción admin se agrega por comando/capacidad, no mediante `if/else` en el shell.
 
-### 249A-1 — Rate limit en rutas POST no-auth (2026-09-24)
-
-Sentinel `ruta-post-sin-rate-limit` (error) con **9 hallazgos** en rutas POST fuera de auth. Verificado: el rate limiting existe pero es solo para acciones de auth (`handlers/auth.rs`: `LoginRateLimit`/`AuthActionRateLimit` por ventana de 60 s + `check_auth_action_rate_limit` en MFA); el resto de POST no tiene límite (sin `governor`/tower-rate-limit en `Cargo.toml`). Evidencia: análisis sentinel 2026-09-24 15:50. Alcance: diseñar cuotas por router (patrón existente de `auth.rs`, 429 vía `errors::TooManyRequests`) y aplicarlas donde falte; no parchear por ruta suelta.
-
-**Gate/salida:** `npm run gate:check -- 249A-1` con 0 `ruta-post-sin-rate-limit` + prueba de 429 real contra un POST no-auth.
-
 ## Revisión SOLID y escalabilidad obligatoria
 
 Cada bloque pendiente debe evidenciar antes de cerrarse:

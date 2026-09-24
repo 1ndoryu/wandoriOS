@@ -10,6 +10,7 @@ use crate::models::notification::{
     CreateNotificationRequest, NotificationAccountList, NotificationAdminList,
     NotificationAdminResponse, NotificationPublicList, UpdateNotificationStatusRequest,
 };
+use crate::rate_limit::{check_api_rate_limit, CUOTA_ESCRITURA};
 use crate::services::notification_svc::NotificationService;
 use crate::AppState;
 
@@ -59,6 +60,13 @@ pub async fn mark_read(
     auth: AuthUser,
     Path(id): Path<Uuid>,
 ) -> Result<StatusCode, AppError> {
+    /* [249A-1] Rate limit de escritura por usuario. */
+    check_api_rate_limit(
+        &state.api_rate_limit,
+        "notificaciones",
+        &auth.user_id.to_string(),
+        &CUOTA_ESCRITURA,
+    )?;
     NotificationService::mark_read(&state.pool, auth.user_id, id).await?;
     Ok(StatusCode::NO_CONTENT)
 }
@@ -94,6 +102,13 @@ pub async fn create_admin(
     admin: AdminUser,
     Json(request): Json<CreateNotificationRequest>,
 ) -> Result<Json<NotificationAdminResponse>, AppError> {
+    /* [249A-1] Rate limit de escritura por usuario. */
+    check_api_rate_limit(
+        &state.api_rate_limit,
+        "notificaciones",
+        &admin.user_id.to_string(),
+        &CUOTA_ESCRITURA,
+    )?;
     let notification = NotificationService::create(&state.pool, request, admin.user_id).await?;
     Ok(Json(NotificationAdminResponse::from(&notification)))
 }

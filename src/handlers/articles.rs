@@ -11,6 +11,7 @@ use crate::models::article::{
     Article, ArticlePublic, ArticleQueryParams, CreateArticleRequest, PaginatedArticles,
     PaginatedArticlesPublic, UpdateArticleRequest,
 };
+use crate::rate_limit::{check_api_rate_limit, CUOTA_ESCRITURA};
 use crate::services::article::ArticleService;
 use crate::AppState;
 
@@ -209,9 +210,16 @@ pub async fn list_trashed_articles(
 )]
 pub async fn restore_article(
     State(state): State<AppState>,
-    _auth: AdminUser,
+    auth: AdminUser,
     Path(id): Path<Uuid>,
 ) -> Result<Json<Article>, AppError> {
+    /* [249A-1] Rate limit de escritura por usuario. */
+    check_api_rate_limit(
+        &state.api_rate_limit,
+        "articulos",
+        &auth.user_id.to_string(),
+        &CUOTA_ESCRITURA,
+    )?;
     let article = ArticleService::restore(&state.pool, id).await?;
     Ok(Json(article))
 }

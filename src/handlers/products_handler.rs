@@ -13,6 +13,7 @@ use crate::models::product::{
     CheckoutRequest, CreateProductRequest, Order, Product, ProductAdminResponse,
     ProductPublicResponse, UpdateProductRequest,
 };
+use crate::rate_limit::{check_api_rate_limit, clave_ip, CUOTA_CHECKOUT};
 use crate::services::product_svc::ProductService;
 use crate::AppState;
 
@@ -315,6 +316,14 @@ pub async fn checkout(
     headers: HeaderMap,
     Json(req): Json<CheckoutRequest>,
 ) -> Result<Json<CheckoutResponse>, AppError> {
+    /* [249A-1] Rate limit de checkout por IP (endpoint publico, sensible
+     * a abuso: crear sesiones de pago en bucle). */
+    check_api_rate_limit(
+        &state.api_rate_limit,
+        "checkout",
+        &clave_ip(&headers),
+        &CUOTA_CHECKOUT,
+    )?;
     req.validate()
         .map_err(|error| AppError::Validation(error.to_string()))?;
     let product = ProductService::get_public(&state.pool, product_id).await?;
