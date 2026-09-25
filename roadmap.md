@@ -73,6 +73,16 @@
 
 ## Pendientes ordenados
 
+### 259A-1 — Triage `cargo audit` lows 7→2 (2026-09-25, HECHA)
+
+Patch-bumps `quinn-proto 0.11.14→0.11.18` (+`rand` transitivo 0.9→0.10; directo
+`rand 0.8` intacto), `rustls 0.23.37→0.23.45`, `rustls-webpki 0.103.10→0.103.15`.
+`run-with-db.mjs check` PASS (glory-backend compila, 2m44s). Restan `idna 0.5.0`
+(RUSTSEC-2024-0421, pineado por `validator 0.18.1` ← requiere migración a validator
+0.20, bloque dedicado) y `rsa 0.9.10` unmaintained (RUSTSEC-2023-0071, vía
+`sqlx-mysql 0.8.6`; superficie muerta — proyecto usa PostgreSQL; se corrige con
+upgrade de sqlx).
+
 ### Seguimiento 318A-3 — Evaluar reactivación de `mixed-barrel-logic` (2026-09-01)
 
 Informe del cierre de PROYECTO TASKS (plan 318A-3): este proyecto tiene `mixed-barrel-logic`
