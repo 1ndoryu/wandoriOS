@@ -5,15 +5,51 @@
     "primaryBranch": "main"
   },
   "gate": {
-    "command": ["sentinel", "check", "--"],
+    "command": [
+      "sentinel",
+      "check",
+      "--"
+    ],
     "taskIdRequired": true
   },
   "guard": {
     "directCommands": {
-      "npmScripts": ["test", "test:changed", "test:full", "test:file", "test:watch", "type-check", "lint", "check", "check:back", "check:front", "fmt", "fmt:check", "build"],
-      "npxTools": ["vitest", "tsc", "eslint", "prettier", "rustfmt"],
-      "cargoSubcommands": ["check", "clippy", "test", "bench", "fmt"],
-      "tools": ["vitest", "tsc", "eslint", "prettier", "rustfmt"]
+      "npmScripts": [
+        "test",
+        "test:changed",
+        "test:full",
+        "test:file",
+        "test:watch",
+        "type-check",
+        "lint",
+        "check",
+        "check:back",
+        "check:front",
+        "fmt",
+        "fmt:check",
+        "build"
+      ],
+      "npxTools": [
+        "vitest",
+        "tsc",
+        "eslint",
+        "prettier",
+        "rustfmt"
+      ],
+      "cargoSubcommands": [
+        "check",
+        "clippy",
+        "test",
+        "bench",
+        "fmt"
+      ],
+      "tools": [
+        "vitest",
+        "tsc",
+        "eslint",
+        "prettier",
+        "rustfmt"
+      ]
     }
   },
   "runtime": {
@@ -46,7 +82,8 @@
           "frontend/src/utils/dom.ts",
           "_archivo/**",
           "**/.freebuff/**",
-          "**/data/inventarios/**"
+          "**/data/inventarios/**",
+          "glory-rs/**"
         ],
         "directoryExceptions": [
           "migrations",
@@ -85,10 +122,11 @@
             "/frontend/src/features/mobile/",
             "/frontend/src/features/runtime/",
             "/frontend/src/features/notifications/",
-            "/frontend/src/features/commerce/store-view.ts",  "/frontend/src/pages/verify-email.ts",
-  "/frontend/src/pages/article.ts",
-  "/frontend/src/utils/sanitize-html.ts"
- ],
+            "/frontend/src/features/commerce/store-view.ts",
+            "/frontend/src/pages/verify-email.ts",
+            "/frontend/src/pages/article.ts",
+            "/frontend/src/utils/sanitize-html.ts"
+          ],
           "services": [
             "/frontend/src/services/",
             "/frontend/src/api/",
