@@ -28,6 +28,7 @@ pub struct DevMailMessage {
 }
 
 impl DevMailMessage {
+    #[must_use]
     pub fn new(to: &str, subject: &str, link: &str) -> Self {
         Self {
             id: Uuid::new_v4(),
@@ -39,7 +40,7 @@ impl DevMailMessage {
     }
 }
 
-/// Tipo del buzón en memoria compartido por AppState.
+/// Tipo del buzón en memoria compartido por `AppState`.
 pub type DevMailbox = Mutex<Vec<DevMailMessage>>;
 
 /// Lista los correos mockeados. Solo existe en desarrollo: si el proveedor

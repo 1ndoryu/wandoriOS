@@ -11,6 +11,10 @@ use crate::AppState;
 const SITE_URL: &str = "https://wandori.us";
 
 /// Genera sitemap.xml dinamicamente desde articulos publicados
+/* `format_push_string` desactivado aquí a conciencia: escribir en `String`
+ * no puede fallar y el proyecto evita `expect` inalcanzables; la asignación
+ * extra solo existe para no ocultar el `format!` al lector. */
+#[allow(clippy::format_push_string)]
 pub async fn sitemap(State(state): State<AppState>) -> Result<impl IntoResponse, AppError> {
     let articles = ArticleRepository::list_published_slugs(&state.pool).await?;
 
@@ -21,9 +25,6 @@ pub async fn sitemap(State(state): State<AppState>) -> Result<impl IntoResponse,
 
     /* Paginas estaticas */
     for path in &["/", "/about", "/gallery", "/projects"] {
-        /* `push_str` con `format!` en vez de `write!(..).expect(..)`: escribir en
-         * un `String` no puede fallar, así que el `expect` era inalcanzable y el
-         * gate lo contaba como deuda. Sin `Result` no hay pánico ni descarte. */
         xml.push_str(&format!(
             "\n  <url>\n    <loc>{SITE_URL}{path}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>"
         ));

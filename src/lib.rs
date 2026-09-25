@@ -45,6 +45,7 @@ impl AppState {
     /// Stripe configurados. Fail-closed: con claves reales (producción), el
     /// mock nunca se activa; el checkout llama al proveedor y el webhook exige
     /// firma HMAC. El mismo patrón que Resend/DevMailbox: real solo en prod.
+    #[must_use]
     pub fn stripe_mock_enabled(&self) -> bool {
         self.stripe_secret_key.is_none() && self.stripe_webhook_secret.is_none()
     }

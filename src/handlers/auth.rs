@@ -18,8 +18,8 @@ use crate::handlers::dev_mail::DevMailMessage;
 use crate::middleware::AuthUser;
 use crate::models::user::UserResponse;
 use crate::models::{
-    ConfirmPasswordResetRequest, LoginMfaRequired, LoginRequest,
-    PasswordResetRequest, RegisterRequest, RegistrationResponse, VerifyEmailRequest,
+    ConfirmPasswordResetRequest, LoginMfaRequired, LoginRequest, PasswordResetRequest,
+    RegisterRequest, RegistrationResponse, VerifyEmailRequest,
 };
 use crate::repositories::auth_audit_repo::AuthAuditRepository;
 use crate::repositories::UserRepository;
@@ -96,11 +96,15 @@ pub(crate) fn check_auth_action_rate_limit(
     )
 }
 
-/// Emite sesión opaca + cookies (sesión HttpOnly, CSRF y expiración de la
-/// identidad invitada del juego) y devuelve la respuesta 204.
+/// Emite sesión opaca + cookies (sesión `HttpOnly`, `CSRF` y expiración de la
+/// identidad invitada del juego) y devuelve la respuesta `204`.
 /// [297A-13] Compartido por el login directo y la verificación de segundo
 /// factor para que ambas rutas construyan exactamente las mismas cookies.
-pub(crate) async fn issue_session(state: &AppState, user_id: Uuid, ip: &str) -> Result<Response, AppError> {
+pub(crate) async fn issue_session(
+    state: &AppState,
+    user_id: Uuid,
+    ip: &str,
+) -> Result<Response, AppError> {
     let session_result = SessionService::create(&state.pool, user_id, Some(ip), None).await?;
 
     let mut headers = HeaderMap::new();
@@ -149,8 +153,7 @@ pub(crate) async fn issue_session(state: &AppState, user_id: Uuid, ip: &str) -> 
 /* Valores CONSTANTES de expiración de cookies. */
 const SESSION_ID_EXPIRADA: &str = "session_id=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0";
 const CSRF_TOKEN_EXPIRADO: &str = "csrf_token=; Path=/; SameSite=Lax; Max-Age=0";
-const GUEST_GAME_EXPIRADA: &str =
-    "guest_game=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0";
+const GUEST_GAME_EXPIRADA: &str = "guest_game=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0";
 
 /* Cabecera `Set-Cookie` a partir de un valor constante ya conocido. [por que]
  * Antes cada constante se construía con `"...".parse().expect(..)`: el valor es
@@ -466,10 +469,7 @@ pub async fn logout(
 
     for pair in cookie_header.split(';') {
         let pair = pair.trim();
-        if let Some(token) =
-            pair.strip_prefix("session_id=")
-                .and_then(|s| if s.is_empty() { None } else { Some(s) })
-        {
+        if let Some(token) = pair.strip_prefix("session_id=").filter(|s| !s.is_empty()) {
             let _ = SessionService::revoke_by_token(&state.pool, token).await;
             break;
         }
@@ -540,27 +540,24 @@ async fn deliver_account_link(
     heading: &str,
     link: &str,
 ) -> Result<(), AppError> {
-    match state.resend_api_key.as_deref() {
-        Some(api_key) => {
-            crate::services::email::EmailService::send_account_link(
-                api_key,
-                &state.email_from,
-                to_email,
-                subject,
-                heading,
-                link,
-            )
-            .await
-        }
-        None => {
-            tracing::info!(to = %to_email, %link, "[dev-mail] {subject}");
-            state
-                .dev_mailbox
-                .lock()
-                .map_err(|e| AppError::Internal(format!("Error escribiendo buzón dev: {e}")))?
-                .push(DevMailMessage::new(to_email, subject, link));
-            Ok(())
-        }
+    if let Some(api_key) = state.resend_api_key.as_deref() {
+        crate::services::email::EmailService::send_account_link(
+            api_key,
+            &state.email_from,
+            to_email,
+            subject,
+            heading,
+            link,
+        )
+        .await
+    } else {
+        tracing::info!(to = %to_email, %link, "[dev-mail] {subject}");
+        state
+            .dev_mailbox
+            .lock()
+            .map_err(|e| AppError::Internal(format!("Error escribiendo buzón dev: {e}")))?
+            .push(DevMailMessage::new(to_email, subject, link));
+        Ok(())
     }
 }
 
@@ -573,8 +570,14 @@ pub fn routes() -> Router<AppState> {
         .route("/auth/login", post(login))
         .route("/auth/mfa/totp/status", get(super::auth_totp::totp_status))
         .route("/auth/mfa/totp/setup", post(super::auth_totp::totp_setup))
-        .route("/auth/mfa/totp/confirm", post(super::auth_totp::totp_confirm))
-        .route("/auth/mfa/totp/disable", post(super::auth_totp::totp_disable))
+        .route(
+            "/auth/mfa/totp/confirm",
+            post(super::auth_totp::totp_confirm),
+        )
+        .route(
+            "/auth/mfa/totp/disable",
+            post(super::auth_totp::totp_disable),
+        )
         .route("/auth/mfa/totp/verify", post(super::auth_totp::mfa_verify))
         .route("/auth/me", get(me))
         .route("/auth/logout", post(logout))

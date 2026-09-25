@@ -406,6 +406,12 @@ primer icono real (1086px) con RTL+space-between, `getCellAt` inverso exacto, y
 
 **Gate/salida:** Configuración sigue funcionando durante la migración y una nueva acción admin se agrega por comando/capacidad, no mediante `if/else` en el shell.
 
+### 249A-1 - Rate limit en POST fuera de auth (en gate)
+9× `ruta-post-sin-rate-limit` (notes, articles restore, notifications ×2, products checkout, settings ×3, workspace ×3; stripe exento HMAC+idempotencia). `src/rate_limit.rs` + `Retry-After`; 429 real 120+5; clippy/fmt limpios; 52/52 tests. Falta solo `gate:check` canónico tras cooldown heavy-guard (~2026-09-25T05:06Z).
+
+### 249A-2 - Waiver html en 2 productores (en gate)
+2× `html-sin-origen-declarado` (article.ts, article-editor-ui.ts + `urlSeguraParaMedia()`). Mismo gate pendiente que 249A-1.
+
 ## Revisión SOLID y escalabilidad obligatoria
 
 Cada bloque pendiente debe evidenciar antes de cerrarse:

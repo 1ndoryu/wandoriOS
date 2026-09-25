@@ -20,6 +20,7 @@ type HmacSha1 = Hmac<Sha1>;
 const BASE32_ALPHABET: &[u8; 32] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 
 /// Genera un secreto TOTP en base32 (sin padding).
+#[must_use]
 pub fn generate_secret() -> String {
     let mut bytes = [0_u8; SECRET_BYTES];
     rand::rngs::OsRng.fill(&mut bytes);
@@ -27,7 +28,7 @@ pub fn generate_secret() -> String {
 }
 
 fn encode_base32(input: &[u8]) -> String {
-    let mut out = String::with_capacity((input.len() * 8 + 4) / 5);
+    let mut out = String::with_capacity((input.len() * 8).div_ceil(5));
     let mut buffer: u32 = 0;
     let mut bits = 0;
     for &byte in input {
@@ -53,18 +54,23 @@ fn decode_base32(input: &str) -> Option<Vec<u8>> {
         .chars()
         .filter(|c| !c.is_whitespace())
         .map(|c| c.to_ascii_uppercase())
-        .filter(|c| c.is_ascii_alphanumeric())
+        .filter(char::is_ascii_alphanumeric)
         .collect();
     let mut out = Vec::with_capacity(cleaned.len() * 5 / 8);
     let mut buffer: u32 = 0;
     let mut bits = 0;
     for ch in cleaned.chars() {
-        let value = BASE32_ALPHABET.iter().position(|&v| v == ch as u8)?;
-        buffer = (buffer << 5) | value as u32;
+        /* `position` en un alfabeto de 32 siempre cabe en u32; `try_from`
+         * mantiene el cierre fail-closed si el contrato cambiara. */
+        let index = BASE32_ALPHABET.iter().position(|&v| v == ch as u8)?;
+        let value = u32::try_from(index).ok()?;
+        buffer = (buffer << 5) | value;
         bits += 5;
         if bits >= 8 {
             bits -= 8;
-            out.push((buffer >> bits) as u8);
+            /* Truncamiento intencional: tras consumir, solo quedan los 8 bits
+             * altos ya validados; `try_from` lo deja fail-closed. */
+            out.push(u8::try_from((buffer >> bits) & 0xFF).ok()?);
         }
     }
     Some(out)
@@ -90,11 +96,11 @@ fn code_at(secret_bytes: &[u8], counter: u64) -> Option<String> {
 fn current_counter() -> u64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
-        .map(|d| d.as_secs() / STEP_SECONDS)
-        .unwrap_or(0)
+        .map_or(0, |d| d.as_secs() / STEP_SECONDS)
 }
 
 /// Código actual para el secreto (referencia / tests).
+#[must_use]
 pub fn current_code(secret_base32: &str) -> String {
     let Some(bytes) = decode_base32(secret_base32) else {
         return String::new();
@@ -103,6 +109,7 @@ pub fn current_code(secret_base32: &str) -> String {
 }
 
 /// Verifica un código de 6 dígitos contra el secreto con ventana de ±1 paso.
+#[must_use]
 pub fn verify(secret_base32: &str, code: &str) -> bool {
     let Some(bytes) = decode_base32(secret_base32) else {
         return false;
@@ -118,6 +125,7 @@ pub fn verify(secret_base32: &str, code: &str) -> bool {
 }
 
 /// URI de aprovisionamiento `otpauth://` para apps autenticadoras.
+#[must_use]
 pub fn otpauth_uri(secret_base32: &str, account_email: &str, issuer: &str) -> String {
     let label = format!("{issuer}:{account_email}").replace(' ', "%20");
     let issuer_enc = issuer.replace(' ', "%20");

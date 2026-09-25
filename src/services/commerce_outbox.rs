@@ -157,34 +157,31 @@ async fn deliver_event(
     /* [297A-15] Mismo patrón que auth: con Resend real se envía; sin proveedor
      * (dev) el enlace se guarda en el buzón de desarrollo y a log. Solo tras
      * éxito (real o mock) se marca la orden entregada. */
-    match resend_api_key {
-        Some(api_key) => {
-            EmailService::send_download_link(
-                api_key,
-                email_from,
-                &order.customer_email,
-                &product.name,
-                &download_url,
-            )
-            .await?;
-        }
-        None => {
-            tracing::info!(
-                to = %order.customer_email,
-                %download_url,
-                "[dev-mail] tu descarga: {}",
-                product.name
-            );
-            if let Some(mailbox) = dev_mailbox {
-                mailbox
-                    .lock()
-                    .map_err(|e| AppError::Internal(format!("Error escribiendo buzón dev: {e}")))?
-                    .push(DevMailMessage::new(
-                        &order.customer_email,
-                        &format!("tu descarga: {}", product.name),
-                        &download_url,
-                    ));
-            }
+    if let Some(api_key) = resend_api_key {
+        EmailService::send_download_link(
+            api_key,
+            email_from,
+            &order.customer_email,
+            &product.name,
+            &download_url,
+        )
+        .await?;
+    } else {
+        tracing::info!(
+            to = %order.customer_email,
+            %download_url,
+            "[dev-mail] tu descarga: {}",
+            product.name
+        );
+        if let Some(mailbox) = dev_mailbox {
+            mailbox
+                .lock()
+                .map_err(|e| AppError::Internal(format!("Error escribiendo buzón dev: {e}")))?
+                .push(DevMailMessage::new(
+                    &order.customer_email,
+                    &format!("tu descarga: {}", product.name),
+                    &download_url,
+                ));
         }
     }
     OrderRepository::mark_delivered(pool, order.id).await?;

@@ -12,9 +12,10 @@ pub struct PreferencesService;
 /// existe, si no el default global (del admin) guardado en `site_settings`.
 /// [297A-29] Los defaults del admin son la configuración por defecto del OS;
 /// cada usuario puede sobreescribirlos campo a campo (NULL en su fila).
+#[must_use]
 pub fn resolve_appearance(
     user_prefs: &UserPreferences,
-    defaults: &std::collections::HashMap<String, String>,
+    defaults: &std::collections::HashMap<String, String, impl std::hash::BuildHasher>,
 ) -> (Option<String>, Option<String>, Option<f64>) {
     let default_scale = defaults
         .get("appearance_scale")

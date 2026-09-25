@@ -253,22 +253,19 @@ pub async fn stripe_webhook(
      * sin secreto (dev/mock) solo se aceptan eventos de prueba (`livemode:
      * false`) para que el ciclo E2E funcione sin credenciales. Fail-closed:
      * un evento `livemode: true` sin secreto es rechazado. */
-    match state.stripe_webhook_secret.as_deref() {
-        Some(webhook_secret) => {
-            let signature_header = headers
-                .get("stripe-signature")
-                .and_then(|value| value.to_str().ok())
-                .ok_or_else(|| AppError::BadRequest("Missing stripe-signature header".into()))?;
-            verify_stripe_signature(&body, signature_header, webhook_secret)?;
+    if let Some(webhook_secret) = state.stripe_webhook_secret.as_deref() {
+        let signature_header = headers
+            .get("stripe-signature")
+            .and_then(|value| value.to_str().ok())
+            .ok_or_else(|| AppError::BadRequest("Missing stripe-signature header".into()))?;
+        verify_stripe_signature(&body, signature_header, webhook_secret)?;
+    } else {
+        if event["livemode"].as_bool().unwrap_or(true) {
+            return Err(AppError::BadRequest(
+                "Webhook sin secreto solo acepta eventos de prueba (livemode=false)".into(),
+            ));
         }
-        None => {
-            if event["livemode"].as_bool().unwrap_or(true) {
-                return Err(AppError::BadRequest(
-                    "Webhook sin secreto solo acepta eventos de prueba (livemode=false)".into(),
-                ));
-            }
-            tracing::warn!("[mock-stripe] webhook sin firma aceptado (modo dev, evento de prueba)");
-        }
+        tracing::warn!("[mock-stripe] webhook sin firma aceptado (modo dev, evento de prueba)");
     }
 
     let event_id = event["id"]

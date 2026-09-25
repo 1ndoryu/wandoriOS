@@ -186,7 +186,7 @@ impl AuthService {
         Ok(raw_token)
     }
 
-    /// Consume el reto y valida el código; devuelve el user_id para la sesión.
+    /// Consume el reto y valida el código; devuelve el `user_id` para la sesión.
     pub async fn verify_totp_challenge(
         pool: &PgPool,
         raw_token: &str,
