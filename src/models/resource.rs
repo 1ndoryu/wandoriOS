@@ -48,7 +48,7 @@ pub enum LifecycleState {
     Trashed,
 }
 
-/// Sobre común de todo recurso editorial/comercial.
+/// Sobre común de cada recurso editorial/comercial.
 /// Defaults de DB: draft, private, active.
 #[derive(Debug, Clone, FromRow, Serialize, ToSchema)]
 pub struct Resource {

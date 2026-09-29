@@ -21,7 +21,7 @@ const MAX_REF_ID_LENGTH: usize = 256;
 const MAX_GRID_COORDINATE: u64 = 10_000;
 const MAX_MOBILE_ORDER: u64 = 100_000;
 
-/// Nodos del sistema del shell que TODO release debe contener.
+/// Nodos del sistema del shell que cada release debe contener.
 /// [038A-2] Fuente canónica: los nodos que el `AppRegistry` del frontend
 /// registra como parte del OS (`default-release.ts` + `ADMIN_NODES` en stores.ts).
 /// `trash` (Papelera) es irremplazable: sin él el usuario no puede restaurar

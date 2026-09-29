@@ -1,6 +1,6 @@
 /* sentinel-disable-file mixed-barrel-logic
  * [por que] Este modulo re-exporta la API publica de window-store (los
- * consumidores importan todo desde aqui) y ademas contiene la logica de
+ * consumidores importan desde aqui) y ademas contiene la logica de
  * mutacion; el split barrel/logica romperia la API publica documentada.
  */
 /* wandori.us — Window Manager
@@ -19,7 +19,7 @@ import {
   type WindowEntry, type WindowBounds, type WindowState,
 } from './window-store';
 
-/* Re-export todo desde window-store para backward compatibility.
+/* Re-exporta desde window-store para backward compatibility.
  * Los consumidores existentes importan de 'window-manager' y seguirán funcionando. */
 export { windowStore, setWorkspaceBounds, clampWindowBounds, getWindows, getFocusedWindow, findOpenWindow, ensureNextZIndexAbove } from './window-store';
 export type { WindowState, WindowBounds, WindowEntry, WindowIdentity, WindowGeometry, WindowContent } from './window-store';

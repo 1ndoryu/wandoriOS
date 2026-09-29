@@ -1,6 +1,6 @@
 /* wandori.us — Security Panel (MFA TOTP)
  * Panel de segundo factor embebido en la ventana Cuenta [297A-13].
- * No conoce HTTP: delega todo en AuthService y solo presenta estados.
+ * No conoce HTTP: delega en AuthService y solo presenta estados.
  * Alta en dos pasos: setup (secreto + URI otpauth) → confirmación con código.
  * Desactivación exige un código válido (prueba de propiedad). */
 

@@ -116,7 +116,7 @@ export function tombstoneNode(nodeId: NodeId): void {
   }));
 }
 
-/* [018A-90] Borrado seguro en cascada: tumba el nodo y TODO su subárbol.
+/* [018A-90] Borrado seguro en cascada: tumba el nodo y su subárbol completo.
  * A diferencia de tombstoneNode, conserva addedItems y fieldOverrides de los
  * descendientes: el merge los ignora mientras el id esté en tombstones (ver
  * la guarda en merge.ts [018A-90]) y restoreNode los recupera al quitar el

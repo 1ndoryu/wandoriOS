@@ -1,6 +1,6 @@
 /* wandori.us — Design System Variables
  * Ultra-minimalista B&W. Sin colores, sin sombras, sin bordes redondeados.
- * Todo se configura desde estas variables.
+ * Se configura desde estas variables.
  * [Auditoría v2 §3.4] @layer order para gestión de specificity. */
 
 @layer base, components;
