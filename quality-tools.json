@@ -25,8 +25,8 @@
     "varsense": {
       "repository": "https://github.com/1ndoryu/varsense.git",
       "sourcePath": "tools/varsense",
-      "commit": "eeb036f5cc1d5b7b2658beb14b1b189bc6ee5ed1",
-      "version": "2.2.5",
+      "commit": "19d4ad7390d105036f9e84b7a334545c681e29f3",
+      "version": "2.2.7",
       "outputSchemaVersion": "1",
       "buildScript": "compile",
       "cli": "dist/cli/index.js",
