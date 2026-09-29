@@ -152,8 +152,8 @@ export function mountCurvedIsland(
     highlight.position.set(pick.worldX, pick.blockCenterY, pick.worldZ);
   };
 
-  /* [138A-1] El comparador alterna entre esta isla y su vista suave: ocultar
-   * TODO el conjunto (incluida agua/lluvia) en vez de solo el grupo de tierra. */
+  /* [138A-1] El comparador alterna entre esta isla y su vista suave: setVisible
+   * ya oculta el conjunto completo (tierra + agua + lluvia). Marcador retirado. */
   const setVisible = (visible: boolean): void => {
     islandVisible = visible;
     island.visible = visible;
