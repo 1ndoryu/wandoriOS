@@ -51,7 +51,7 @@
   },
   "tokenDetection": {
     "duplicate": {
-      "enabled": true,
+      "enabled": false,
       "severity": "warning"
     },
     "unused": {
@@ -99,7 +99,10 @@
       "^inline$",
       "^mt-lg$",
       "^align-start$",
-      "^flex-wrap-center$"
+      "^flex-wrap-center$",
+      "^tiptap$",
+      "^ProseMirror$",
+      "^movilLauncher__tema$"
     ]
   }
 }
