@@ -87,10 +87,10 @@ export function enableSelectionBand(options: SelectionBandOptions): () => void {
     const y1 = Math.max(0, Math.min(startY, clientY) - containerRect.top);
     const x2 = Math.min(maxX, Math.max(startX, clientX) - containerRect.left);
     const y2 = Math.min(maxY, Math.max(startY, clientY) - containerRect.top);
-    bandEl.style.left = `${x1}px`;
-    bandEl.style.top = `${y1}px`;
-    bandEl.style.width = `${Math.max(0, x2 - x1)}px`;
-    bandEl.style.height = `${Math.max(0, y2 - y1)}px`;
+    bandEl.style.setProperty('--band-x', `${x1}px`);
+    bandEl.style.setProperty('--band-y', `${y1}px`);
+    bandEl.style.setProperty('--band-w', `${Math.max(0, x2 - x1)}px`);
+    bandEl.style.setProperty('--band-h', `${Math.max(0, y2 - y1)}px`);
 
     const band = rectFromClientRect(bandEl.getBoundingClientRect());
     const hits = getItems()
@@ -155,10 +155,6 @@ export function enableSelectionBand(options: SelectionBandOptions): () => void {
     additive = e.ctrlKey || e.metaKey;
     bandEl = createEl('div', { className: bandClass });
     container.appendChild(bandEl);
-    bandEl.style.left = '0px';
-    bandEl.style.top = '0px';
-    bandEl.style.width = '0px';
-    bandEl.style.height = '0px';
 
     const onMove = (ev: PointerEvent): void => onPointerMove(ev);
     const onUp = (): void => onPointerUp();

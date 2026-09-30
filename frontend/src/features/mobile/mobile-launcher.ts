@@ -176,14 +176,14 @@ export function createMobileLauncher(options: MobileLauncherOptions): MobileLaun
         ghost.classList.add('movilLauncher__app--ghost');
         document.body.appendChild(ghost);
         const rect = button.getBoundingClientRect();
-        ghost.style.left = `${event.clientX - rect.width / 2}px`;
-        ghost.style.top = `${event.clientY - rect.height / 2}px`;
+        ghost.style.setProperty('--m-ghost-x', `${event.clientX - rect.width / 2}px`);
+        ghost.style.setProperty('--m-ghost-y', `${event.clientY - rect.height / 2}px`);
       },
       onDragMove: (event) => {
         if (!ghost) return;
         const rect = button.getBoundingClientRect();
-        ghost.style.left = `${event.clientX - rect.width / 2}px`;
-        ghost.style.top = `${event.clientY - rect.height / 2}px`;
+        ghost.style.setProperty('--m-ghost-x', `${event.clientX - rect.width / 2}px`);
+        ghost.style.setProperty('--m-ghost-y', `${event.clientY - rect.height / 2}px`);
       },
       onDragEnd: (event) => {
         const columns = getColumns();

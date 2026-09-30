@@ -120,8 +120,8 @@ export function openDropdownMenu(options: DropdownMenuOptions): HTMLElement | nu
     const vp = getViewport();
     const maxX = vp.width - rect.width - 4;
     const maxY = vp.height - rect.height - taskbarH - 4;
-    menu.style.left = `${Math.max(0, Math.min(options.x, maxX))}px`;
-    menu.style.top = `${Math.max(0, Math.min(options.y, maxY))}px`;
+    menu.style.setProperty('--menu-x', `${Math.max(0, Math.min(options.x, maxX))}px`);
+    menu.style.setProperty('--menu-y', `${Math.max(0, Math.min(options.y, maxY))}px`);
   }
 
   const cleanup = (): void => {

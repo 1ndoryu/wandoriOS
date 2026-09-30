@@ -83,8 +83,10 @@ export function enableDragResize(opts: DragResizeOptions): () => void {
 
   function onMouseMove(e: MouseEvent): void {
     if (drag || resize) return;
-    if (!resizable) { windowEl.style.cursor = ''; return; }
-    windowEl.style.cursor = cursorForEdge(detectEdge(e, windowEl, EDGE_SIZE));
+    if (!resizable) { windowEl.style.removeProperty('--win-cursor'); return; }
+    const borde = cursorForEdge(detectEdge(e, windowEl, EDGE_SIZE));
+    if (borde) windowEl.style.setProperty('--win-cursor', borde);
+    else windowEl.style.removeProperty('--win-cursor');
   }
 
   function onMouseDown(e: MouseEvent): void {
@@ -95,7 +97,7 @@ export function enableDragResize(opts: DragResizeOptions): () => void {
   }
 
   function onMouseLeave(): void {
-    if (!drag && !resize) windowEl.style.cursor = '';
+    if (!drag && !resize) windowEl.style.removeProperty('--win-cursor');
   }
 
   function commitBounds(): void {

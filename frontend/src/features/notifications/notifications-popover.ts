@@ -124,7 +124,7 @@ export function createNotificationsPopover(anchor: HTMLElement): NotificationsPo
     const rect = anchor.getBoundingClientRect();
     const vp = getViewport();
     const ancho = Math.min(POPOVER_ANCHO, vp.width - PADDING_UNIVERSO * 2);
-    root.style.width = `${ancho}px`;
+    root.style.setProperty('--pop-w', `${ancho}px`);
     let top = rect.bottom + DESPLAZAMIENTO;
     if (top + root.offsetHeight > vp.height - PADDING_UNIVERSO) {
       /* Abajo no cabe: colocar por encima del ancla si hay altura. */
@@ -133,8 +133,8 @@ export function createNotificationsPopover(anchor: HTMLElement): NotificationsPo
     }
     let right = vp.width - rect.right;
     right = Math.max(PADDING_UNIVERSO, Math.min(right, vp.width - ancho - PADDING_UNIVERSO));
-    root.style.right = `${right}px`;
-    root.style.top = `${top}px`;
+    root.style.setProperty('--pop-right', `${right}px`);
+    root.style.setProperty('--pop-top', `${top}px`);
   }
 
   let abierto = false;

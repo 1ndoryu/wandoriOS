@@ -42,9 +42,6 @@ export function mountGrid(
   iconWidth = CELL,
 ): HTMLElement {
   const grid = document.createElement('div');
-  grid.style.position = 'absolute';
-  grid.style.width = `${width}px`;
-  grid.style.height = `${height}px`;
   const icon = document.createElement('div');
   icon.className = 'desktop-icon--interactive';
   grid.appendChild(icon);

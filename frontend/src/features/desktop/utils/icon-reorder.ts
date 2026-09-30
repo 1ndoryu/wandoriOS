@@ -60,10 +60,10 @@ export function positionHighlight(
   const rect = target.getBoundingClientRect();
   const gridRect = session.gridEl.getBoundingClientRect();
   const hl = session.highlightEl;
-  hl.style.left = `${rect.left - gridRect.left}px`;
-  hl.style.top = `${rect.top - gridRect.top}px`;
-  hl.style.width = `${rect.width}px`;
-  hl.style.height = `${rect.height}px`;
+  hl.style.setProperty('--hl-x', `${rect.left - gridRect.left}px`);
+  hl.style.setProperty('--hl-y', `${rect.top - gridRect.top}px`);
+  hl.style.setProperty('--hl-w', `${rect.width}px`);
+  hl.style.setProperty('--hl-h', `${rect.height}px`);
 }
 
 /** [297A-20] Posicionar el highlight en una celda snap del grid. */
@@ -82,10 +82,10 @@ export function positionCellHighlight(
    * gaps efectivos distribuidos con space-between). Antes este cálculo era
    * una fórmula paralela que divergía del track real cuando sobraba espacio. */
   const origin = cellOriginAt(cell.col, cell.row, metrics);
-  hl.style.left = `${origin.left}px`;
-  hl.style.top = `${origin.top}px`;
-  hl.style.width = `${metrics.cellWidth}px`;
-  hl.style.height = `${metrics.cellHeight}px`;
+  hl.style.setProperty('--hl-x', `${origin.left}px`);
+  hl.style.setProperty('--hl-y', `${origin.top}px`);
+  hl.style.setProperty('--hl-w', `${metrics.cellWidth}px`);
+  hl.style.setProperty('--hl-h', `${metrics.cellHeight}px`);
 }
 
 /** Registrar un elemento como drop target. */

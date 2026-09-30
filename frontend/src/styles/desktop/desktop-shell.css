@@ -143,9 +143,8 @@
 }
 
 /* [FASE-FINAL] Contenedor de ventanas: capa absoluta sobre el workspace que no
- * intercepta eventos; cada ventana reactiva los suyos con inline funcional
- * (excepción documentada: opt-in por ventana). Valores exactos del
- * style.* original en desktop-shell.ts. */
+ * intercepta eventos; cada ventana reactiva los suyos con
+ * .desktop-window--interactiva (desktop-shell.ts). */
 .desktop-windows-container {
   position: absolute;
   inset: 0;
@@ -164,6 +163,11 @@
   background: var(--sistema-drop-target-fondo);
   pointer-events: none;
   box-sizing: border-box;
+  /* Geometría fijada por selection-band.ts vía --band-x/--band-y/--band-w/--band-h. */
+  left: var(--band-x, 0);
+  top: var(--band-y, 0);
+  width: var(--band-w, 0);
+  height: var(--band-h, 0);
 }
 
 /* [058A-4] Feedback provisional de la banda sobre ítems intersectados: mismo
@@ -178,11 +182,19 @@
 
 .desktop-icon--ghost {
   position: fixed;
+  /* Posición del fantasma fijada por icon-drag.ts vía --ghost-x/--ghost-y. */
+  left: var(--ghost-x, 0);
+  top: var(--ghost-y, 0);
   z-index: 10000;
   opacity: 0.7;
   pointer-events: none;
   background: var(--sistema-superficie);
   border: 1px dashed var(--sistema-texto);
+}
+
+/* Gesto de arrastre en curso: suprime la acción táctil por defecto del icono. */
+.desktop-icon--gesture {
+  touch-action: none;
 }
 
 .desktop-icon-drop-target {
@@ -191,6 +203,11 @@
   border: 1px dashed var(--sistema-texto);
   background: var(--sistema-drop-target-fondo);
   transition: left 0.1s, top 0.1s;
+  /* Geometría fijada por icon-reorder.ts vía --hl-x/--hl-y/--hl-w/--hl-h. */
+  left: var(--hl-x, 0);
+  top: var(--hl-y, 0);
+  width: var(--hl-w, 0);
+  height: var(--hl-h, 0);
 }
 
 /* [Auditoría v2] Drop hover — feedback visual al arrastrar sobre un target válido */

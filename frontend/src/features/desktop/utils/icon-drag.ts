@@ -77,7 +77,7 @@ export function enableDrag(options: {
     startX = e.clientX;
     startY = e.clientY;
     groupIds = getGroupIds?.() ?? [];
-    el.style.touchAction = 'none';
+    el.classList.add('desktop-icon--gesture');
 
     document.addEventListener('pointermove', onPointerMove);
     document.addEventListener('pointerup', onPointerUp);
@@ -112,8 +112,8 @@ export function enableDrag(options: {
 
     if (activeSession) {
       const rect = el.getBoundingClientRect();
-      activeSession.ghost.style.left = `${e.clientX - rect.width / 2}px`;
-      activeSession.ghost.style.top = `${e.clientY - rect.height / 2}px`;
+      activeSession.ghost.style.setProperty('--ghost-x', `${e.clientX - rect.width / 2}px`);
+      activeSession.ghost.style.setProperty('--ghost-y', `${e.clientY - rect.height / 2}px`);
 
       const target = findDropTarget(e.clientX, e.clientY, activeSession.ghost, gridEl);
       updateHighlight(target, e.clientX, e.clientY, activeSession);
@@ -123,7 +123,7 @@ export function enableDrag(options: {
   function onPointerUp(e: PointerEvent): void {
     document.removeEventListener('pointermove', onPointerMove);
     document.removeEventListener('pointerup', onPointerUp);
-    el.style.touchAction = '';
+    el.classList.remove('desktop-icon--gesture');
 
     if (!activeSession) return;
 
@@ -178,7 +178,7 @@ export function enableDrag(options: {
     el.removeEventListener('pointerdown', onPointerDown);
     document.removeEventListener('pointermove', onPointerMove);
     document.removeEventListener('pointerup', onPointerUp);
-    el.style.touchAction = '';
+    el.classList.remove('desktop-icon--gesture');
   };
 }
 

@@ -19,9 +19,16 @@
   background: var(--color-fondo);
   border: var(--borde);
   width: 100%;
-  max-width: 560px;
+  /* Ancho funcional fijado siempre por createModal vía --modal-ancho. */
+  max-width: var(--modal-ancho);
   max-height: 90vh;
   overflow-y: auto;
+}
+
+/* Bloqueo de scroll del documento mientras un modal está abierto
+ * (createModal lo alterna en document.body). */
+.modal--bloquea-scroll {
+  overflow: hidden;
 }
 
 .modal-cabecera {

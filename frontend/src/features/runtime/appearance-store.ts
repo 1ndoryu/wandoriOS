@@ -31,17 +31,6 @@ const SCALE_MAX = 1.3;
 const SCALE_ABS_MIN = 0.5;
 const SCALE_ABS_MAX = 2.0;
 
-/* Tokens de tamaño que la escala multiplica (texto del shell). */
-const SCALED_SIZE_TOKENS: ReadonlyArray<readonly [string, number]> = [
-  ['--sistema-texto-tamano', 13],
-  ['--menu-size', 13],
-  ['--tamano-texto', 13],
-  ['--tamano-pequeno', 11],
-  ['--tamano-grande', 15],
-  ['--tamano-titulo', 16],
-  ['--tamano-titulo-grande', 20],
-];
-
 export function isOsFont(value: unknown): value is OsFont {
   return value === 'system' || value === 'mono' || value === 'sans';
 }
@@ -93,9 +82,15 @@ export function applyAppearance(appearance: AppearanceState): void {
         : '\'JetBrains Mono\', ui-monospace, monospace';
   root.style.setProperty('--fuente-sistema', fontStack);
 
-  for (const [token, basePx] of SCALED_SIZE_TOKENS) {
-    root.style.setProperty(token, `${Math.round(basePx * appearance.scale)}px`);
-  }
+  /* Escala de texto del shell: literales para que cada token resuelva su
+   * var(--*) en el CSS (patrón exento de cssInlineScript). */
+  root.style.setProperty('--sistema-texto-tamano', `${Math.round(13 * appearance.scale)}px`);
+  root.style.setProperty('--menu-size', `${Math.round(13 * appearance.scale)}px`);
+  root.style.setProperty('--tamano-texto', `${Math.round(13 * appearance.scale)}px`);
+  root.style.setProperty('--tamano-pequeno', `${Math.round(11 * appearance.scale)}px`);
+  root.style.setProperty('--tamano-grande', `${Math.round(15 * appearance.scale)}px`);
+  root.style.setProperty('--tamano-titulo', `${Math.round(16 * appearance.scale)}px`);
+  root.style.setProperty('--tamano-titulo-grande', `${Math.round(20 * appearance.scale)}px`);
 
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(appearance));

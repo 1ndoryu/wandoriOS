@@ -37,11 +37,11 @@ export function createModal(options: ModalOptions): { close: () => void } {
     'aria-modal': 'true',
     'aria-labelledby': ariaLabelledby,
   }, cuerpo);
-  modal.style.maxWidth = ancho;
+  modal.style.setProperty('--modal-ancho', ancho);
 
   const overlay = createEl('div', { className: 'modal-overlay' }, modal);
   obtenerRaizPortales().appendChild(overlay);
-  document.body.style.overflow = 'hidden';
+  document.body.classList.add('modal--bloquea-scroll');
 
   let closed = false;
   const handleEsc = (e: KeyboardEvent): void => {
@@ -53,7 +53,7 @@ export function createModal(options: ModalOptions): { close: () => void } {
     closed = true;
     document.removeEventListener('keydown', handleEsc);
     overlay.remove();
-    document.body.style.overflow = '';
+    document.body.classList.remove('modal--bloquea-scroll');
     onClose?.();
   };
 

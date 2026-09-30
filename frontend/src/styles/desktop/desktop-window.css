@@ -1,6 +1,7 @@
 .desktop-window {
   position: absolute;
-  z-index: var(--z-sistema-ventana);
+  /* Orden funcional fijado por el shell vía --win-z (default: token). */
+  z-index: var(--win-z, var(--z-sistema-ventana));
   display: flex;
   flex-direction: column;
   min-width: var(--sistema-ventana-ancho-min);
@@ -8,6 +9,8 @@
   background: var(--sistema-superficie);
   color: var(--sistema-texto);
   overflow: hidden;
+  /* Cursor de borde fijado por drag-resize.ts vía --win-cursor. */
+  cursor: var(--win-cursor, default);
   /* Position via CSS custom properties — set by shell/drag-resize */
   left: var(--win-x, 0);
   top: var(--win-y, 0);
@@ -63,6 +66,16 @@
   min-height: 0;
   overflow: auto;
   background: var(--sistema-superficie);
+}
+
+/* Ventana operativa dentro del contenedor sin eventos: reactiva los suyos
+ * (desktop-shell.ts) y oculta las minimizadas sin inline. */
+.desktop-window--interactiva {
+  pointer-events: auto;
+}
+
+.desktop-window--minimizada {
+  display: none;
 }
 
 /* [Plan §2.3] Layout del body: padded por default, full-bleed para apps como Finder */

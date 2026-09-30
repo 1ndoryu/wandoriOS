@@ -200,7 +200,7 @@ export function createDesktopShell(
         el.style.setProperty('--win-y', `${win.bounds.y}px`);
         el.style.setProperty('--win-w', `${win.bounds.w}px`);
         el.style.setProperty('--win-h', `${win.bounds.h}px`);
-        el.style.pointerEvents = 'auto';
+        el.classList.add('desktop-window--interactiva');
 
         const titleBar = el.querySelector('.desktop-window__titlebar') as HTMLElement;
         let cleanup = () => {};
@@ -233,8 +233,8 @@ export function createDesktopShell(
       if (!entry) continue;
       const el = entry.el;
 
-      el.style.display = win.state === 'minimized' ? 'none' : '';
-      el.style.zIndex = String(win.zIndex);
+      el.classList.toggle('desktop-window--minimizada', win.state === 'minimized');
+      el.style.setProperty('--win-z', String(win.zIndex));
       el.classList.toggle('desktop-window--active', win.focused);
       el.style.setProperty('--win-x', `${win.bounds.x}px`);
       el.style.setProperty('--win-y', `${win.bounds.y}px`);
