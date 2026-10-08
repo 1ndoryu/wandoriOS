@@ -83,6 +83,12 @@ Patch-bumps `quinn-proto 0.11.14→0.11.18` (+`rand` transitivo 0.9→0.10; dire
 `sqlx-mysql 0.8.6`; superficie muerta — proyecto usa PostgreSQL; se corrige con
 upgrade de sqlx).
 
+### 08AA-1 — Cierre resto 259A-1 (2026-10-08, HECHA)
+
+`validator 0.18→0.20` (`validator_derive →0.20.1`, saca `idna 0.5.0` del lock);
+`cargo audit` 2→1 (queda `rsa 0.9.10` RUSTSEC-2023-0071 sin parche upstream + 5
+warnings permitidos). Evidencia: `npm run check:back` (check+clippy) exit 0.
+
 ### Seguimiento 318A-3 — Evaluar reactivación de `mixed-barrel-logic` (2026-09-01)
 
 Informe del cierre de PROYECTO TASKS (plan 318A-3): este proyecto tiene `mixed-barrel-logic`

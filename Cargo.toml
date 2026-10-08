@@ -24,8 +24,8 @@ sqlx = { version = "0.8", features = ["runtime-tokio", "tls-rustls", "postgres",
 utoipa = { version = "4", features = ["axum_extras", "uuid", "chrono"] }
 utoipa-swagger-ui = { version = "7", features = ["axum"] }
 
-# Validation
-validator = { version = "0.18", features = ["derive"] }
+# Validation (seguridad: 0.18->0.20 para idna 1.x; 0.18 anclaba idna 0.5.0 RUSTSEC-2024-0421)
+validator = { version = "0.20", features = ["derive"] }
 
 # Environment
 dotenvy = "0.15"
