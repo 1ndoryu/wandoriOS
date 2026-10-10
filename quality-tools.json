@@ -5,6 +5,7 @@
     "sentinel": {
       "repository": "https://github.com/1ndoryu/glory-sentinel.git",
       "sourcePath": "tools/sentinel",
+      "provisionPath": ".quality-tools/sentinel",
       "commit": "361e14ee66af543e1478620d2b5297571fd24ed6",
       "version": "0.7.22",
       "outputSchemaVersion": "1",
@@ -25,6 +26,7 @@
     "varsense": {
       "repository": "https://github.com/1ndoryu/varsense.git",
       "sourcePath": "tools/varsense",
+      "provisionPath": ".quality-tools/varsense",
       "commit": "8f5eac20e30c74989352885cc255075bf94e5bf8",
       "version": "2.2.9",
       "outputSchemaVersion": "1",
