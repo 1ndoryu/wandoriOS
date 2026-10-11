@@ -276,6 +276,13 @@ async function gitStatusPorcelain(toolRoot) {
   });
 }
 
+async function isInsideWorkspace(workspaceRoot, configuredSourcePath) {
+  const rootReal = await realpath(workspaceRoot);
+  const sourceReal = await realpath(configuredSourcePath);
+  const relative = path.relative(rootReal, sourceReal).replace(/\\/g, '/');
+  return relative !== '' && relative !== '..' && !relative.startsWith('../') && !path.isAbsolute(relative);
+}
+
 async function parentGitlinkCommit(workspaceRoot, configuredSourcePath) {
   const rootReal = await realpath(workspaceRoot);
   const sourceReal = await realpath(configuredSourcePath);
@@ -369,7 +376,10 @@ export async function inspectInstalledAnalyzers(workspaceRoot, manifest) {
     if (configuredSourcePath !== null && revision.stdout.trim() !== config.commit) {
       throw new Error(`${name}: sourcePath externo no coincide con el commit fijado`);
     }
-    if (configuredSourcePath !== null) {
+    /* Solo un sourcePath INTERNO al workspace se representa como gitlink.
+     * Uno externo (p. ej. ../.quality-tools-harness/sentinel desde un proyecto)
+     * queda validado por commit (arriba); exigirle gitlink rechazaba todo externo. */
+    if (configuredSourcePath !== null && await isInsideWorkspace(workspaceRoot, configuredSourcePath)) {
       const gitlink = await parentGitlinkCommit(workspaceRoot, configuredSourcePath);
       if (!gitlink) throw new Error(`${name}: sourcePath interno no está representado por un gitlink inicializado`);
       if (gitlink !== revision.stdout.trim()) throw new Error(`${name}: gitlink del workspace no coincide con el checkout instalado`);

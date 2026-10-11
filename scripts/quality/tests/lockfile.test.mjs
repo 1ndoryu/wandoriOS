@@ -6,6 +6,7 @@ import test from 'node:test';
 import {
   assertRuntimeLockHash,
   gitArchiveSha256,
+  inspectInstalledAnalyzers,
   runtimeLockHash,
   verifyInstalledAnalyzers,
   validateLock,
@@ -153,6 +154,29 @@ test('rechaza un patch raíz manipulado antes de confiar en el checkout', async 
     await assert.rejects(() => verifyInstalledAnalyzers(root, localManifest, lock), /SHA-256 del patch declarado/);
   } finally {
     await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('acepta un sourcePath externo validado por commit, sin exigir gitlink', async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'sentinel-lock-ext-ws-'));
+  const external = await mkdtemp(path.join(os.tmpdir(), 'sentinel-lock-ext-tool-'));
+  try {
+    const { mkdir } = await import('node:fs/promises');
+    const { spawnSync } = await import('node:child_process');
+    await mkdir(path.join(external, 'out'), { recursive: true });
+    await writeFile(path.join(external, 'out', 'cli.js'), "process.stdout.write('0.4.0');\n", 'utf8');
+    spawnSync('git', ['init', '-q'], { cwd: external });
+    spawnSync('git', ['add', '.'], { cwd: external });
+    spawnSync('git', ['-c', 'user.email=lock@test', '-c', 'user.name=lock', 'commit', '-qm', 'fixture'], { cwd: external });
+    const commit = spawnSync('git', ['rev-parse', 'HEAD'], { cwd: external, encoding: 'utf8' }).stdout.trim();
+    const tool = { version: '0.4.0', outputSchemaVersion: '1', commit, cli: 'out/cli.js', sourcePath: external };
+    const results = await inspectInstalledAnalyzers(root, { installRoot: '.quality-tools', tools: { sentinel: tool } });
+    assert.equal(results.sentinel.commit, commit);
+    const desalineado = { installRoot: '.quality-tools', tools: { sentinel: { ...tool, commit: 'f'.repeat(40) } } };
+    await assert.rejects(() => inspectInstalledAnalyzers(root, desalineado), /sourcePath externo no coincide con el commit fijado/);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+    await rm(external, { recursive: true, force: true });
   }
 });
 
