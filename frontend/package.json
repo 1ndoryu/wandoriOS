@@ -16,11 +16,11 @@
     "codegen": "orval"
   },
   "dependencies": {
-    "@tiptap/core": "^2.6.0",
-    "@tiptap/extension-image": "^2.6.0",
-    "@tiptap/extension-link": "^2.6.0",
-    "@tiptap/extension-placeholder": "^2.6.0",
-    "@tiptap/starter-kit": "^2.6.0",
+    "@tiptap/core": "^3.31.4",
+    "@tiptap/extension-image": "^3.31.4",
+    "@tiptap/extension-link": "^3.31.4",
+    "@tiptap/extension-placeholder": "^3.31.4",
+    "@tiptap/starter-kit": "^3.31.4",
     "lucide": "^1.27.0",
     "three": "^0.185.1"
   },
@@ -30,7 +30,7 @@
     "orval": "^8.6.2",
     "terser": "^5.31.0",
     "typescript": "^5.5.0",
-    "vite": "^5.4.0",
+    "vite": "^6.4.4",
     "vitest": "^4.1.10"
   }
 }
