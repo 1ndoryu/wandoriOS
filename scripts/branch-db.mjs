@@ -111,7 +111,7 @@ export function getBranchDbContext({ verbose = true, ensureExists = true } = {})
 
   const cargoTargetBase =
     process.env.CARGO_TARGET_DIR_BASE ||
-    (process.platform === 'win32' ? 'C:\\tmp\\glory-target' : path.join(tmpdir(), 'glory-target'));
+    (process.platform === 'win32' ? 'C:\\tmp\\glory-target\\WANDORIUS' : path.join(tmpdir(), 'glory-target'));
   const cargoTargetDir =
     process.env.GLORY_CARGO_TARGET_DIR ||
     path.join(cargoTargetBase, `${pkgName}_${branchSlug}`);

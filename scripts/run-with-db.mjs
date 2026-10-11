@@ -99,10 +99,8 @@ process.once('exit', cleanupMarker);
 
 const child = spawn(cargoCommand(), cargoArgs, {
   stdio: 'inherit',
-  /* [05AA-3] sccache útil: sin incremental + basedirs para que la caché
-   * acierte tras cada purga del target/ (el usuario arranca siempre de cero).
-   * RUSTC_WRAPPER ya viene del entorno de usuario. */
-  env: { ...process.env, DATABASE_URL: dbUrl, CARGO_TARGET_DIR: cargoTargetDir, CARGO_INCREMENTAL: '0', SCCACHE_BASEDIRS: process.env.SCCACHE_BASEDIRS || projectRoot },
+  // [10AA-2 F4] Incremental activo: acelera el ciclo editar-compilar. sccache cachea las dependencias igual.
+  env: { ...process.env, DATABASE_URL: dbUrl, CARGO_TARGET_DIR: cargoTargetDir, SCCACHE_BASEDIRS: process.env.SCCACHE_BASEDIRS || projectRoot },
   shell: false,
 });
 
