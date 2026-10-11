@@ -84,6 +84,12 @@ corrección solo por salto mayor. `npm audit fix` sin `--force` no aplica nada (
 - Desbloqueo: migración verificable (`npm run build` + editor tiptap y dev server probados) en rama propia; sin `npm audit fix --force`.
 - Decidido: no se fuerza ningún salto mayor sin migración probada. Lock sin cambios.
 
+### 11AA-2 — Alerta Dependabot abierta: `rand` (2026-10-11, PENDIENTE)
+
+GitHub (`1ndoryu/wandoriOS`, main) tiene 1 alerta abierta: #26, severidad low, paquete `rand`. Sin verificar si es el crate de Cargo o un paquete npm, ni si coincide con 11AA-1.
+- Pendiente: confirmar la versión instalada en el lock; corregir con patch-bump o descartar con motivo.
+- Sin cambios de versión mayor sin migración probada. Gate: `sentinel check 11AA-2`.
+
 ### 259A-1 — Triage `cargo audit` lows 7→2 (2026-09-25, HECHA)
 
 Patch-bumps `quinn-proto 0.11.14→0.11.18` (+`rand` transitivo 0.9→0.10; directo
