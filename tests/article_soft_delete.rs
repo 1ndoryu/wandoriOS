@@ -43,6 +43,7 @@ async fn test_state() -> AppState {
         auth_action_rate_limit: Arc::new(Mutex::new(
             HashMap::<String, (u8, std::time::Instant)>::new(),
         )),
+        api_rate_limit: Arc::new(Mutex::new(HashMap::new())),
         dev_mailbox: Arc::new(Mutex::new(Vec::new())),
     }
 }

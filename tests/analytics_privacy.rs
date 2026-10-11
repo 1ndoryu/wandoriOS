@@ -44,6 +44,7 @@ async fn test_state() -> AppState {
         site_url: "http://localhost:3000".to_string(),
         login_rate_limit: Arc::new(Mutex::new(HashMap::new())),
         auth_action_rate_limit: Arc::new(Mutex::new(HashMap::new())),
+        api_rate_limit: Arc::new(Mutex::new(HashMap::new())),
         dev_mailbox: Arc::new(Mutex::new(Vec::new())),
     }
 }
