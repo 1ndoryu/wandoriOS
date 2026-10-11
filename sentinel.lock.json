@@ -12,14 +12,14 @@
     "sentinel": {
       "version": "0.7.23",
       "protocolVersion": 1,
-      "commit": "02d82d7aa28f7b1c1f051be76193c0dbb49a74d8",
+      "commit": "d401ded043d232c77dac673da0181747f61f8fff",
       "sha256": "c185dbb9cf1113f2b74b4689fc8f123fcb00379d6185bda0068ef1e0ea829b74",
       "patchSha256": null
     },
     "varsense": {
       "version": "2.2.9",
       "protocolVersion": 1,
-      "commit": "8f5eac20e30c74989352885cc255075bf94e5bf8",
+      "commit": "7c5cb7a6b448b52ac2fda8a219f89d1cb029c39a",
       "sha256": "a1a3cec5f9d29b10a079a562538fd237c91f74b4b4cb718c4a2872f4c9499bbf",
       "patchSha256": null,
       "capabilities": {
