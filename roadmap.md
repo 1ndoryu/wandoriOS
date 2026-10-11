@@ -73,6 +73,17 @@
 
 ## Pendientes ordenados
 
+### 11AA-1 — Vulnerabilidades npm de `frontend` sin parche en rango (2026-10-11, PENDIENTE)
+
+`npm audit` (lock sin cambios): 26 hallazgos (25 moderate, 1 high), todos con
+corrección solo por salto mayor. `npm audit fix` sin `--force` no aplica nada (exit 1
+= quedan vulnerabilidades, no error de npm).
+- High `vite <=6.4.2` (declarado `^5.4.0`, instalado 5.4.21): corrección = vite 8.3.4 (salto mayor).
+- Moderate `esbuild <=0.24.2` (arrastrado por vite 5): corrección = vite 8.3.4 (salto mayor).
+- Moderate `@tiptap/*` (`@tiptap/core` y extensiones; rangos `<=2.27.3`, `<=3.0.0-next.8` y `3.22.4–3.30.3`): corrección = `@tiptap/*` 3.31.4 (salto mayor). Declarado `^2.6.0`.
+- Desbloqueo: migración verificable (`npm run build` + editor tiptap y dev server probados) en rama propia; sin `npm audit fix --force`.
+- Decidido: no se fuerza ningún salto mayor sin migración probada. Lock sin cambios.
+
 ### 259A-1 — Triage `cargo audit` lows 7→2 (2026-09-25, HECHA)
 
 Patch-bumps `quinn-proto 0.11.14→0.11.18` (+`rand` transitivo 0.9→0.10; directo
