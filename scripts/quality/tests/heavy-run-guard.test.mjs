@@ -152,6 +152,38 @@ test('la excepción manual con motivo concede sobre el cooldown y queda auditada
   }
 });
 
+test('el override por entorno sin flag se audita como env, no como flag (run-with-db)', async () => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'glory-heavy-env-'));
+  const targetBase = path.join(root, 'target');
+  const names = ['GLORY_QUALITY_ALLOW_HEAVY', 'GLORY_HEAVY_RUN_REASON'];
+  const previous = Object.fromEntries(names.map(key => [key, process.env[key]]));
+  try {
+    for (const key of names) delete process.env[key];
+    await writeFile(path.join(root, 'quality.config.json'), JSON.stringify({ heavyRun: { cooldownMinutes: 180 } }), 'utf8');
+    const first = await acquireHeavyRun({ projectRoot: root, targetBase, mode: 'raw-cargo', command: 'run-with-db test' });
+    assert.equal(first.allowed, true);
+    await first.release({ status: 'pass' });
+    /* run-with-db no pasa allowHeavy: la excepción llega por entorno y el guard
+     * la concede leyéndola él mismo. El origen registrado debe ser 'env'. */
+    process.env.GLORY_QUALITY_ALLOW_HEAVY = '1';
+    process.env.GLORY_HEAVY_RUN_REASON = 'validar cierre 10AA-2';
+    const granted = await acquireHeavyRun({ projectRoot: root, targetBase, mode: 'raw-cargo', command: 'run-with-db test' });
+    assert.equal(granted.allowed, true);
+    const logText = await readFile(path.join(root, '.quality-reports', 'heavy-overrides.log'), 'utf8');
+    const entry = JSON.parse(logText.trim().split(/\r?\n/).at(-1));
+    assert.equal(entry.granted, true);
+    assert.equal(entry.source, 'env');
+    assert.equal(entry.reason, 'validar cierre 10AA-2');
+  } finally {
+    for (const key of names) {
+      if (previous[key] === undefined) delete process.env[key];
+      else process.env[key] = previous[key];
+    }
+    await rm(root, { recursive: true, force: true });
+    await rm(path.join(root, '..', 'glory-quality-guard'), { recursive: true, force: true });
+  }
+});
+
 test('logHeavyOverride no lanza aunque el directorio de reportes no exista', async () => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'glory-heavy-log-'));
   try {

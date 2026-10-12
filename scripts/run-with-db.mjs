@@ -8,7 +8,7 @@ import { existsSync, mkdirSync, unlinkSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { applySqlxMigrations, getBranchDbContext } from './branch-db.mjs';
-import { acquireHeavyRun, formatHeavyGuardMessage, isHeavyCargoCommand, isHeavyOverride } from './quality/heavy-run-guard.mjs';
+import { acquireHeavyRun, formatHeavyGuardMessage, isHeavyCargoCommand } from './quality/heavy-run-guard.mjs';
 import { cleanupTargets } from './quality/target-maintenance.mjs';
 import { defaultAgent, listActiveForeignTakeovers } from './quality/task-takeover.mjs';
 
@@ -40,11 +40,13 @@ try {
 console.log('');
 let heavyLease = null;
 if (isHeavyCargoCommand(cargoArgs) && !process.env.GLORY_HEAVY_RUN_TOKEN) {
+  /* No se pasa allowHeavy: run-with-db no tiene flag y la excepción llega por
+   * entorno (GLORY_QUALITY_ALLOW_HEAVY / token). El guard la lee directamente
+   * y así la auditoría registra el origen real (env), no 'flag'. */
   heavyLease = await acquireHeavyRun({
     projectRoot,
     mode: 'raw-cargo',
     command: `run-with-db ${cargoArgs.join(' ')}`,
-    allowHeavy: isHeavyOverride(),
   });
   if (!heavyLease.allowed) {
     console.error(`[run-with-db] BLOQUEADO: ${formatHeavyGuardMessage(heavyLease)}`);
