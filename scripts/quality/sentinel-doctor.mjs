@@ -55,8 +55,12 @@ async function resolveSentinelCli(projectRoot) {
   const tool = manifest?.tools?.sentinel;
   if (!tool?.cli) throw new Error('quality-tools.json no declara el CLI de Sentinel');
   const candidates = [];
+  const sourceCli = tool.sourcePath ? path.resolve(projectRoot, tool.sourcePath, tool.cli) : null;
+  /* Mismo criterio que gate-check: con el submódulo en el pin, su build manda; la copia provisionada no tiene identidad de commit y queda obsoleta tras un bump. */
+  const submoduleManda = Boolean(sourceCli && tool.commit && await submoduleAtPin(projectRoot, tool.sourcePath, tool.commit));
+  if (submoduleManda) candidates.push(sourceCli);
   if (tool.provisionPath) candidates.push(path.resolve(projectRoot, tool.provisionPath, tool.cli));
-  if (tool.sourcePath) candidates.push(path.resolve(projectRoot, tool.sourcePath, tool.cli));
+  if (sourceCli && !submoduleManda) candidates.push(sourceCli);
   if (manifest.installRoot) candidates.push(path.resolve(projectRoot, manifest.installRoot, 'sentinel', tool.cli));
   for (const candidate of candidates) {
     try {
@@ -67,6 +71,13 @@ async function resolveSentinelCli(projectRoot) {
     }
   }
   throw new Error('No se encontró el CLI fijado de Sentinel; ejecuta npm run quality:setup');
+}
+
+async function submoduleAtPin(projectRoot, sourcePath, commit) {
+  try {
+    const { stdout } = await execFileAsync('git', ['-C', path.resolve(projectRoot, sourcePath), 'rev-parse', 'HEAD']);
+    return stdout.trim() === commit;
+  } catch { return false; }
 }
 
 async function runCanonicalDoctor(projectRoot, json) {
