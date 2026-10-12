@@ -1,7 +1,7 @@
 # Inventario de scripts y adapters frente a Sentinel
 
 > Fecha de corte: 2026-08-07
-> Iniciativas canónicas: `Agente/planes/plan-migracion-scripts-adapters-sentinel-2026-08-06.md` y `Agente/planes/plan-preflight-recuperacion-sentinel-2026-08-07.md`
+> Iniciativas canónicas: `Agente/planes/completados/plan-migracion-scripts-adapters-sentinel-2026-08-06.md` y `Agente/planes/completados/plan-preflight-recuperacion-sentinel-2026-08-07.md`
 
 > **Actualización de seguimiento:** este inventario conserva abajo la fotografía histórica
 > de la transición 0.6.0. El estado operativo actual es Sentinel 0.7.4 (`0349485c`) y VarSense 2.2.1

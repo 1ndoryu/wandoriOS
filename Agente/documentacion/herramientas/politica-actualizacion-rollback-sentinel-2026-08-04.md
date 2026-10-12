@@ -2,7 +2,7 @@
 
 > **Fecha:** 2026-08-04
 > **Estado:** contrato documental aprobado dentro del bloque local de Fase 0. No se ejecuta hasta disponer del runtime global versionado y sus fixtures; la instalación de shims y la modificación de perfiles permanecen bloqueadas por dependencia externa.
-> **Fuente canónica del plan:** `Agente/planes/plan-global-quality-guard-agnostico-2026-08-02.md` (Fase 1, Fase 5 y Definition of Done).
+> **Fuente canónica del plan:** `Agente/planes/completados/plan-global-quality-guard-agnostico-2026-08-02.md` (Fase 1, Fase 5 y Definition of Done).
 > **ADR:** `Agente/documentacion/arquitectura/adr-sentinel-plano-global-028a6-2026-08-03.md`.
 
 ## 1. Objetivo y límites

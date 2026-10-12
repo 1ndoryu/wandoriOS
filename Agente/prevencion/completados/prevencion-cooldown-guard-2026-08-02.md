@@ -8,7 +8,7 @@
 
 ## Regla a implementar (automatizable)
 
-**Dónde:** `scripts/quality/heavy-run-guard.mjs` (capa del guard; actualmente en manos del otro agente vía `Agente/planes/plan-heavy-run-guard-2026-08-02.md` — coordinar antes de editar).
+**Dónde:** `scripts/quality/heavy-run-guard.mjs` (capa del guard; actualmente en manos del otro agente vía `Agente/planes/completados/plan-heavy-run-guard-2026-08-02.md` — coordinar antes de editar).
 
 1. **Auditoría persistente de overrides:** cuando se active la excepción (`--allow-heavy`, `GLORY_QUALITY_ALLOW_HEAVY=1`, `GLORY_HEAVY_RUN_TOKEN`), escribir una línea en `.quality-reports/heavy-overrides.log` con: timestamp ISO, source (`flag`/`env`/`token`), comando completo, cwd, PID y motivo.
 2. **Exigir motivo:** activar la excepción sin `--heavy-reason "<motivo>"` produce WARNING o FAIL con "la excepción requiere motivo"; con motivo, se registra en el log de auditoría.

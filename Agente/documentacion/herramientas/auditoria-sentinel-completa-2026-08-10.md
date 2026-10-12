@@ -88,7 +88,7 @@ por el adapter local y no por ese recorrido. La deuda está reconocida explícit
 
 - `roadmap-sentinel.md:341` pide eliminar la separación conceptual entre gate y Sentinel;
 - `roadmap-sentinel.md:351` mantiene pendiente integrar el consumidor al orquestador del Core;
-- `Agente/planes/plan-global-quality-guard-agnostico-2026-08-02.md:13` declara a Sentinel como único plano;
+- `Agente/planes/completados/plan-global-quality-guard-agnostico-2026-08-02.md:13` declara a Sentinel como único plano;
 - el mismo plan, línea 53, dice que `task:check` debe quedar solo como alias.
 
 Por tanto, la intuición del usuario no contradice la arquitectura objetivo: **expone que esa arquitectura aún
@@ -533,7 +533,7 @@ El CLI debe generar su help y la referencia de schema desde el mismo contrato pr
 
 ## 7. Revisión del plan 098A-1
 
-El plan `plan-agilizar-ceremonia-cierre-calidad-2026-08-09.md` diagnostica correctamente varios costes:
+El plan `Agente/planes/completados/plan-agilizar-ceremonia-cierre-calidad-2026-08-09.md` diagnostica correctamente varios costes:
 preflight completo, mantenimiento incondicional, caché fría, evidencia invisible desde worktrees y ceremonia
 duplicada.
 
@@ -682,7 +682,7 @@ ownership.
 
 > **Estado:** COMPLETADA CON PENDIENTES CONDICIONADOS — Fases F0–F9 ejecutadas y documentadas; la retirada
 > física de capas legacy espera una segunda release verde con rollback. El seguimiento operativo vive en
-> `Agente/planes/plan-ejecucion-auditoria-sentinel-2026-08-10.md`; el roadmap marca 098A-1 como
+> `Agente/planes/completados/plan-ejecucion-auditoria-sentinel-2026-08-10.md`; el roadmap marca 098A-1 como
 > absorbido.  
 > **Fuente del plan:** hallazgos y evidencia de esta auditoría.  
 > **Veredicto de arquitectura:** `VIABLE CON RESERVAS`.  
@@ -720,7 +720,7 @@ Corregir todos los defectos y riesgos confirmados sin consolidar el adapter tran
 
 #### Decisión sobre el plan 098A-1
 
-`plan-agilizar-ceremonia-cierre-calidad-2026-08-09.md` debe ser **absorbido/sustituido** al iniciar la
+`Agente/planes/completados/plan-agilizar-ceremonia-cierre-calidad-2026-08-09.md` debe ser **absorbido/sustituido** al iniciar la
 implementación:
 
 - [ ] Conservar su F0 como línea base y trazabilidad.

@@ -93,7 +93,7 @@ Los siguientes bloques y casillas fueron movidos aquí desde roadmap.md:
 
 **108A-1 — Ejecutar la corrección de la auditoría completa de Glory Sentinel y el quality gate
 (completada, 10-08-2026).** F0–F9 ejecutadas en orden; release publicado y consumidor adoptado;
-push autorizado por el usuario. Plan de seguimiento: `Agente/planes/plan-ejecucion-auditoria-sentinel-2026-08-10.md`.
+push autorizado por el usuario. Plan de seguimiento: `Agente/planes/completados/plan-ejecucion-auditoria-sentinel-2026-08-10.md`.
 
 **108A-6 — Retirada Legacy (capa A completada).** Continúa la adopción posterior a la auditoría:
 stage `custom` retirado (commit `2244eee7`), segundo consumidor adoptado, y la release **0.7.0** de
@@ -203,7 +203,7 @@ La retirada física de capas A/B espera una segunda release verde con rollback.
 
 **098A-1 — Agilizar la ceremonia de cierre de calidad (ABSORBIDO por 108A-1, 10-08; aprobado
 09-08).** Conservado como historia. Plan original:
-`Agente/planes/plan-agilizar-ceremonia-cierre-calidad-2026-08-09.md`.
+`Agente/planes/completados/plan-agilizar-ceremonia-cierre-calidad-2026-08-09.md`.
 
 **028A-18 — Orquestación universal de tareas con Sentinel (en curso).** El siguiente bloque de tooling permanece serializado hasta completar su integración, gate y cleanup. La iniciativa SNT-12 queda registrada como plan dependiente/aprobable, no como tarea paralela habilitada.
 
@@ -238,7 +238,7 @@ legacy solo se ejecuta tras la segunda release verde y rollback.
 
 ### 028A-6 — Guard global agnóstico por proyecto y rama (migración incremental)
 
-**Depende de:** 028A-5 y de aprobar `Agente/planes/plan-global-quality-guard-agnostico-2026-08-02.md`.
+**Depende de:** 028A-5 y de aprobar `Agente/planes/completados/plan-global-quality-guard-agnostico-2026-08-02.md`.
 
 - [x] Definir y validar localmente la política v2 en `scripts/quality/policy.mjs`, sin reutilizar silenciosamente el `sentinel.config.json` v1 del analizador.
 - [x] Añadir `quality:doctor -- --migrate --dry-run`; produce migración en memoria, `writes: []` y no modifica perfiles/archivos.
@@ -259,7 +259,7 @@ legacy solo se ejecuta tras la segunda release verde y rollback.
 
 ### 028A-8 — Optimización medible de Sentinel y VarSense (en curso, tramos 1–4 cerrados)
 
-**Depende de:** 028A-5 y 028A-6. Plan canónico: `Agente/planes/plan-optimizacion-sentinel-varsense-2026-08-02.md`.
+**Depende de:** 028A-5 y 028A-6. Plan canónico: `Agente/planes/completados/plan-optimizacion-sentinel-varsense-2026-08-02.md`.
 
 - [x] Corregir la degradación full→local-light para que el alcance efectivo no siga ejecutando análisis completo tras el cooldown: `scope.mjs` separa requested/automatic/effective/fullReason/heavyDeferred y `task-check.mjs` adquiere el lease pesado también para automaticFull; un full diferido degrada a local-light real (verificado en gate 028A-8 con `full · ejecución incremental (heavy-deferred)`).
 - [ ] Compartir un manifiesto de alcance/hashes entre etapas y añadir métricas de descubrimiento, parseo, caché, archivos reutilizados, RSS y CPU. *(el `scope-manifest.json` único con hashes ya está emitido y `run-frontend-tests` lo consume; las métricas por etapa del orquestador quedaron: `probeCachedPass` expone la razón de invalidación, `runVarsense` propaga filesAnalyzed/filesReused/cacheHitRate/peakRssMb al reporte y `npm run quality:profile` calcula p50/p95 por etapa y total desde los últimos reportes — Fase 0/4 parcial)*
@@ -314,7 +314,7 @@ quality) y gate PASS.
 
 ### 028A-16 — Auditoría del uso de excepciones del guard (prevención cooldown)
 
-**Depende de:** coordinar con `Agente/planes/plan-heavy-run-guard-2026-08-02.md` (el otro agente posee `scripts/quality/`). Fuente: `Agente/prevencion/completados/prevencion-cooldown-guard-2026-08-02.md` (archivada).
+**Depende de:** coordinar con `Agente/planes/completados/plan-heavy-run-guard-2026-08-02.md` (el otro agente posee `scripts/quality/`). Fuente: `Agente/prevencion/completados/prevencion-cooldown-guard-2026-08-02.md` (archivada).
 
 - [x] Registrar en un log auditable (`.quality-reports/heavy-overrides.log`) cada activación de la excepción (`--allow-heavy`, `GLORY_QUALITY_ALLOW_HEAVY`, `GLORY_HEAVY_RUN_TOKEN`): timestamp, source, comando completo, cwd, PID. `logHeavyOverride` escribe una línea JSONL por evento (concedido o denegado) y nunca bloquea la decisión; `acquireHeavyRun` y el `--execute-cargo` del shim lo invocan. Tests en `heavy-run-guard.test.mjs`.
 - [x] Exigir motivo (`--heavy-reason "<motivo>"`) para activar la excepción y mostrarlo en el reporte del gate. Sin motivo, `inspectHeavyRun`/`acquireHeavyRun` rechazan con `heavy-reason-required` (el intento queda en el log); el motivo se acepta por flag o por `GLORY_HEAVY_RUN_REASON`; el reporte expone `heavyOverride` con source/motivo y la línea `OVERRIDE` en Markdown/compacto.
@@ -330,7 +330,7 @@ quality) y gate PASS.
 > (Core/CLI/planner). El checklist siguiente se conserva como historia.
 
 **Aprobado por el usuario (OK 09-08-2026).** Plan canónico:
-`Agente/planes/plan-agilizar-ceremonia-cierre-calidad-2026-08-09.md` (veredicto thinker
+`Agente/planes/completados/plan-agilizar-ceremonia-cierre-calidad-2026-08-09.md` (veredicto thinker
 "VIABLE CON RESERVAS", P1 aplicadas). Ataca el overhead de cierre: preflight/mantenimiento
 incondicionales, evidencia no visible desde worktrees, ceremonia pesada por tarea y caché fría.
 **No toca el submódulo `tools/sentinel`** ni releases upstream (solo `scripts/quality/`,

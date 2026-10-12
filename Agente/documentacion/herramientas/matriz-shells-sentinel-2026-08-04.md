@@ -2,7 +2,7 @@
 
 > **Fecha:** 2026-08-04
 > **Estado:** contrato documental aprobado dentro del bloque local de Fase 0. La ejecución de la matriz contra shells reales y CI permanece bloqueada hasta disponer del runtime global versionado y sus fixtures (Fase 4).
-> **Plan canónico:** `Agente/planes/plan-global-quality-guard-agnostico-2026-08-02.md` (Fase 0, Fase 4) y `roadmap-sentinel.md` (SNT-08, SNT-10).
+> **Plan canónico:** `Agente/planes/completados/plan-global-quality-guard-agnostico-2026-08-02.md` (Fase 0, Fase 4) y `roadmap-sentinel.md` (SNT-08, SNT-10).
 
 ## 1. Objetivo
 

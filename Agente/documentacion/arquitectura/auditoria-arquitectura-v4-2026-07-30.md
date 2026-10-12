@@ -7,7 +7,7 @@
 > **Auditorías anteriores:** v1 (10), v2 (28), v3 (16)
 > **Acumulado base:** 78 hallazgos en 4 auditorías
 > **Revisión SOLID 297A-12:** 4 observaciones de lifecycle/ownership añadidas como anexo; no se mezclan con el conteo base para evitar doble contabilización
-> **Plan asociado:** `plan-mejora-quality-tool-2026-07-30.md`
+> **Plan asociado:** `Agente/planes/completados/plan-mejora-quality-tool-2026-07-30.md`
 > **Revisión extendida:** Esta versión corrige omisiones de la v4 original — añade 12 hallazgos, corrige 3 subestimaciones, profundiza impacto en tareas futuras
 
 ---
@@ -815,7 +815,7 @@ Estado de cada hallazgo de la auditoría v4 con su corrección o plan de acción
 - Auditoría v2: `auditoria-arquitectura-frontend-v2-2026-07-30.md` (28 hallazgos)
 - Auditoría v3: `auditoria-arquitectura-v3-2026-07-30.md` (16 hallazgos)
 - Auditoría v4 original: `auditoria-arquitectura-v4-2026-07-30.md` (12 hallazgos — reemplazada por esta)
-- Plan mejora quality tool: `plan-mejora-quality-tool-2026-07-30.md`
+- Plan mejora quality tool: `Agente/planes/completados/plan-mejora-quality-tool-2026-07-30.md`
 - Plan componentización UI: `plan-componentizacion-ui-2026-07-30.md`
 - Sentinel config: `sentinel.config.json` (7 reglas)
 - VarSense config: `varsense.config.json` (4 detectores; extractor de contratos vanilla ampliado, patch reproducible y 43 tests del tool)

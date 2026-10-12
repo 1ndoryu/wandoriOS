@@ -356,7 +356,7 @@ no describe como pendientes los contratos ya activos en `scripts/quality`.
 
 **Objetivo:** eliminar la separación conceptual entre un "quality gate" independiente y Sentinel. Sentinel debe ser el único dueño de política, guard, cooldown, scope, caché, ejecución de etapas y reporte; VarSense conserva su core/CLI/LSP, pero entra como analyzer versionado.
 
-**Plan canónico:** `Agente/planes/plan-global-quality-guard-agnostico-2026-08-02.md`.
+**Plan canónico:** `Agente/planes/completados/plan-global-quality-guard-agnostico-2026-08-02.md`.
 
 - [x] Definir el contrato `analyze/check/guard/doctor/status` sin romper el CLI `sentinel analyze` actual. *(CLI implementado en `a57cfc1`; la matriz multi-shell y el runtime global siguen en Fase 4)*
 - [ ] Definir el contrato de analyzer: manifest de alcance, configuración efectiva, cancelación, timeout, salida normalizada, métricas y estados de error.

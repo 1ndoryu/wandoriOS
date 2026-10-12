@@ -2,7 +2,7 @@
 
 > **Fecha:** 2026-08-10 (mediciones; el nombre conserva la fecha del plan 098A-1 F0).
 > **Origen:** F0 de `098A-1` (plan agilizar ceremonia) absorbido por la Fase 0 de la
-> auditoría `108A-1` (`plan-ejecucion-auditoria-sentinel-2026-08-10.md`).
+> auditoría `108A-1` (`Agente/planes/completados/plan-ejecucion-auditoria-sentinel-2026-08-10.md`).
 > **Máquina:** Windows, Node `process.version`, checkout `glory-rust-template` rama `wandorius`.
 > **Objetivo:** separar el coste del cierre por fase (preflight, mantenimientos, etapas,
 > reporte) en `metrics.json` (`phaseDurationMs`) para poder atacar el overhead sin adivinar.

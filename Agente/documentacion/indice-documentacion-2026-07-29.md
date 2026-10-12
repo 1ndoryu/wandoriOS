@@ -24,7 +24,7 @@
 | ¿Cómo se agrega una nueva app al OS (receta canónica)?  | `Agente/documentacion/arquitectura/guia-agregar-app-2026-07-31.md`                 |
 | ¿Cómo se cargan apps pesadas y cuál es su presupuesto?   | `Agente/documentacion/arquitectura/adr-carga-apps-pesadas-2026-07-31.md`           |
 | ¿Dónde está archivado el frente de videojuego? | `_archivo/juego/` (código frontend/backend + documentación; se ocultó del front el 18-ago) |
-| ¿Cómo se ejecuta la auditoría y corrección de Sentinel y el quality gate? | `Agente/documentacion/herramientas/auditoria-sentinel-completa-2026-08-10.md` (plan: `Agente/planes/plan-ejecucion-auditoria-sentinel-2026-08-10.md`) |
+| ¿Cómo se ejecuta la auditoría y corrección de Sentinel y el quality gate? | `Agente/documentacion/herramientas/auditoria-sentinel-completa-2026-08-10.md` (plan: `Agente/planes/completados/plan-ejecucion-auditoria-sentinel-2026-08-10.md`) |
 | ¿Qué decisión arquitectónica rige el producto único Sentinel? | `tools/sentinel/docs/adr/0001-producto-unico-sentinel.md` |
 | ¿Cuáles son los conceptos, configuración y operación vigentes de Sentinel? | `tools/sentinel/docs/concepts.md`, `tools/sentinel/docs/configuration.md`, `tools/sentinel/docs/operations.md` |
 | ¿Cómo se migra un gate legacy sin copiar carpetas ni conservar duplicados? | `tools/sentinel/docs/migration.md` + skill `quality-gate-setup` |
@@ -39,7 +39,7 @@
 | ¿Cómo se consienten, anonimizan y depuran las métricas? | `Agente/planes/plan-analytics-privacidad-2026-08-01.md` |
 | ¿Cómo funciona el registro verificado y recovery?       | `Agente/planes/plan-auth-verificado-2026-08-01.md` |
 | ¿Cuál es la paridad y el commit fijado de Sentinel/VarSense? | `Agente/documentacion/herramientas/matriz-paridad-sentinel-varsense-2026-08-01.md` |
-| ¿Cómo se migra Sentinel a plano global sin romper el gate? | `Agente/planes/plan-global-quality-guard-agnostico-2026-08-02.md` + `Agente/documentacion/arquitectura/adr-sentinel-plano-global-028a6-2026-08-03.md` |
+| ¿Cómo se migra Sentinel a plano global sin romper el gate? | `Agente/planes/completados/plan-global-quality-guard-agnostico-2026-08-02.md` + `Agente/documentacion/arquitectura/adr-sentinel-plano-global-028a6-2026-08-03.md` |
 | ¿Cómo se actualiza, revierte y retira el runtime global de Sentinel? | `Agente/documentacion/herramientas/politica-actualizacion-rollback-sentinel-2026-08-04.md` |
 | ¿Qué shells cubre el interceptor de Sentinel y cuál es su frontera? | `Agente/documentacion/herramientas/matriz-shells-sentinel-2026-08-04.md` |
 | ¿Cómo se retiran los wrappers duplicados del repo tras dos releases? | `Agente/documentacion/herramientas/runbook-retirada-wrappers-sentinel-2026-08-05.md` |

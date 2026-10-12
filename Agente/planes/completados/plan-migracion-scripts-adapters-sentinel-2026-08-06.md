@@ -11,7 +11,7 @@
 > de capas legacy después de dos CI consecutivos, matriz multi-shell y gates verdes; las secciones inferiores
 > conservan evidencia histórica de la transición 0.6.0 y no deben usarse para bootstrap nuevo.
 > **Ámbito:** calidad, coordinación de tareas y wrappers de desarrollo; migración reversible y por evidencia
-> **Relación:** complementa `Agente/planes/plan-global-quality-guard-agnostico-2026-08-02.md`, `Agente/planes/plan-sentinel-orquestacion-tareas-worktrees-2026-08-06.md` y `Agente/planes/plan-preflight-recuperacion-sentinel-2026-08-07.md`
+> **Relación:** complementa `Agente/planes/completados/plan-global-quality-guard-agnostico-2026-08-02.md`, `Agente/planes/completados/plan-sentinel-orquestacion-tareas-worktrees-2026-08-06.md` y `Agente/planes/completados/plan-preflight-recuperacion-sentinel-2026-08-07.md`
 > **Fuente canónica de esta iniciativa:** este documento
 
 ## 1. Decisión ejecutiva

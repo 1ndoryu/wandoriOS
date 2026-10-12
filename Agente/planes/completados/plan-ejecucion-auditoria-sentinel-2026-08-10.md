@@ -37,7 +37,7 @@
   - `scripts/quality/task-check.mjs`: fragmento de medición F0 de 098A-1 **incompleto** — usa
     `preflightStartedAt` sin declararlo (`ReferenceError` en todo `task:check`).
   - Untracked: `Agente/documentacion/herramientas/auditoria-sentinel-completa-2026-08-10.md` y
-    `Agente/planes/plan-agilizar-ceremonia-cierre-calidad-2026-08-09.md` (historia; no se borran).
+    `Agente/planes/completados/plan-agilizar-ceremonia-cierre-calidad-2026-08-09.md` (historia; no se borran).
 - **Reportes previos:** ninguno válido para `108A-1`; todo gate posterior al fragmento F0 de 098A-1
   fallaba con `ReferenceError`. Línea base a reconstruir tras el hotfix.
 - **Guard pesado:** sin full activo ni cooldown (`quality:guard` → `projects: {}`, `active: null`).

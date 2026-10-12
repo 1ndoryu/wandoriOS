@@ -1,7 +1,7 @@
 # Runbook — Retirada de los wrappers del repo (028A-6 Fase 5 residual)
 
 > **Fecha:** 2026-08-05
-> **Plan canónico:** `Agente/planes/plan-global-quality-guard-agnostico-2026-08-02.md` (Fase 5).
+> **Plan canónico:** `Agente/planes/completados/plan-global-quality-guard-agnostico-2026-08-02.md` (Fase 5).
 > **Criterio:** este runbook se ejecutó de forma mecánica, verificada y reversible después de dos releases consecutivas con la matriz en verde.
 > **Estado (2026-08-11):** Sentinel **0.7.1** (`b22c848`, tag `v0.7.1`) y VarSense **2.2.1** (`88f281f`,
 > tag `v2.2.1`) son la segunda release adoptada por wandorius y glory-rs-rest. Setup, lock, doctor y
