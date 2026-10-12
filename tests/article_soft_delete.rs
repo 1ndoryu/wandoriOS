@@ -129,8 +129,12 @@ async fn json_body(response: axum::response::Response) -> Value {
 }
 
 fn create_body(title: &str) -> Value {
+    /* `articles.slug` es UNIQUE y el slug sale del título: un sufijo por
+     * ejecución evita el 500 (unique violation) cuando una ejecución previa
+     * falló antes de su limpieza y dejó una fila con el mismo slug. */
+    let unique_title = format!("{title} {}", Uuid::new_v4().simple());
     json!({
-        "title": title,
+        "title": unique_title,
         "content": { "type": "doc", "content": [{ "type": "paragraph" }] },
         "excerpt": "resumen",
         "status": "published"
@@ -190,6 +194,8 @@ async fn soft_delete_moves_article_and_envelope_to_trash_and_restore_recovers_bo
     assert_eq!(created_status, StatusCode::CREATED);
     let article: Value = serde_json::from_slice(&created_body).expect("artículo JSON");
     let article_id = article["id"].as_str().expect("id del artículo").to_string();
+    /* `resources.id` y `articles.id` son UUID: enlazar String compara uuid = text. */
+    let article_uuid: Uuid = article_id.parse().expect("uuid del artículo");
     assert_eq!(article["trashed"], json!(false));
 
     /* Soft delete. */
@@ -259,7 +265,9 @@ async fn soft_delete_moves_article_and_envelope_to_trash_and_restore_recovers_bo
         .expect("papelera");
     assert_eq!(trashed.status(), StatusCode::OK);
     let trashed_body = json_body(trashed).await;
-    assert_eq!(trashed_body["total"], json!(1));
+    /* La BD de pruebas es compartida (tests en paralelo y restos de ejecuciones
+     * previas): se valida la presencia del artículo, no el total global. */
+    assert!(trashed_body["total"].as_u64().unwrap_or(0) >= 1);
     let trashed_item = trashed_body["items"]
         .as_array()
         .expect("items")
@@ -269,11 +277,12 @@ async fn soft_delete_moves_article_and_envelope_to_trash_and_restore_recovers_bo
     assert_eq!(trashed_item["trashed"], json!(true));
 
     /* El envelope `resources` quedó trashed en la misma transacción. */
-    let (lifecycle,): (String,) = sqlx::query_as("SELECT lifecycle FROM resources WHERE id = $1")
-        .bind(&article_id)
-        .fetch_one(&state.pool)
-        .await
-        .expect("envelope del artículo");
+    let (lifecycle,): (String,) =
+        sqlx::query_as("SELECT lifecycle::text FROM resources WHERE id = $1")
+            .bind(article_uuid)
+            .fetch_one(&state.pool)
+            .await
+            .expect("envelope del artículo");
     assert_eq!(lifecycle, "trashed");
 
     /* Restaurar. */
@@ -310,7 +319,14 @@ async fn soft_delete_moves_article_and_envelope_to_trash_and_restore_recovers_bo
             .expect("papelera tras restore"),
     )
     .await;
-    assert_eq!(trashed_after["total"], json!(0));
+    assert!(
+        trashed_after["items"]
+            .as_array()
+            .expect("items de la papelera tras restore")
+            .iter()
+            .all(|item| item["id"].as_str() != Some(article_id.as_str())),
+        "el artículo restaurado no debe seguir en la papelera"
+    );
     let list_after = json_body(
         router
             .clone()
@@ -336,8 +352,8 @@ async fn soft_delete_moves_article_and_envelope_to_trash_and_restore_recovers_bo
 
     /* El envelope volvió a active. */
     let (lifecycle_after,): (String,) =
-        sqlx::query_as("SELECT lifecycle FROM resources WHERE id = $1")
-            .bind(&article_id)
+        sqlx::query_as("SELECT lifecycle::text FROM resources WHERE id = $1")
+            .bind(article_uuid)
             .fetch_one(&state.pool)
             .await
             .expect("envelope restaurado");
@@ -345,12 +361,12 @@ async fn soft_delete_moves_article_and_envelope_to_trash_and_restore_recovers_bo
 
     /* Limpieza directa de la fila y del envelope de prueba. */
     sqlx::query("DELETE FROM resources WHERE id = $1")
-        .bind(&article_id)
+        .bind(article_uuid)
         .execute(&state.pool)
         .await
         .expect("limpieza envelope");
     sqlx::query("DELETE FROM articles WHERE id = $1")
-        .bind(&article_id)
+        .bind(article_uuid)
         .execute(&state.pool)
         .await
         .expect("limpieza artículo");
@@ -436,6 +452,7 @@ async fn trashed_article_is_hidden_from_reads_until_restore() {
         .expect("creación");
     let article = json_body(created).await;
     let article_id = article["id"].as_str().expect("id").to_string();
+    let article_uuid: Uuid = article_id.parse().expect("uuid del artículo");
 
     let deleted = router
         .clone()
@@ -495,12 +512,12 @@ async fn trashed_article_is_hidden_from_reads_until_restore() {
     assert_eq!(by_id_after.status(), StatusCode::OK);
 
     sqlx::query("DELETE FROM resources WHERE id = $1")
-        .bind(&article_id)
+        .bind(article_uuid)
         .execute(&state.pool)
         .await
         .expect("limpieza envelope");
     sqlx::query("DELETE FROM articles WHERE id = $1")
-        .bind(&article_id)
+        .bind(article_uuid)
         .execute(&state.pool)
         .await
         .expect("limpieza artículo");
