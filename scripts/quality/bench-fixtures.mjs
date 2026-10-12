@@ -28,14 +28,14 @@ export const FIXTURES = Object.freeze({
   }),
   medium: Object.freeze({
     id: 'medium',
-    label: 'mediano: 12 archivos reales (8 TS + 3 CSS + vite.config.ts) con borrado (reset.css) y rename (app-registration-game-3d.ts → app-registration-game-playable.ts) simulados',
+    label: 'mediano: 12 archivos reales (8 TS + 3 CSS + vite.config.ts) con borrado (reset.css) y rename (app-registration-game-3d.ts) simulados',
     changeTypes: ['ts', 'css', 'config', 'delete', 'rename'],
     profiles: ['frontend', 'css'],
     files: [
       'frontend/src/features/runtime/app-registration.ts',
       'frontend/src/features/runtime/app-registration-admin.ts',
-      'frontend/src/features/runtime/app-registration-game-playable.ts',
-      'frontend/src/features/runtime/app-registration-game-routes.ts',
+      'frontend/src/features/runtime/app-registry.ts',
+      'frontend/src/features/runtime/window-manager.ts',
       'frontend/src/features/runtime/workspace/public-resource-locator.ts',
       'frontend/src/features/desktop/workspace-icon-grid.ts',
       'frontend/src/features/desktop/apps/finder/finder-preview.ts',
