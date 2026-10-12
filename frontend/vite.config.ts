@@ -29,8 +29,9 @@ export default defineConfig({
     minify: 'terser',
     rollupOptions: {
       output: {
-        manualChunks: {
-          tiptap: ['@tiptap/core', '@tiptap/starter-kit'],
+        // Vite 8 (rolldown) exige función; el objeto de Vite 7 da "manualChunks is not a function".
+        manualChunks(id) {
+          if (/node_modules[\\/]@tiptap[\\/](core|starter-kit)[\\/]/.test(id)) return 'tiptap';
         },
       },
     },
