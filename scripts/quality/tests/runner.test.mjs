@@ -65,3 +65,25 @@ test('safeEnvironment hereda los tokens de sanción del gate desde process.env (
     else process.env.GLORY_HEAVY_RUN_TOKEN = previousHeavy;
   }
 });
+
+test('safeEnvironment hereda el override de un uso del guard pesado (2026-10-12)', () => {
+  /* Regresión 10AA-2: el override pasado al gate (--allow-heavy por entorno)
+   * no llegaba al hijo de rust, así que run-with-db aplicaba el cooldown sin
+   * registrar la excepción. Mismo contrato que los tokens: heredado desde
+   * process.env y fuera del allowlist. */
+  const names = ['GLORY_QUALITY_ALLOW_HEAVY', 'GLORY_HEAVY_RUN_REASON'];
+  const previous = Object.fromEntries(names.map(key => [key, process.env[key]]));
+  process.env.GLORY_QUALITY_ALLOW_HEAVY = '1';
+  process.env.GLORY_HEAVY_RUN_REASON = 'motivo de prueba';
+  try {
+    const env = safeEnvironment({});
+    assert.equal(env.GLORY_QUALITY_ALLOW_HEAVY, '1');
+    assert.equal(env.GLORY_HEAVY_RUN_REASON, 'motivo de prueba');
+    for (const key of names) assert.equal(DEFAULT_ENV_ALLOWLIST.includes(key), false, `${key} no debe estar en el allowlist`);
+  } finally {
+    for (const key of names) {
+      if (previous[key] === undefined) delete process.env[key];
+      else process.env[key] = previous[key];
+    }
+  }
+});

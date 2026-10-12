@@ -19,8 +19,12 @@ export const DEFAULT_ENV_ALLOWLIST = Object.freeze([
  * globales bloqueaban las validaciones internas del gate (cargo fmt) y
  * run-with-db chocaba con el lease pesado del propio gate (clippy/test). Estos
  * marcadores no contienen secretos: solo identifican una ejecución sancionada
- * por el gate; si el proceso padre no es el gate, no existen. */
-const GATE_SANCTION_ENV = Object.freeze(['GLORY_QUALITY_GATE_TOKEN', 'GLORY_HEAVY_RUN_TOKEN']);
+ * por el gate; si el proceso padre no es el gate, no existen.
+ * [por que] GLORY_QUALITY_ALLOW_HEAVY y GLORY_HEAVY_RUN_REASON son el override
+ * de un uso que la usuaria pasa al gate (2026-10-12). Sin herencia, el hijo de
+ * rust (run-with-db clippy/test) no los veía y el guard aplicaba el cooldown sin
+ * dejar registro en heavy-overrides.log. Solo los lee heavy-run-guard. */
+const GATE_SANCTION_ENV = Object.freeze(['GLORY_QUALITY_GATE_TOKEN', 'GLORY_HEAVY_RUN_TOKEN', 'GLORY_QUALITY_ALLOW_HEAVY', 'GLORY_HEAVY_RUN_REASON']);
 const MAX_CAPTURE_BYTES = 64 * 1024;
 const activeChildren = new Set();
 
