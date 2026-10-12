@@ -6,7 +6,7 @@
       "repository": "https://github.com/1ndoryu/glory-sentinel.git",
       "sourcePath": "tools/sentinel",
       "provisionPath": ".quality-tools/sentinel",
-      "commit": "2a00a29464efb9b40b324c7f0c421c0f01cb8631",
+      "commit": "f6915105be7c403e912dae1f627b5df393736933",
       "version": "0.7.24",
       "outputSchemaVersion": "1",
       "buildScript": "compile",
