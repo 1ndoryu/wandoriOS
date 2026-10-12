@@ -7,7 +7,7 @@ import { spawn } from 'node:child_process';
 import { existsSync, mkdirSync, unlinkSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { getBranchDbContext } from './branch-db.mjs';
+import { applySqlxMigrations, getBranchDbContext } from './branch-db.mjs';
 import { acquireHeavyRun, formatHeavyGuardMessage, isHeavyCargoCommand, isHeavyOverride } from './quality/heavy-run-guard.mjs';
 import { cleanupTargets } from './quality/target-maintenance.mjs';
 import { defaultAgent, listActiveForeignTakeovers } from './quality/task-takeover.mjs';
@@ -53,8 +53,14 @@ if (isHeavyCargoCommand(cargoArgs) && !process.env.GLORY_HEAVY_RUN_TOKEN) {
   }
 }
 
+// [test] `cargo test` usa su propia BD (<nombre>_test) y la migra: el arranque del
+// backend es el único otro punto que migra, y los tests no lo ejecutan.
+const testDb = cargoArgs[0] === 'test';
 let dbContext;
-try { dbContext = getBranchDbContext(); }
+try {
+  dbContext = getBranchDbContext({ testDb });
+  if (testDb) applySqlxMigrations(dbContext);
+}
 catch (error) {
   if (heavyLease?.allowed) await heavyLease.release({ status: 'setup-error' });
   throw error;

@@ -2,7 +2,8 @@
 
 /* Helper reutilizable: deriva DATABASE_URL y CARGO_TARGET_DIR desde Cargo.toml
  * y la rama git actual. main/master usan el nombre base del paquete; el resto
- * usa {pkg}_{branch}. Tambien crea la BD local si no existe. */
+ * usa {pkg}_{branch}. Tambien crea la BD local si no existe. Con testDb, la BD
+ * lleva sufijo _test: `cargo test` no toca la BD de desarrollo. */
 
 import { execSync, execFileSync, spawnSync } from 'node:child_process';
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
@@ -88,12 +89,14 @@ function quoteSqlIdentifier(value) {
   return `"${value.replaceAll('"', '""')}"`;
 }
 
-export function getBranchDbContext({ verbose = true, ensureExists = true } = {}) {
+export function getBranchDbContext({ verbose = true, ensureExists = true, testDb = false } = {}) {
   const branch = detectBranch();
   const branchSlug = slugifyBranchName(branch);
   const pkgName = readPackageName();
   const isDefaultBranch = branch === 'main' || branch === 'master';
-  const dbName = isDefaultBranch ? pkgName : `${pkgName}_${branchSlug}`;
+  const baseDbName = isDefaultBranch ? pkgName : `${pkgName}_${branchSlug}`;
+  // [test] BD aislada para los tests: nunca la BD de desarrollo de la rama.
+  const dbName = testDb ? `${baseDbName}_test` : baseDbName;
 
   const envPath = path.join(projectRoot, '.env');
   const envVars = existsSync(envPath) ? parseEnvFile(readFileSync(envPath, 'utf8')) : {};
@@ -146,7 +149,31 @@ export function getBranchDbContext({ verbose = true, ensureExists = true } = {})
     }
   }
 
-  return { branch, branchSlug, pkgName, dbName, dbUrl, cargoTargetBase, cargoTargetDir };
+  return { branch, branchSlug, pkgName, dbName, dbUrl, dbPass, cargoTargetBase, cargoTargetDir };
+}
+
+/* [test] Aplica las migraciones pendientes con sqlx-cli. Es idempotente (registra
+ * _sqlx_migrations, igual que sqlx::migrate!() al arrancar el backend), así que
+ * se ejecuta en cada `test` y recoge migraciones nuevas. La contraseña se
+ * redacta de la salida de error: nunca se imprime ni va en argv. */
+export function applySqlxMigrations({ dbUrl, dbPass }) {
+  const sqlxBin = process.platform === 'win32' ? 'sqlx.exe' : 'sqlx';
+  const result = spawnSync(sqlxBin, ['migrate', 'run', '--source', path.join(projectRoot, 'migrations')], {
+    cwd: projectRoot,
+    env: { ...process.env, DATABASE_URL: dbUrl },
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+    timeout: 300_000,
+    shell: false,
+  });
+  if (result.error) {
+    throw new Error(`No se pudo ejecutar sqlx (${result.error.code ?? result.error.message}). Instala sqlx-cli 0.8.2.`);
+  }
+  if (result.status !== 0) {
+    const output = `${result.stdout ?? ''}${result.stderr ?? ''}`;
+    const redacted = dbPass ? output.split(dbPass).join('***') : output;
+    throw new Error(`sqlx migrate run falló (exit ${result.status}):\n${redacted}`);
+  }
 }
 
 export function getBranchDbUrl(options = {}) {
