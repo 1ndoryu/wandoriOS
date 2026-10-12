@@ -126,7 +126,7 @@ async fn deliver_event(
             .await?
             .map(|(id, _)| id)
     };
-    let token = generate_download_token();
+    let token = generate_download_token()?;
     let expires_at = Utc::now() + Duration::days(30);
     let refreshed =
         EntitlementRepository::refresh_token_for_order(pool, order.id, &token.hash, expires_at)

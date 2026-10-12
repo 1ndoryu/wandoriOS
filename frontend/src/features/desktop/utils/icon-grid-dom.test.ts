@@ -133,9 +133,9 @@ describe('positionCellHighlight — highlight alineado con la celda real', () =>
     };
     positionCellHighlight({ col: 1, row: 0 }, metrics, session);
     const hl = session.highlightEl!;
-    expect(hl.style.left).toBe(`${CELL + GAP + 8}px`);
-    expect(hl.style.top).toBe('0px');
-    expect(hl.style.width).toBe(`${CELL}px`);
+    expect(hl.style.getPropertyValue('--hl-x')).toBe(`${CELL + GAP + 8}px`);
+    expect(hl.style.getPropertyValue('--hl-y')).toBe('0px');
+    expect(hl.style.getPropertyValue('--hl-w')).toBe(`${CELL}px`);
   });
 
   it('RTL: col 0 queda a la derecha y crece hacia la izquierda con gap efectivo', () => {
@@ -152,10 +152,10 @@ describe('positionCellHighlight — highlight alineado con la celda real', () =>
     const gapEff = GAP + 8;
     positionCellHighlight({ col: 0, row: 0 }, metrics, session);
     const hl = session.highlightEl!;
-    expect(hl.style.left).toBe(`${width - CELL}px`);
+    expect(hl.style.getPropertyValue('--hl-x')).toBe(`${width - CELL}px`);
     positionCellHighlight({ col: 2, row: 1 }, metrics, session);
-    expect(hl.style.left).toBe(`${width - 3 * CELL - 2 * gapEff}px`);
-    expect(hl.style.top).toBe(`${CELL_H + ROW_GAP}px`);
+    expect(hl.style.getPropertyValue('--hl-x')).toBe(`${width - 3 * CELL - 2 * gapEff}px`);
+    expect(hl.style.getPropertyValue('--hl-y')).toBe(`${CELL_H + ROW_GAP}px`);
   });
 
   it('RTL: el highlight de col 0 coincide con el rect del icono posicionado a la derecha', () => {
@@ -173,7 +173,7 @@ describe('positionCellHighlight — highlight alineado con la celda real', () =>
     /* El icono en col 0 (RTL) ocupa el extremo derecho del grid: su rect
      * local empieza en width - CELL, igual que el highlight. */
     const hl = session.highlightEl!;
-    expect(hl.style.left).toBe(`${width - CELL}px`);
-    expect(parseFloat(hl.style.left) + CELL).toBe(width);
+    expect(hl.style.getPropertyValue('--hl-x')).toBe(`${width - CELL}px`);
+    expect(parseFloat(hl.style.getPropertyValue('--hl-x')) + CELL).toBe(width);
   });
 });

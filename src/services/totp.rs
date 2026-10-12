@@ -10,6 +10,8 @@ use hmac::{Hmac, Mac};
 use rand::TryRngCore;
 use sha1::Sha1;
 
+use crate::errors::AppError;
+
 const STEP_SECONDS: u64 = 30;
 const CODE_DIGITS: u32 = 6;
 const SECRET_BYTES: usize = 20; // 160 bits
@@ -19,14 +21,13 @@ type HmacSha1 = Hmac<Sha1>;
 
 const BASE32_ALPHABET: &[u8; 32] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 
-/// Genera un secreto TOTP en base32 (sin padding).
-#[must_use]
-pub fn generate_secret() -> String {
+/// Genera un secreto TOTP en base32 (sin padding). Falla cerrada sin entropía.
+pub fn generate_secret() -> Result<String, AppError> {
     let mut bytes = [0_u8; SECRET_BYTES];
     rand::rngs::OsRng
         .try_fill_bytes(&mut bytes)
-        .expect("entropía del SO no disponible");
-    encode_base32(&bytes)
+        .map_err(|_| AppError::Internal("Entropía del SO no disponible".into()))?;
+    Ok(encode_base32(&bytes))
 }
 
 fn encode_base32(input: &[u8]) -> String {
@@ -142,19 +143,24 @@ mod tests {
 
     #[test]
     fn base32_roundtrip_preserves_secret() {
-        let secret = generate_secret();
+        let secret = generate_secret().expect("entropía disponible en tests");
         let decoded = decode_base32(&secret).expect("secreto decodificable");
         assert_eq!(encode_base32(&decoded), secret);
     }
 
     #[test]
     fn generated_secret_is_32_base32_chars() {
-        assert_eq!(generate_secret().len(), 32);
+        assert_eq!(
+            generate_secret()
+                .expect("entropía disponible en tests")
+                .len(),
+            32
+        );
     }
 
     #[test]
     fn verify_accepts_current_code_and_rejects_invalid() {
-        let secret = generate_secret();
+        let secret = generate_secret().expect("entropía disponible en tests");
         let code = current_code(&secret);
         assert!(verify(&secret, &code));
         assert!(!verify(&secret, "000000"));
@@ -164,7 +170,7 @@ mod tests {
 
     #[test]
     fn otpauth_uri_exposes_secret_issuer_and_rfc6238_defaults() {
-        let secret = generate_secret();
+        let secret = generate_secret().expect("entropía disponible en tests");
         let uri = otpauth_uri(&secret, "user@example.com", "wandori.us");
         assert!(uri.starts_with("otpauth://totp/wandori.us:user@example.com"));
         assert!(uri.contains(&format!("secret={secret}")));

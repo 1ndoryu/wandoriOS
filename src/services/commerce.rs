@@ -13,15 +13,15 @@ pub struct DownloadToken {
     pub hash: String,
 }
 
-#[must_use]
-pub fn generate_download_token() -> DownloadToken {
+/// Falla cerrada si el SO no entrega entropía: el grant no se crea sin token.
+pub fn generate_download_token() -> Result<DownloadToken, AppError> {
     let mut bytes = [0_u8; 32];
     OsRng
         .try_fill_bytes(&mut bytes)
-        .expect("entropía del SO no disponible");
+        .map_err(|_| AppError::Internal("Entropía del SO no disponible".into()))?;
     let raw = hex::encode(bytes);
     let hash = hash_download_token(&raw);
-    DownloadToken { raw, hash }
+    Ok(DownloadToken { raw, hash })
 }
 
 #[must_use]
@@ -72,7 +72,7 @@ mod tests {
 
     #[test]
     fn el_grant_no_guarda_el_token_en_claro() {
-        let token = generate_download_token();
+        let token = generate_download_token().expect("entropía disponible en tests");
         assert_ne!(token.raw, token.hash);
         assert_eq!(token.hash, hash_download_token(&token.raw));
         assert_eq!(token.raw.len(), 64);

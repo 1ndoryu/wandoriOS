@@ -129,7 +129,7 @@ async fn create_download_grant(
     order: &Order,
     product_version_id: Option<uuid::Uuid>,
 ) -> Result<bool, AppError> {
-    let token = generate_download_token();
+    let token = generate_download_token()?;
     let expires_at = chrono::Utc::now() + chrono::Duration::days(30);
     let created = EntitlementRepository::create_active(
         &state.pool,

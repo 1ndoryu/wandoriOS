@@ -51,8 +51,8 @@ impl SessionService {
         ip_address: Option<&str>,
         user_agent: Option<&str>,
     ) -> Result<SessionResult, AppError> {
-        let raw_token = generate_token();
-        let csrf_token = generate_token();
+        let raw_token = generate_token()?;
+        let csrf_token = generate_token()?;
         let token_hash = hash_token(&raw_token);
         let csrf_hash = hash_token(&csrf_token);
 
@@ -197,12 +197,12 @@ impl SessionService {
 }
 
 /// Genera un token opaco de 32 bytes (64 hex chars)
-fn generate_token() -> String {
+fn generate_token() -> Result<String, AppError> {
     let mut rng = rand::rngs::OsRng;
     let mut bytes = [0u8; TOKEN_BYTES];
     rng.try_fill_bytes(&mut bytes)
-        .expect("entropía del SO no disponible");
-    hex::encode(bytes)
+        .map_err(|_| AppError::Internal("Entropía del SO no disponible".into()))?;
+    Ok(hex::encode(bytes))
 }
 
 /// Hashea un token con SHA-256

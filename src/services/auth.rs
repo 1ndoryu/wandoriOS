@@ -31,7 +31,7 @@ impl AuthService {
         }
 
         let password_hash = hash_password(&req.password)?;
-        let raw_token = generate_action_token();
+        let raw_token = generate_action_token()?;
         let mut tx = pool.begin().await?;
         let user = UserRepository::create_unverified(&mut tx, &req.email, &password_hash).await?;
         AuthTokenRepository::create_tx(
@@ -72,7 +72,7 @@ impl AuthService {
         if !UserRepository::is_email_verified(pool, user.id).await? {
             return Ok(None);
         }
-        let raw_token = generate_action_token();
+        let raw_token = generate_action_token()?;
         AuthTokenRepository::create(
             pool,
             user.id,
@@ -124,7 +124,7 @@ impl AuthService {
                 "El segundo factor ya está activo".into(),
             ));
         }
-        let secret = totp::generate_secret();
+        let secret = totp::generate_secret()?;
         if !UserRepository::set_totp_secret(pool, user_id, &secret).await? {
             return Err(AppError::Conflict(
                 "El segundo factor ya está activo".into(),
@@ -174,7 +174,7 @@ impl AuthService {
 
     /// Emite un reto de segundo factor (token opaco, un solo uso, 5 min).
     pub async fn issue_totp_challenge(pool: &PgPool, user_id: Uuid) -> Result<String, AppError> {
-        let raw_token = generate_action_token();
+        let raw_token = generate_action_token()?;
         AuthTokenRepository::create(
             pool,
             user_id,
@@ -220,12 +220,12 @@ fn hash_password(password: &str) -> Result<String, AppError> {
         .map(|hash| hash.to_string())
 }
 
-fn generate_action_token() -> String {
+fn generate_action_token() -> Result<String, AppError> {
     let mut bytes = [0_u8; 32];
     rand::rngs::OsRng
         .try_fill_bytes(&mut bytes)
-        .expect("entropía del SO no disponible");
-    hex::encode(bytes)
+        .map_err(|_| AppError::Internal("Entropía del SO no disponible".into()))?;
+    Ok(hex::encode(bytes))
 }
 
 fn hash_action_token(token: &str) -> String {
@@ -238,7 +238,7 @@ mod tests {
 
     #[test]
     fn action_token_is_opaque_and_hash_is_fixed_length() {
-        let token = generate_action_token();
+        let token = generate_action_token().expect("entropía disponible en tests");
         let hash = hash_action_token(&token);
         assert_eq!(token.len(), 64);
         assert_eq!(hash.len(), 64);
