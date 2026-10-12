@@ -14,7 +14,7 @@ export function selectReminders(scope, stages, limit = 4, context = {}) {
   const failed = stages.some(stage => stage.status === 'fail' || stage.status === 'error');
   const rustLight = stages.some(stage => stage.stage === 'rust' && stage.validationMode === 'local-light');
   if (failed) reminders.push('Corrige los primeros hallazgos y repite exactamente el mismo comando.');
-  if (context.heavyDeferred) reminders.push('Full bloqueado por cooldown de 3 horas; conserva el modo local-light y usa --allow-heavy --heavy-reason "<motivo>" solo con una necesidad manual justificada (el intento queda en .quality-reports/heavy-overrides.log).');
+  if (context.heavyDeferred) reminders.push('Full bloqueado por cooldown de 20 minutos; conserva el modo local-light y usa --allow-heavy --heavy-reason "<motivo>" solo con una necesidad manual justificada (el intento queda en .quality-reports/heavy-overrides.log).');
   if (rustLight) reminders.push('Rust local-light: se ejecutaron fmt/check; ejecuta `npm run task:check -- <ID> --full` antes de cerrar una fase o publicar.');
   if (!failed) {
     /* El cierre es siempre visible aunque el alcance tenga varios perfiles y

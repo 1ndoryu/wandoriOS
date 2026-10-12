@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { redact } from './redaction.mjs';
 
-const DEFAULT_COOLDOWN_MS = 3 * 60 * 60 * 1000;
+const DEFAULT_COOLDOWN_MS = 20 * 60 * 1000;
 const DEFAULT_TARGET_BASE = process.platform === 'win32'
   ? 'C:\\tmp\\glory-target'
   : path.join(os.tmpdir(), 'glory-target');
@@ -138,7 +138,7 @@ export function isHeavyCargoCommand(args) {
 }
 
 /* [SNT-11] RE-ACTIVADO (2026-08-05, decisión explícita del usuario): la
- * excepción manual del guard vuelve a conceder saltos del cooldown de 180 min
+ * excepción manual del guard vuelve a conceder saltos del cooldown de 20 min
  * usando `--allow-heavy --heavy-reason "<motivo>"` (o GLORY_HEAVY_RUN_TOKEN).
  * El cooldown NO se elimina: sigue bloqueando las ejecuciones pesadas normales
  * (sin excepción) y toda activación manual queda auditada en heavy-overrides.log
