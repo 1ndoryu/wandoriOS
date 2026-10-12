@@ -33,6 +33,12 @@ test('valida una política v2 y rechaza claves desconocidas o rutas inseguras', 
   assert.throws(() => validatePolicy({ ...validPolicy(), mode: 'invalid' }), /mode inválido/);
 });
 
+test('acepta el tope budgets de Sentinel y rechaza un budgets.mode inválido', () => {
+  assert.doesNotThrow(() => validatePolicy({ ...validPolicy(), budgets: { mode: 'enforce' } }));
+  assert.throws(() => validatePolicy({ ...validPolicy(), budgets: { mode: 'bogus' } }), /budgets\.mode inválido/);
+  assert.throws(() => validatePolicy({ ...validPolicy(), budgets: { other: true } }), /claves desconocidas/);
+});
+
 test('valida la rama principal declarada sin asumir main', () => {
   assert.doesNotThrow(() => validatePolicy({ ...validPolicy(), project: { primaryBranch: 'wandorius' } }));
   assert.doesNotThrow(() => validatePolicy({ ...validPolicy(), project: { primaryBranch: 'sites/client-a' } }));
