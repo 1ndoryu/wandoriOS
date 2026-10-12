@@ -32,7 +32,7 @@
     "throttleHours": 6
   },
   "heavyRun": {
-    "cooldownMinutes": 20,
+    "cooldownMinutes": 0,
     "maxTargetGb": 15,
     "maxTargetAgeDays": 7,
     "maxConcurrent": 1

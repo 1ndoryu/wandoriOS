@@ -138,11 +138,13 @@ export function isHeavyCargoCommand(args) {
 }
 
 /* [SNT-11] RE-ACTIVADO (2026-08-05, decisión explícita del usuario): la
- * excepción manual del guard vuelve a conceder saltos del cooldown de 20 min
- * usando `--allow-heavy --heavy-reason "<motivo>"` (o GLORY_HEAVY_RUN_TOKEN).
- * El cooldown NO se elimina: sigue bloqueando las ejecuciones pesadas normales
- * (sin excepción) y toda activación manual queda auditada en heavy-overrides.log
- * con granted:true/false, motivo, comando y PID. El motivo es requisito (un
+ * excepción manual del guard vuelve a conceder saltos del cooldown usando
+ * `--allow-heavy --heavy-reason "<motivo>"` (o GLORY_HEAVY_RUN_TOKEN).
+ * El cooldown es configurable por proyecto (`heavyRun.cooldownMinutes`); con 0
+ * no hay bloqueo (WANDORIUS, 2026-10-12, decisión de la usuaria). Donde sigue
+ * activo, bloquea las ejecuciones pesadas normales (sin excepción) y toda
+ * activación manual queda auditada en heavy-overrides.log con
+ * granted:true/false, motivo, comando y PID. El motivo es requisito (un
  * intento sin motivo se rechaza). Únicamente CI (modo sancionado, no corre en
  * el equipo) sigue autorizado a full sin cooldown. */
 export const HEAVY_MANUAL_OVERRIDE_ENABLED = true;
