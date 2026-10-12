@@ -73,6 +73,13 @@
 
 ## Pendientes ordenados
 
+### 10AA-2 — Ciclo Rust F4: target por proyecto, perfil dev reducido, sccache y BD de test aislada (2026-10-10, EN CURSO)
+
+Commits en `main`: `55c6ab66`, `c20680bc`, `db63fb1b`. Plan del área (fuera de este repo, raíz `area-trabajo`): plan-mejora-flujo-herramientas-2026-10-10.md (F4).
+- Compila: `check --tests` rc=0 (2026-10-11).
+- Falta: `npm run gate:check -- 10AA-2` con la BD `<nombre>_test` migrada. La última prueba (`glory_backend`, sin migrar, anterior a `db63fb1b`) dio 8 fallos `no existe la relación «resources»` / `«auth_sessions»`.
+- Cierre: sin hallazgos nuevos del gate; después la entrada pasa al registro de completadas del área (tareas-2026-10-11.md, fuera de este repo).
+
 ### 11AA-1 — Vulnerabilidades npm de `frontend` sin parche en rango (2026-10-11, PENDIENTE)
 
 `npm audit` (lock sin cambios): 26 hallazgos (25 moderate, 1 high), todos con
