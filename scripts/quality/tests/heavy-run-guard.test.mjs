@@ -90,6 +90,16 @@ test('solo test, clippy y bench son comandos Cargo pesados', () => {
   assert.equal(isHeavyCargoCommand(['fmt', '--check']), false);
 });
 
+test('un test filtrado no es pesado; la suite completa sí', () => {
+  assert.equal(isHeavyCargoCommand(['test', 'filtro']), false);
+  assert.equal(isHeavyCargoCommand(['test', '--test', 'archivo']), false);
+  assert.equal(isHeavyCargoCommand(['test', '--', 'filtro']), true);
+  assert.equal(isHeavyCargoCommand(['test', '-p', 'crate']), true);
+  assert.equal(isHeavyCargoCommand(['test', '--lib']), true);
+  assert.equal(isHeavyCargoCommand(['+nightly', 'test']), true);
+  assert.equal(isHeavyCargoCommand(['--color', 'never', 'test']), true);
+});
+
 test('un override sin motivo se rechaza y no concede la excepción (028A-16)', async () => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'glory-heavy-reason-'));
   const targetBase = path.join(root, 'target');
