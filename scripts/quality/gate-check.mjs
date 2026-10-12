@@ -56,20 +56,40 @@ async function generateManifest(parsed) {
 
 async function resolveSentinelCli() {
   /* [108A-6] En CI el submodule `tools/sentinel/out/` no existe (artefacto
-   * ignorado): `quality:setup` compila la copia provisionada
-   * `.quality-tools/sentinel`. Se resuelve el CLI desde quality-tools.json
-   * (provisionPath + cli) y se cae al checkout del submódulo solo como
-   * fallback local. */
+   * ignorado): se usa la copia provisionada `.quality-tools/sentinel` y el
+   * checkout del submódulo queda como fallback.
+   * Con el submódulo en el pin y su build presente, esa build manda: la
+   * copia provisionada no tiene identidad de commit y nada del setup la
+   * actualiza, así que tras un bump de pin ejecutaba la CLI anterior (sin
+   * GLORY_HEAVY_RUN_REASON). quality:setup sí escribe la build del submódulo
+   * para el commit fijado. */
+  const submoduleCli = path.join(projectRoot, 'tools', 'sentinel', 'out', 'cli', 'index.js');
+  let tool;
   try {
     const manifest = JSON.parse(await readFile(path.join(projectRoot, 'quality-tools.json'), 'utf8'));
-    const tool = manifest?.tools?.sentinel;
-    if (tool?.provisionPath && tool?.cli) {
-      const candidate = path.join(projectRoot, tool.provisionPath, tool.cli);
-      await access(candidate);
-      return candidate;
-    }
-  } catch { /* fallback al checkout */ }
-  return path.join(projectRoot, 'tools', 'sentinel', 'out', 'cli', 'index.js');
+    tool = manifest?.tools?.sentinel;
+  } catch { return submoduleCli; }
+  if (!tool?.cli) return submoduleCli;
+  if (tool.commit && await submoduleAtPin(tool.commit) && await pathExists(submoduleCli)) return submoduleCli;
+  if (tool.provisionPath) {
+    const candidate = path.join(projectRoot, tool.provisionPath, tool.cli);
+    if (await pathExists(candidate)) return candidate;
+  }
+  return submoduleCli;
+}
+
+async function submoduleAtPin(commit) {
+  try {
+    const { stdout } = await execFileAsync('git', ['-C', path.join(projectRoot, 'tools', 'sentinel'), 'rev-parse', 'HEAD']);
+    return stdout.trim() === commit;
+  } catch { return false; }
+}
+
+async function pathExists(target) {
+  try {
+    await access(target);
+    return true;
+  } catch { return false; }
 }
 
 /* [108A-6] Sentinel 0.7.0 puede ejecutar correctamente las etapas pero dejar
