@@ -2,7 +2,7 @@
  * Genera grants opacos y valida que una descarga solo pueda salir del storage
  * privado configurado. [297A-15] */
 
-use rand::{rngs::OsRng, RngCore};
+use rand::{rngs::OsRng, TryRngCore};
 use sha2::{Digest, Sha256};
 use std::path::{Component, Path, PathBuf};
 
@@ -16,7 +16,9 @@ pub struct DownloadToken {
 #[must_use]
 pub fn generate_download_token() -> DownloadToken {
     let mut bytes = [0_u8; 32];
-    OsRng.fill_bytes(&mut bytes);
+    OsRng
+        .try_fill_bytes(&mut bytes)
+        .expect("entropía del SO no disponible");
     let raw = hex::encode(bytes);
     let hash = hash_download_token(&raw);
     DownloadToken { raw, hash }

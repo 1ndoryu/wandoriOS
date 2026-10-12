@@ -3,7 +3,7 @@ use argon2::{
     Argon2,
 };
 use chrono::{Duration, Utc};
-use rand::Rng;
+use rand::TryRngCore;
 use sha2::{Digest, Sha256};
 use sqlx::PgPool;
 use uuid::Uuid;
@@ -222,7 +222,9 @@ fn hash_password(password: &str) -> Result<String, AppError> {
 
 fn generate_action_token() -> String {
     let mut bytes = [0_u8; 32];
-    rand::rngs::OsRng.fill(&mut bytes);
+    rand::rngs::OsRng
+        .try_fill_bytes(&mut bytes)
+        .expect("entropía del SO no disponible");
     hex::encode(bytes)
 }
 

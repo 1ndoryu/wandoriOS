@@ -3,7 +3,7 @@
 // .sqlx cache ni DATABASE_URL de build): convertir a query!/query_as!
 // romperia el build. Restriccion documentada en PLAN-corregir-1408.md §5.
 use chrono::{DateTime, Duration, Utc};
-use rand::Rng;
+use rand::TryRngCore;
 use serde::Serialize;
 use sha2::{Digest, Sha256};
 use sqlx::PgPool;
@@ -200,7 +200,8 @@ impl SessionService {
 fn generate_token() -> String {
     let mut rng = rand::rngs::OsRng;
     let mut bytes = [0u8; TOKEN_BYTES];
-    rng.fill(&mut bytes);
+    rng.try_fill_bytes(&mut bytes)
+        .expect("entropía del SO no disponible");
     hex::encode(bytes)
 }
 

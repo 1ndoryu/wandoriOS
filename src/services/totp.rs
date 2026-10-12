@@ -7,7 +7,7 @@
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use hmac::{Hmac, Mac};
-use rand::Rng;
+use rand::TryRngCore;
 use sha1::Sha1;
 
 const STEP_SECONDS: u64 = 30;
@@ -23,7 +23,9 @@ const BASE32_ALPHABET: &[u8; 32] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 #[must_use]
 pub fn generate_secret() -> String {
     let mut bytes = [0_u8; SECRET_BYTES];
-    rand::rngs::OsRng.fill(&mut bytes);
+    rand::rngs::OsRng
+        .try_fill_bytes(&mut bytes)
+        .expect("entropía del SO no disponible");
     encode_base32(&bytes)
 }
 
