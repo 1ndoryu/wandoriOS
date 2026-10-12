@@ -433,7 +433,10 @@ mod tests {
 
         AppState {
             pool,
-            upload_dir: "target/media-http-test-uploads".to_string(),
+            upload_dir: format!(
+                "{}/media-http-test-uploads",
+                std::env::var("CARGO_TARGET_DIR").unwrap_or_else(|_| "target".to_string())
+            ),
             resend_api_key: None,
             email_from: "test@example.invalid".to_string(),
             stripe_secret_key: None,
@@ -459,7 +462,10 @@ mod tests {
             port: 3000,
             stripe_secret_key: None,
             stripe_webhook_secret: None,
-            upload_dir: "target/media-http-test-uploads".to_string(),
+            upload_dir: format!(
+                "{}/media-http-test-uploads",
+                std::env::var("CARGO_TARGET_DIR").unwrap_or_else(|_| "target".to_string())
+            ),
             resend_api_key: None,
             email_from: "test@example.invalid".to_string(),
             frontend_dist: "frontend/dist".to_string(),
