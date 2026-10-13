@@ -1,5 +1,10 @@
 import { defineConfig } from 'vite';
 
+/* [por que] Arranque (workspace-manager) pone el backend en 3104 y declara
+ * VITE_API_URL en el proceso de Vite (registro.json, env). El proxy fijo a 3000
+ * servia /api/img desde otro servicio (404). Fuera de Arranque, 3000 como antes. */
+const API_PROXY_TARGET = process.env.VITE_API_URL || 'http://localhost:3000';
+
 export default defineConfig({
   /* Sin plugins de framework — vanilla TS puro */
   server: {
@@ -7,19 +12,19 @@ export default defineConfig({
     /* Proxy API requests al backend Rust en desarrollo */
     proxy: {
       '/api': {
-        target: 'http://localhost:3000',
+        target: API_PROXY_TARGET,
         changeOrigin: true,
       },
       '/uploads': {
-        target: 'http://localhost:3000',
+        target: API_PROXY_TARGET,
         changeOrigin: true,
       },
       '/swagger-ui': {
-        target: 'http://localhost:3000',
+        target: API_PROXY_TARGET,
         changeOrigin: true,
       },
       '/api-docs': {
-        target: 'http://localhost:3000',
+        target: API_PROXY_TARGET,
         changeOrigin: true,
       },
     },
