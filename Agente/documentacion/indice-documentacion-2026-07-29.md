@@ -17,7 +17,7 @@
 | ¿Qué reglas automáticas faltan?                         | `Agente/prevencion/prevencion-wandorius-sentinel-varsense-2026-07-29.md`        |
 | ¿Cómo está la salud arquitectónica del frontend (v1)?   | `Agente/documentacion/arquitectura/auditoria-arquitectura-frontend-2026-07-30.md` |
 | ¿Auditoría profunda post-refactorización (v2)?           | `Agente/documentacion/arquitectura/auditoria-arquitectura-frontend-v2-2026-07-30.md` |
-| ¿Cómo se ejecuta la refactorización de módulos grandes? | `Agente/planes/plan-refactorizacion-arquitectura-2026-07-30.md`                    |
+| ¿Cómo se ejecuta la refactorización de módulos grandes? | `Agente/planes/completados/plan-refactorizacion-arquitectura-2026-07-30.md`         |
 | ¿Cómo preparar y ejecutar el piloto DeepSWE?            | `Agente/documentacion/herramientas/deepswe-piloto-2026-07-31.md`                  |
 | ¿Cómo se planifica el tema claro/oscuro del OS?         | `Agente/planes/plan-modo-oscuro-os-2026-07-31.md`                                  |
 | ¿Cómo se revisan SOLID y escalabilidad por fase?        | `Agente/documentacion/arquitectura/checkpoints-solid-escalabilidad-2026-07-31.md` |

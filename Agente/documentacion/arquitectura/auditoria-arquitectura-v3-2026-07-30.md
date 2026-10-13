@@ -295,5 +295,5 @@ workspaceStore.subscribe((ws) => {
 
 - Auditoría v1: `Agente/documentacion/arquitectura/auditoria-arquitectura-frontend-2026-07-30.md`
 - Auditoría v2: mismo archivo (secciones §7-§9)
-- Plan de refactorización: `Agente/planes/plan-refactorizacion-arquitectura-2026-07-30.md`
+- Plan de refactorización: `Agente/planes/completados/plan-refactorizacion-arquitectura-2026-07-30.md`
 - Completados: `Agente/completados/tareas-2026-07-30.md`

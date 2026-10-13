@@ -5,7 +5,7 @@
 > **Resultado:** 4 problemas críticos, 3 altos, 12 medios, 5 bajos, 5 informativos
 > **Revisión:** Corregida el 2026-07-30 — 3 hallazgos rebajados de severidad, 7 omisiones añadidas, 2 soluciones corregidas
 > **Auditoría anterior:** `auditoria-arquitectura-frontend-2026-07-30.md` (primera iteración)
-> **Plan asociado:** `plan-refactorizacion-arquitectura-2026-07-30.md` (completado parcialmente)
+> **Plan asociado:** `Agente/planes/completados/plan-refactorizacion-arquitectura-2026-07-30.md` (completado parcialmente)
 
 ---
 
