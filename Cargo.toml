@@ -1,10 +1,21 @@
 [package]
-name = "glory-backend"
+# [por que] El nombre del paquete decide la BD de desarrollo (scripts/branch-db.mjs):
+# "glory-backend" en main apuntaba a la BD compartida glory_backend (migraciones de otros proyectos).
+# Lib y bin conservan sus nombres: tests, src/main.rs y deploy (APP_BIN) los usan.
+name = "glory-backend-wandorius"
 version = "0.1.0"
 edition = "2021"
 description = "wandori.us — Blog/portfolio con Rust + Vanilla TypeScript + OpenAPI"
 license = "MIT"
 authors = ["1ndoryu"]
+
+[lib]
+name = "glory_backend"
+path = "src/lib.rs"
+
+[[bin]]
+name = "glory-backend"
+path = "src/main.rs"
 
 [dependencies]
 # Web framework
