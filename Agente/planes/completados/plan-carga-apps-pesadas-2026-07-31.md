@@ -2,6 +2,7 @@
 
 > **Fecha:** 2026-07-31
 > **Estado:** decisión arquitectónica aceptada; implementación de `preload`/`heavy` diferida hasta existir una app pesada real
+> **Archivado 2026-10-13** en `Agente/planes/completados/`: archivar como decisión (decisión de la usuaria).
 > **Tarea:** 297A-25
 > **Dependencias:** 297A-9 (runtime), 297A-11 (workspace), 297A-12 (móvil)
 > **ADR:** `Agente/documentacion/arquitectura/adr-carga-apps-pesadas-2026-07-31.md`

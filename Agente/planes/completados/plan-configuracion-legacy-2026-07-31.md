@@ -3,6 +3,7 @@
 > **Epic:** 297A-4 (OS persistente) · **Tarea:** 297A-29 (pendiente de roadmap)
 > **Fecha:** 2026-07-31 (renombrado el 2026-07-31: ya NO es "retiro")
 > **Estado:** Fases 1-3 completadas (commits 297A-29 F1/F2/F3); Fase 4 redefinida por decisión del usuario
+> **Archivado 2026-10-13** en `Agente/planes/completados/`: archivar con la Fase 4 pendiente (decisión de la usuaria).
 > **Próximo paso:** Fase 4 = conservar la app Configuración y dejarla pendiente de escalar a otra cosa en el futuro (ver §4). El alias legacy `font-panel.ts` fue retirado en 018A-44.
 > **Archivo de completados:** `Agente/completados/tareas-2026-07-31.md`
 >

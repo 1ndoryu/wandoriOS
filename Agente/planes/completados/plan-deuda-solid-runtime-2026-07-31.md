@@ -2,6 +2,7 @@
 
 > **Fecha:** 2026-07-31
 > **Estado:** Fases 3–5 técnicas y documentales completadas; validación visual del runtime pendiente separada en 297A-24.
+> **Archivado 2026-10-13** en `Agente/planes/completados/`: archivar con la validación visual de escritorio pendiente (decisión de la usuaria).
 > **Evidencia F1:** la jerarquía estaba duplicada en registry, adapter, comandos, menú y merge; `authenticated` permanece como capacidad válida para Cuenta y futuras áreas protegidas.
 > **Última actualización:** 2026-07-31.
 > **Epic:** 297A-4 (OS persistente, cuentas, programas y comercio).

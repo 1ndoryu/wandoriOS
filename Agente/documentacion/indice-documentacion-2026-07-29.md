@@ -31,9 +31,9 @@
 | ¿Cómo se hace bootstrap de un proyecto nuevo con Sentinel? | `sentinel init --preset <node|rust|python|mixed>` (docs en ADR 0001 y auditoría §14 F4) |
 | ¿Cómo se migra o retira un gate legacy sin copiar scripts? | `C:\Users\Owner\.agents\skills\quality-gate-setup\SKILL.md` + auditoría §14.2 |
 | ¿Cómo se diagnostican shims y ejecutables del guard? | `sentinel doctor --shims` (`src/core/shimDiagnostics.ts`) |
-| ¿Cómo se paga la deuda SOLID del runtime de apps?       | `Agente/planes/plan-deuda-solid-runtime-2026-07-31.md`                             |
+| ¿Cómo se paga la deuda SOLID del runtime de apps?       | `Agente/planes/completados/plan-deuda-solid-runtime-2026-07-31.md`                             |
 | ¿Cómo se arregla el grid/placeholder/debug de iconos del escritorio? | `Agente/planes/plan-iconos-escritorio-grid-2026-08-05.md` |
-| ¿Por qué se cierran ventanas al abrir otra y cómo se resuelve? | `Agente/planes/plan-cierre-automatico-ventanas-2026-07-31.md`                |
+| ¿Por qué se cierran ventanas al abrir otra y cómo se resuelve? | `Agente/planes/completados/plan-cierre-automatico-ventanas-2026-07-31.md`                |
 | ¿Cómo se implementan los programas editoriales por vertical? | `Agente/planes/plan-programas-editoriales-2026-07-31.md`                       |
 | ¿Cómo se protege el checkout, webhook y descarga digital? | `Agente/planes/plan-comercio-seguro-2026-08-01.md`                              |
 | ¿Cómo se consienten, anonimizan y depuran las métricas? | `Agente/planes/plan-analytics-privacidad-2026-08-01.md` |

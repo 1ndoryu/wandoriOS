@@ -2,6 +2,7 @@
 
 > **Fecha:** 2026-07-31
 > **Estado:** solución S1 implementada y validada por tests; prueba visual real desktop/móvil pendiente controlada.
+> **Archivado 2026-10-13** en `Agente/planes/completados/`: archivar con la prueba visual de escritorio pendiente (decisión de la usuaria).
 > **Epic:** 297A-4 (OS persistente, cuentas, programas y comercio).
 > **Síntoma reportado:** al abrir una ventana y luego ir a otra, la ventana anterior se cierra automáticamente. Las ventanas no deberían cerrarse por hacer clic en otra.
 > **Tarea sospechosa:** 297A-19 (URLs canónicas, deep links y ventana enfocada) — todo el runtime actual (adapter + URL sync + reconciliación) vive en un único commit aplanado `df781967`, pero `window-url-sync` y la reconciliación nacieron en ese frente.
