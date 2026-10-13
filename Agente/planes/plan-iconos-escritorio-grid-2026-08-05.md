@@ -1,4 +1,5 @@
 # Plan — Iconos del escritorio: grid, placeholder y rejilla de debug coherentes
+> **Revisión 2026-10-13:** en curso. Fase 5 (línea 162) y 5.5 (líneas 173–192) abiertas; falta la validación de la usuaria de la fase 6 (líneas 194–232).
 
 > **Fecha:** 2026-08-05 · **Estado:** en curso — el usuario probó el 05-ago y **falla**; corrección pendiente (Fase 5.5)
 > **Fuentes:** `frontend/src/features/desktop/workspace-icon-grid.ts`, `frontend/src/features/desktop/utils/icon-grid.ts`,

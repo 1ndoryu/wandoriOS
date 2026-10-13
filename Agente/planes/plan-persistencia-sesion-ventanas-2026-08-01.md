@@ -1,4 +1,5 @@
 # Plan 317A-5 — Persistencia de sesión de ventanas del OS
+> **Revisión 2026-10-13:** pendiente la comprobación visual de la Biblioteca tras recarga (línea 98). Después puede archivarse.
 
 > **Fecha:** 2026-08-01
 > **Estado:** completado funcionalmente — commit propio no forzado por cambios compartidos

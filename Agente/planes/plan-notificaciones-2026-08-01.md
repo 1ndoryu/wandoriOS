@@ -1,4 +1,5 @@
 # Plan de notificaciones — 2026-08-01
+> **Revisión 2026-10-13:** la línea 34 figura como hecha ([x]) mientras la línea 3 dice que la UI admin avanzada está diferida: pendiente de conciliar. Queda abierto el E2E (línea 35).
 
 > Estado: entrega server-side y endpoints admin completados; UI admin avanzada y E2E quedan diferidos.
 

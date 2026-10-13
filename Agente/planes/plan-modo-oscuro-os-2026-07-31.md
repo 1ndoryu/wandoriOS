@@ -1,7 +1,8 @@
 # Plan — modo claro/oscuro del OS
+> **Revisión 2026-10-13:** NO cerrado. Ítems 46, 47, 56 y 57 abiertos; DoD (línea 71) sin marcar. El E2E depende de la infra 297A-17.
 
 > **Fecha:** 2026-07-31  
-> **Estado:** cerrado con aprobación visual del usuario (2026-07-31); transporte remoto de preferencia, overlay de workspace y Cuenta base implementados/validados en 297A-13; E2E multi-dispositivo, registro avanzado y Cuenta ampliada siguen pendientes; feature flag descartado por decisión del usuario. **Post-cierre 018A-72:** los campos legacy (`.campo-entrada`, `.campo-textarea`, `.campo-select`) no invertían sus bordes en oscuro porque `--borde` resuelve su `var(--color-borde)` en `:root`; se redefinió `--borde` en el scope oscuro del OS y la flecha del select pasó a token `--color-select-flecha` invertible.
+> **Estado:** en curso con aprobación visual del usuario (2026-07-31); transporte remoto de preferencia, overlay de workspace y Cuenta base implementados/validados en 297A-13; E2E multi-dispositivo, registro avanzado y Cuenta ampliada siguen pendientes; feature flag descartado por decisión del usuario. **Post-cierre 018A-72:** los campos legacy (`.campo-entrada`, `.campo-textarea`, `.campo-select`) no invertían sus bordes en oscuro porque `--borde` resuelve su `var(--color-borde)` en `:root`; se redefinió `--borde` en el scope oscuro del OS y la flecha del select pasó a token `--color-select-flecha` invertible.
 > **Alcance:** chrome y superficies del OS; la navegación exterior queda fuera del tema.
 
 ## Objetivo y límites

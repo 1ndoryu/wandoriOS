@@ -1,4 +1,5 @@
 # Plan: Componentización UI — Frontend wandori.us
+> **Revisión 2026-10-13:** backlog diferido. DoD (líneas 303–316) sin marcar; se reactiva solo con tarea explícita.
 
 > **Epic:** 297A-11 (limpieza post-arquitectura)
 > **Fecha:** 2026-07-30
