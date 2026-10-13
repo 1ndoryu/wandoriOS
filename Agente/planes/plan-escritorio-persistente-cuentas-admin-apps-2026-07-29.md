@@ -3,7 +3,7 @@
 > **Epic:** 297A-4  
 > **Fecha:** 2026-07-29  
 > **Prioridad:** máxima  
-> **Estado:** en ejecución; identidad visual, seguridad inmediata, sesiones seguras, runtime, recursos, workspace y Cuenta base implementados
+> **Estado:** cierre parcial (tareas-2026-07-31.md:307; tareas-2026-08-01.md:190); 297A-13 pendiente de UI, E2E y MFA (l.56); 297A-10/11 marcados bloqueado (l.53-54)
 > **Siguiente bloque habilitado:** 297A-17 — hardening, identidad, accesibilidad y SEO. La paridad automatizable de contratos quedó cerrada en 018A-50; CSS/clases legacy y fachadas manuales quedan como deuda no bloqueante hasta una revisión visual/migración dedicada.
 
 ## 1. Autoridad y alcance

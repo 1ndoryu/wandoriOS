@@ -1,6 +1,6 @@
 # Plan de autenticación verificada — 2026-08-01
 
-> Estado: backend implementado detrás de `registration_enabled=false`; UI de registro/verificación, proveedor de correo real, MFA y E2E quedan pendientes.
+> Estado: backend implementado detrás de `registration_enabled=false` (tareas-2026-08-01.md:150); pendientes MFA, E2E y UI de tokens
 
 ## Fase 1 — Tokens y persistencia (completada)
 

@@ -1,7 +1,7 @@
 # Plan 297A-14 — Programas editoriales
 
 > **Fecha:** 2026-07-31
-> **Estado:** verticales de artículos, proyectos, productos y media completados; F5 técnica (matriz, comandos de recurso, autosave compartido por tipo de recurso) completada; E2E visual y retiro legacy pendientes.
+> **Estado:** F1-F5 cerradas (tareas-2026-08-18.md:320); pendientes E2E visual y retiro legacy
 > **Epic:** 297A-4 — OS persistente, cuentas, programas y comercio.
 > **Depende de:** 297A-9, 297A-10 y 297A-11.
 > **Bloquea:** cierre completo de la administración editorial y 297A-15 Comercio.

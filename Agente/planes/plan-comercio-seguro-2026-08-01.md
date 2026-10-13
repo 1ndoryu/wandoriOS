@@ -1,6 +1,6 @@
 # Plan de comercio seguro — 2026-08-01
 
-Estado: backend y primera superficie OS completados; worker local de outbox implementado; quedan proveedor real, reembolsos y E2E.
+Estado: reembolsos, chargeback, historial y E2E mock cerrados (tareas-2026-08-18.md:337); restan proveedor real y storage privado
 
 ## Alcance
 

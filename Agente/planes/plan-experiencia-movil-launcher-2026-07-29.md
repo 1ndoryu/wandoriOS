@@ -2,7 +2,7 @@
 
 > **Tarea:** 297A-12  
 > **Fecha:** 2026-07-29  
-> **Estado:** Bloques 2 y 3 de interacción parcialmente implementados y validados por quality gate; validación visual real y pruebas E2E de transición pendientes
+> **Estado:** validación visual real y E2E de transición pendientes; bloques 2 y 3 abiertos
 > **Alcance:** teléfonos `<768px`; tablet conserva experiencia desktop
 
 ## 1. Resultado

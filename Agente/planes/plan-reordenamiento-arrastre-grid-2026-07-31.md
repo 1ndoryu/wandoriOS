@@ -2,9 +2,9 @@
 
 > **Tarea propuesta:** 297A-22
 > **Fecha:** 2026-07-31
-> **Estado:** 🟡 implementación técnica completada; validación visual/E2E pendiente
+> **Estado:** implementación técnica completada; validación visual/E2E pendiente
 > **Decisión aplicada:** Opción 1 — `mobilePosition {col,row}`, grid compacto de 2/3 columnas, `mobileOrder` solo como fallback legacy y comandos accesibles limitados a presentación móvil
-> **Siguiente paso:** ejecutar validación visual/E2E en 320/360/390/768+; no confundir el gate automatizado con evidencia de interacción real
+> **Siguiente paso:** Validación visual/E2E en 320/360/390/768+ con drag táctil, foco y teclado (l.146)
 
 ## 1. Objetivo y límites
 

@@ -2,7 +2,7 @@
 
 > **Epic:** 297A-4
 > **Fecha:** 2026-07-29
-> **Estado:** contratos base de 297A-9/10 cerrados; 018A-61 alineó navegación externa, maximizar/restaurar y reencuadre batch. Los pendientes restantes requieren validación visual/E2E, proveedores o decisiones de producto.
+> **Estado:** pendientes E2E de puntero, teclado y touch (l.177); commandId espera a 297A-13 (l.32)
 > **Tareas dueñas:** 297A-9, 297A-10, 297A-11, 297A-12, 297A-14, 297A-15 y 297A-16
 > **Arquitectura:** `Agente/documentacion/arquitectura/manual-arquitectura-wandorius-2026-07-29.md`
 > **Identidad:** `Agente/documentacion/design-system/manual-identidad-visual-os-2026-07-29.md`

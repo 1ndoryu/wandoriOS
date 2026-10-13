@@ -1,6 +1,6 @@
 # Analytics privado y consentido — 2026-08-01
 
-> Estado: fase técnica cerrada; quedan solo auditoría visual/E2E y operación de la política en producción.
+> Estado: fase técnica cerrada (tareas-2026-08-01.md:118); pendientes auditoría visual/E2E y operación de la política en producción
 
 ## Objetivo
 

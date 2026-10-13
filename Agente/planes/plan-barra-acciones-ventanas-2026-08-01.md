@@ -2,7 +2,7 @@
 
 - **Epic:** 297A-4 — OS persistente, cuentas, programas y comercio
 - **Fecha:** 2026-08-01
-- **Estado:** completado (fases 1-4 implementadas; verificación visual + gate al cierre)
+- **Estado:** fases 1-4 implementadas; checklist (l.115-119) pendiente de verificación visual y gate al cierre
 - **Gate de tarea:** `npm run task:check -- 018A-1` (o el ID de cada fase)
 
 ## Objetivo

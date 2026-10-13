@@ -1,7 +1,7 @@
 # Plan — URLs canónicas, deep links y foco del OS
 
 > **Fecha:** 2026-07-31  
-> **Estado:** contrato y sincronización de foco implementados y validados; E2E, recursos privados y compartir pendientes
+> **Estado:** contrato y sincronización de foco validados (tareas-2026-07-31.md:85; tareas-2026-08-01.md:86); faltan E2E, recursos privados y compartir
 > **Dependencias:** 297A-9 runtime, 297A-11 workspace, 297A-12 móvil; integra permisos de 297A-13.
 
 ## Objetivo

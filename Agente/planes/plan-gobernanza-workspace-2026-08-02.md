@@ -2,8 +2,8 @@
 
 - **Epic:** 297A-4 (OS persistente, cuentas, programas y comercio)
 - **Fecha:** 2026-08-02
-- **Estado:** en ejecución — fases `028A-10` COMPLETA, `028A-13` COMPLETA, `028A-14` COMPLETA (verificadas en navegador)
-- **Próximo paso:** `028A-15` (tests de integración del guard de publish, pendiente de cooldown) y `028A-12` (borrado unificado).
+- **Estado:** fases `028A-10`, `028A-13` y `028A-14` completas (tareas-2026-08-02.md)
+- **Próximo paso:** Ejecutar `028A-15` (tests de integración de publish) y después `028A-12` (borrado unificado)
 
 ---
 
