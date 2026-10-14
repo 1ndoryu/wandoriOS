@@ -40,6 +40,7 @@ desktop.ini
 *.pyc
 
 /scripts/*
+!/scripts/run-cargo.mjs
 !/scripts/quality/
 !/scripts/quality/**
 !/scripts/branch-db.mjs
