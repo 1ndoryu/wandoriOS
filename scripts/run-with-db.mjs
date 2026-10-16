@@ -3,7 +3,7 @@
 /* Ejecuta cualquier comando de cargo con DATABASE_URL y CARGO_TARGET_DIR
  * alineados a la rama/proyecto actual. */
 
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, unlinkSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -21,6 +21,19 @@ const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '
 const cargoArgs = process.argv.slice(2);
 if (cargoArgs.length === 0) {
   console.error('Uso: node scripts/run-with-db.mjs <subcomando cargo> [...args]');
+  process.exit(1);
+}
+
+/* [16AA-9 F3] El portátil ya no lleva toolchain de Rust (retirado el
+ * 2026-10-16): este script no compila. Se sale aquí, antes de migrar o tocar la
+ * cuota de target, en vez de reventar más abajo con un ENOENT de sqlx o de
+ * cargo. No se delega en run-cargo.mjs porque `rcargo` deriva la BD por rama
+ * ({paquete}_{rama}) y aquí los tests usan {paquete}_test: delegar cambiaría
+ * contra qué base corren. WANDORIUS aún no está dado de alta en el taller. */
+if (spawnSync(cargoCommand(), ['--version'], { encoding: 'utf8' }).status !== 0) {
+  console.error('[db] No hay cargo en el portátil (toolchain retirado el 2026-10-16).');
+  console.error('[db] Compila y prueba en la 89. WANDORIUS aún no está en el taller:');
+  console.error('[db]   Arranque alta "WANDORIUS"   (y luego: node scripts/run-cargo.mjs <subcomando>)');
   process.exit(1);
 }
 
