@@ -19,11 +19,15 @@ pub mod stripe_webhook;
 pub mod workspace_handler;
 pub mod workspace_overlay_handler;
 
+use std::path::PathBuf;
+
 use axum::extract::DefaultBodyLimit;
-use axum::http::{header, HeaderValue, Method};
+use axum::http::{header, HeaderValue, Method, StatusCode};
+use axum::routing::any;
 use axum::Router;
 use tower::ServiceBuilder;
 use tower_http::cors::{AllowOrigin, CorsLayer};
+use tower_http::services::{ServeDir, ServeFile};
 use tower_http::trace::TraceLayer;
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
@@ -250,7 +254,45 @@ pub fn create_router(pool: sqlx::PgPool, config: crate::config::AppConfig) -> Ro
         ),
         dev_mailbox: std::sync::Arc::new(std::sync::Mutex::new(Vec::new())),
     };
-    create_router_with_state(state)
+    /* [16AA-18] Modo build: el front vive en `frontend/dist` y lo sirve este
+ * backend, como en produccion (en dev lo sirve vite). Solo se activa si el
+ * `index.html` existe, asi que en dev el router es exactamente el de antes. */
+let router = create_router_with_state(state);
+let dist = PathBuf::from(&config.frontend_dist);
+if dist.join("index.html").is_file() {
+    tracing::info!("Sirviendo el front estatico de {}", dist.display());
+    router.fallback_service(spa_de(dist))
+} else {
+    router
+}
+}
+
+/* Prefijos que NO son rutas del SPA: bajo ellos un 404 se queda en 404.
+ * [por que] Si el fallback devolviera el `index.html` con un 200 para
+ * `/uploads/x.png`, una imagen ausente seria un HTML con 200 (verde fingido), y
+ * ese 404 lo fija un test (`media_handler::tests`). */
+const RESERVED: [&str; 4] = ["/api", "/uploads", "/swagger-ui", "/api-docs"];
+
+async fn no_encontrado() -> StatusCode {
+    StatusCode::NOT_FOUND
+}
+
+/* Sirve `dist` y, para lo que no sea un archivo, el `index.html` (rutas del
+ * cliente: `/admin/articulos/1`). `ServeDir` ya trae tipos MIME, rangos y
+ * cacheo; lo unico propio son los 404 de los prefijos reservados, que van como
+ * rutas de este router en vez de envolver el servicio: envolverlo obligaria al
+ * future a retener la respuesta de `ServeDir`, que no es `Send`. */
+fn spa_de(dist: PathBuf) -> Router {
+    let mut spa = Router::new();
+    for prefijo in RESERVED {
+        spa = spa.route(&format!("{prefijo}/*resto"), any(no_encontrado));
+    }
+    /* [por que] `not_found_service` fuerza un 404 sobre la respuesta del fallback (sirve para
+     * una pagina 404 propia): con el, una ruta del cliente como `/admin/articulos/1` seria el
+     * `index.html` con 404. `.fallback` conserva el 200 del `index.html`. */
+    spa.fallback_service(
+        ServeDir::new(dist.clone()).fallback(ServeFile::new(dist.join("index.html"))),
+    )
 }
 
 /// Crea el router usando un estado ya construido.
@@ -317,4 +359,82 @@ fn api_routes() -> Router<AppState> {
         .merge(stripe_webhook::routes())
         .merge(workspace_handler::routes())
         .merge(workspace_overlay_handler::routes())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::config::AppConfig;
+    use tower::ServiceExt;
+
+    /* [por que] `connect_lazy` no abre conexion: este test mira el router (estatico
+     * vs reservado), no la base. */
+    fn router_with_dist(dist: &std::path::Path) -> Router {
+        let pool = sqlx::postgres::PgPoolOptions::new()
+            .connect_lazy("postgres://test:test@127.0.0.1:1/none")
+            .expect("pool perezoso");
+        create_router(
+            pool,
+            AppConfig {
+                database_url: "postgres://test:test@127.0.0.1:1/none".to_string(),
+                host: "127.0.0.1".to_string(),
+                port: 3000,
+                stripe_secret_key: None,
+                stripe_webhook_secret: None,
+                upload_dir: "target/spa-test-uploads".to_string(),
+                resend_api_key: None,
+                email_from: "test@example.invalid".to_string(),
+                frontend_dist: dist.display().to_string(),
+            },
+        )
+    }
+
+    async fn get(router: &Router, uri: &str) -> axum::http::Response<axum::body::Body> {
+        router
+            .clone()
+            .oneshot(
+                axum::http::Request::builder()
+                    .uri(uri)
+                    .body(axum::body::Body::empty())
+                    .expect("peticion"),
+            )
+            .await
+            .expect("el router debe responder")
+    }
+
+    #[tokio::test]
+    async fn modo_build_sirve_el_spa_y_respeta_los_prefijos_reservados() {
+        let dir = std::env::temp_dir().join(format!("wandorius-spa-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).expect("dist de prueba");
+        std::fs::write(dir.join("index.html"), "<div id=\"root\">SPA</div>").expect("index");
+        std::fs::write(dir.join("app.js"), "console.log(1)").expect("asset");
+        let router = router_with_dist(&dir);
+
+        // `/` y una ruta anidada del cliente devuelven el index.html del SPA.
+        for uri in ["/", "/admin/articulos/1"] {
+            let r = get(&router, uri).await;
+            assert_eq!(r.status(), StatusCode::OK, "{uri}");
+            let cuerpo = axum::body::to_bytes(r.into_body(), 64 * 1024).await.expect("cuerpo");
+            assert!(String::from_utf8_lossy(&cuerpo).contains("SPA"), "{uri} debe ser el index.html");
+        }
+        // Un archivo real del dist se sirve tal cual, con su tipo.
+        let r = get(&router, "/app.js").await;
+        assert_eq!(r.status(), StatusCode::OK);
+        assert!(r.headers().get("content-type").and_then(|v| v.to_str().ok()).unwrap_or("").contains("javascript"));
+
+        // [por que] Sin esto, una imagen ausente o una API inexistente responderian
+        // el HTML del SPA con 200: un verde fingido que ademas rompe un test existente.
+        for uri in ["/uploads/nope.png", "/api/no-existe"] {
+            assert_eq!(get(&router, uri).await.status(), StatusCode::NOT_FOUND, "{uri}");
+        }
+        std::fs::remove_dir_all(&dir).ok();
+    }
+
+    #[tokio::test]
+    async fn sin_dist_el_router_no_sirve_ningun_front() {
+        let dir = std::env::temp_dir().join(format!("wandorius-spa-vacio-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).expect("carpeta vacia");
+        assert_eq!(get(&router_with_dist(&dir), "/").await.status(), StatusCode::NOT_FOUND);
+        std::fs::remove_dir_all(&dir).ok();
+    }
 }
