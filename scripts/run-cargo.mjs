@@ -12,7 +12,10 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const RCARGO_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', 'workspace-manager', 'scripts', 'remoto');
 const taller = await import(pathToFileURL(path.join(RCARGO_DIR, 'rcargo.mjs')).href);
 const argvCargo = process.argv.slice(2);
-const config = taller.cargarConfig(path.join(RCARGO_DIR, 'taller.json'));
+/* [10AA-3-A] Sin ruta explícita: la config privada la movió el refactor a
+ * `workspace-manager/config/`, y `exigirConfigPrivada` es el único que sabe
+ * dónde está. Pasar `RCARGO_DIR/taller.json` (la ruta vieja) moría con ENOENT. */
+const config = taller.cargarConfig();
 const proyecto = taller.detectarProyecto(process.cwd());
 if (taller.modoEfectivo(argvCargo, config, proyecto) === 'remoto') {
   const r = spawnSync(process.execPath, [path.join(RCARGO_DIR, 'rcargo.mjs'), ...argvCargo], { stdio: 'inherit' });
