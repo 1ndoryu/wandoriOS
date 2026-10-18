@@ -27,12 +27,12 @@
       "repository": "https://github.com/1ndoryu/varsense.git",
       "sourcePath": "tools/varsense",
       "provisionPath": "tools/varsense",
-      "commit": "33192580e32a08c9600284c02ad6d3d679d75822",
+      "commit": "3375e186bcee1086f66df6dd88a16c63a714851b",
       "version": "2.2.9",
       "outputSchemaVersion": "1",
       "buildScript": "compile",
       "cli": "dist/cli/index.js",
-      "testScript": "test",
+      "testScript": "smoke:lsp",
       "releaseRefs": [
         "refs/remotes/origin/main",
         "refs/tags/v*"
