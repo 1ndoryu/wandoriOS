@@ -15,11 +15,10 @@
  * [--json <ruta>] */
 import { createHash } from 'node:crypto';
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { runProcess } from './runner.mjs';
-import { percentile, summarize } from './quality-profile.mjs';
+import { summarize } from './quality-profile.mjs';
 import { evaluateStageBudgets, insufficientBudgetStages, readEffectiveBudgets } from './quality-profile.mjs';
 
 export const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');

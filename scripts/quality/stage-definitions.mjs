@@ -4,7 +4,7 @@ import { runFrontend } from './adapters/frontend.mjs';
 import { runRust } from './adapters/rust.mjs';
 import { runSentinel } from './adapters/sentinel.mjs';
 import { runVarsense } from './adapters/varsense.mjs';
-import { adapterEnvironmentAllowlist, adapterStageNames, assertImplementedStages, assertStageParity, readAdapterManifest, resolveWorkspacePath, validateAdapterManifest } from './adapter-manifest.mjs';
+import { adapterEnvironmentAllowlist, adapterStageNames, assertImplementedStages, assertStageParity, resolveWorkspacePath, validateAdapterManifest } from './adapter-manifest.mjs';
 import { DEFAULT_ENV_ALLOWLIST } from './runner.mjs';
 import { EXECUTABLE_PROFILES, isFullExecution, PROFILE_STAGE_RULES } from './profile-contract.mjs';
 
