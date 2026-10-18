@@ -90,3 +90,9 @@ split-debuginfo = "packed"
 [profile.dev.package."*"]
 opt-level = 1
 debug = false
+
+# [por que] utoipa-swagger-ui 7.x fija zip 1 en su build.rs, y zip < 9.0.0 tiene RUSTSEC-2026-0367/0368/0369.
+# Parche local: el crate vendorizado usa zip 9 (solo build-dependency; el runtime no toca zip).
+# Quitar cuando utoipa-swagger-ui publique una versión con zip ≥ 9.
+[patch.crates-io]
+utoipa-swagger-ui = { path = "vendor/utoipa-swagger-ui-7.1.0" }

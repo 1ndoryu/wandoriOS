@@ -87,7 +87,8 @@
           "_archivo/**",
           "**/.freebuff/**",
           "**/data/inventarios/**",
-          "glory-rs/**"
+          "glory-rs/**",
+          "vendor/**"
         ],
         "directoryExceptions": [
           "migrations",
