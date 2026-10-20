@@ -13,19 +13,4 @@ Blog, portfolio y tienda digital dentro de un OS retro minimalista (Rust/Axum + 
 
 ## Planes activos
 
-- `Agente/planes/plan-escritorio-persistente-cuentas-admin-apps-2026-07-29.md` — `297A-4` — plan maestro del OS persistente (cuentas, admin y apps).
-- `Agente/planes/plan-experiencia-movil-launcher-2026-07-29.md` — `297A-12` — experiencia móvil tipo launcher.
-- `Agente/planes/plan-deep-links-ventanas-2026-07-31.md` — `297A-19` — URLs canónicas, deep links y foco.
-- `Agente/planes/plan-programas-editoriales-2026-07-31.md` — `297A-14` — programas editoriales.
-- `Agente/planes/plan-contratos-interaccion-comandos-medicion-2026-07-29.md` — `297A-9..16` — contratos de interacción, comandos y medición.
-- `Agente/planes/plan-gobernanza-workspace-2026-08-02.md` — `028A-10..15` — gobernanza del workspace (releases y publicación).
-- `Agente/planes/plan-iconos-escritorio-grid-2026-08-05.md` — `018A-97` — grid de iconos del escritorio.
-- `Agente/planes/plan-modo-oscuro-os-2026-07-31.md` — `297A-17` — modo claro/oscuro del OS.
-- `Agente/planes/plan-notificaciones-2026-08-01.md` — `297A-21` — notificaciones de novedades.
-- `Agente/planes/plan-persistencia-sesion-ventanas-2026-08-01.md` — `317A-5` — persistencia de sesión de ventanas.
-- `Agente/planes/plan-reordenamiento-arrastre-grid-2026-07-31.md` — `297A-22` — reordenamiento por arrastre con grid.
-- `Agente/planes/plan-comercio-seguro-2026-08-01.md` — `297A-15` — comercio seguro.
-- `Agente/planes/plan-analytics-privacidad-2026-08-01.md` — `297A-16` — analytics privado y consentido.
-- `Agente/planes/plan-auth-verificado-2026-08-01.md` — `297A-13` — autenticación verificada (registro y tokens).
-- `Agente/planes/plan-barra-acciones-ventanas-2026-08-01.md` — `018A-1` — franja inferior de acciones de ventana.
-- `Agente/planes/plan-componentizacion-ui-2026-07-30.md` — `297A-11` — componentización UI (backlog diferido).
+Ninguno.
