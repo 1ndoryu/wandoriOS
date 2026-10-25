@@ -13,4 +13,19 @@ Blog, portfolio y tienda digital dentro de un OS retro minimalista (Rust/Axum + 
 
 ## Planes activos
 
-Ninguno.
+- `Agente/planes/plan-analytics-privacidad-2026-08-01.md` — `plan-analytics-privacidad-2026-08-01` — analítica privada y con consentimiento.
+- `Agente/planes/plan-auth-verificado-2026-08-01.md` — `plan-auth-verificado-2026-08-01` — autenticación verificada (registro, MFA TOTP).
+- `Agente/planes/plan-barra-acciones-ventanas-2026-08-01.md` — `018A-1` — barra de acciones inferior de ventana.
+- `Agente/planes/plan-comercio-seguro-2026-08-01.md` — `plan-comercio-seguro-2026-08-01` — comercio seguro.
+- `Agente/planes/plan-componentizacion-ui-2026-07-30.md` — `plan-componentizacion-ui-2026-07-30` — componentización de la UI del frontend.
+- `Agente/planes/plan-contratos-interaccion-comandos-medicion-2026-07-29.md` — `plan-contratos-interaccion-comandos-medicion-2026-07-29` — contratos de interacción, comandos y medición del OS.
+- `Agente/planes/plan-deep-links-ventanas-2026-07-31.md` — `plan-deep-links-ventanas-2026-07-31` — URLs canónicas, deep links y foco del OS.
+- `Agente/planes/plan-escritorio-persistente-cuentas-admin-apps-2026-07-29.md` — `plan-escritorio-persistente-cuentas-admin-apps-2026-07-29` — plan maestro del OS persistente.
+- `Agente/planes/plan-experiencia-movil-launcher-2026-07-29.md` — `plan-experiencia-movil-launcher-2026-07-29` — experiencia móvil tipo launcher.
+- `Agente/planes/plan-gobernanza-workspace-2026-08-02.md` — `plan-gobernanza-workspace-2026-08-02` — releases, publicación y coherencia del workspace.
+- `Agente/planes/plan-iconos-escritorio-grid-2026-08-05.md` — `plan-iconos-escritorio-grid-2026-08-05` — iconos del escritorio en grid, placeholder y rejilla de debug.
+- `Agente/planes/plan-modo-oscuro-os-2026-07-31.md` — `plan-modo-oscuro-os-2026-07-31` — modo claro/oscuro del OS.
+- `Agente/planes/plan-notificaciones-2026-08-01.md` — `plan-notificaciones-2026-08-01` — notificaciones.
+- `Agente/planes/plan-persistencia-sesion-ventanas-2026-08-01.md` — `317A-5` — persistencia de sesión de ventanas del OS.
+- `Agente/planes/plan-programas-editoriales-2026-07-31.md` — `297A-14` — programas editoriales.
+- `Agente/planes/plan-reordenamiento-arrastre-grid-2026-07-31.md` — `plan-reordenamiento-arrastre-grid-2026-07-31` — reordenamiento de iconos por arrastre con grid.
