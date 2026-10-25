@@ -6,6 +6,8 @@ Blog, portfolio y tienda digital dentro de un OS retro minimalista (Rust/Axum + 
 
 ## Pendientes
 
+- [ ] `18AA-1` — **Gate: sentinel y varsense de WANDORIUS corren en la 89, no en el portátil** (AGENTS §1); criterio: `gate:check` verde con las herramientas fijadas provisionadas en `~/.local/share/WANDORIUS/gate-tools`.
+
 ## Bloqueos
 
 - **297A-15 — Comercio con credenciales reales.** Checkout/refund contra Stripe live y webhook firmado en staging requieren intervención humana; la migración de `/uploads` legacy a storage privado queda fuera de alcance. (El mock fail-closed y el E2E ya se cerraron el 18-ago; ver histórico.)
