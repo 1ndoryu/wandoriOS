@@ -1,4 +1,5 @@
 import { spawn } from 'node:child_process';
+import { existsSync } from 'node:fs';
 import { access } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -6,7 +7,12 @@ import { fileURLToPath } from 'node:url';
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const manifestPath = path.join(projectRoot, 'quality-tools.json');
 const realNodeDir = path.dirname(process.execPath);
-const npmCliPath = path.join(realNodeDir, 'node_modules', 'npm', 'bin', 'npm-cli.js');
+/* [por que] Windows pone `node_modules` junto a node.exe; en Linux (instalación con prefijo `bin/` y `lib/`,
+ * como en la 89) npm vive en `../lib/node_modules`. Sin esta segunda ruta, el setup falla en la 89. */
+const npmCliPath = [
+  path.join(realNodeDir, 'node_modules', 'npm', 'bin', 'npm-cli.js'),
+  path.join(realNodeDir, '..', 'lib', 'node_modules', 'npm', 'bin', 'npm-cli.js'),
+].find(candidata => existsSync(candidata)) ?? path.join(realNodeDir, 'node_modules', 'npm', 'bin', 'npm-cli.js');
 
 /* [109A-9] La suite de Sentinel hace I/O real (git, worktrees) y su duración es
  * carga-intermitente: 180 s medidos en una corrida y 344 s sin terminar en
