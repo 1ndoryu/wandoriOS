@@ -290,9 +290,7 @@ fn spa_de(dist: &std::path::Path) -> Router {
     /* [por que] `not_found_service` fuerza un 404 sobre la respuesta del fallback (sirve para
      * una pagina 404 propia): con el, una ruta del cliente como `/admin/articulos/1` seria el
      * `index.html` con 404. `.fallback` conserva el 200 del `index.html`. */
-    spa.fallback_service(
-        ServeDir::new(dist).fallback(ServeFile::new(dist.join("index.html"))),
-    )
+    spa.fallback_service(ServeDir::new(dist).fallback(ServeFile::new(dist.join("index.html"))))
 }
 
 /// Crea el router usando un estado ya construido.
