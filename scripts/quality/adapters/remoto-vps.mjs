@@ -20,7 +20,10 @@ const PROVISION_MS = 900_000;
  * es local del portátil y su sync unidireccional borraría lo que escribamos ahí. */
 const REPORTES_REMOTO = '/var/tmp/gate-remoto';
 
+/* [por que] En la 89 (Linux) el repo vive en ~/.local/share y no trae workspace-manager: basta con
+ * saber que la máquina es la 89 (mismo criterio que `esVps` de rcargo), sin cargar rcargo. */
 export async function cargarTaller() {
+  if (process.platform !== 'win32') return { esVps: () => true };
   return import(pathToFileURL(path.join(RCARGO_DIR, 'rcargo.mjs')).href);
 }
 
