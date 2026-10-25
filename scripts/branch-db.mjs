@@ -105,12 +105,14 @@ export function getBranchDbContext({ verbose = true, ensureExists = true, testDb
     throw new Error('DATABASE_URL no encontrado en .env');
   }
 
-  const match = baseDbUrl.match(/^postgres(?:ql)?:\/\/([^:]+):([^@]+)@([^:/]+):(\d+)\/(.+)$/);
+  /* [por que] La 89 conecta por socket Unix sin contraseña (`postgres://dev@%2Fvar%2Frun%2Fpostgresql/bd`):
+   * la URL admite usuario sin clave, puerto opcional y host codificado como ruta de socket. */
+  const match = baseDbUrl.match(/^postgres(?:ql)?:\/\/([^:@/]+)(?::([^@]*))?@([^:/]+)(?::(\d+))?\/(.+)$/);
   if (!match) {
     throw new Error(`No se pudo parsear DATABASE_URL: ${baseDbUrl}`);
   }
-  const [, dbUser, dbPass, dbHost, dbPort] = match;
-  const dbUrl = `postgres://${dbUser}:${dbPass}@${dbHost}:${dbPort}/${dbName}`;
+  const [, dbUser, dbPass = '', dbHost, dbPort] = match;
+  const dbUrl = `postgres://${dbUser}${dbPass ? `:${dbPass}` : ''}@${dbHost}${dbPort ? `:${dbPort}` : ''}/${dbName}`;
 
   const cargoTargetBase =
     process.env.CARGO_TARGET_DIR_BASE ||
@@ -135,7 +137,7 @@ export function getBranchDbContext({ verbose = true, ensureExists = true, testDb
       const psqlEnv = { ...process.env, PGPASSWORD: dbPass };
       const psql = (sql, db = 'postgres') => execFileSync(
         psqlBin,
-        ['-U', dbUser, '-h', dbHost, '-p', dbPort, '-d', db, '-t', '-A', '-c', sql],
+        ['-U', dbUser, '-h', decodeURIComponent(dbHost), ...(dbPort ? ['-p', dbPort] : []), '-d', db, '-t', '-A', '-c', sql],
         { env: psqlEnv, encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] },
       );
 
