@@ -255,16 +255,16 @@ pub fn create_router(pool: sqlx::PgPool, config: crate::config::AppConfig) -> Ro
         dev_mailbox: std::sync::Arc::new(std::sync::Mutex::new(Vec::new())),
     };
     /* [16AA-18] Modo build: el front vive en `frontend/dist` y lo sirve este
- * backend, como en produccion (en dev lo sirve vite). Solo se activa si el
- * `index.html` existe, asi que en dev el router es exactamente el de antes. */
-let router = create_router_with_state(state);
-let dist = PathBuf::from(&config.frontend_dist);
-if dist.join("index.html").is_file() {
-    tracing::info!("Sirviendo el front estatico de {}", dist.display());
-    router.fallback_service(spa_de(dist))
-} else {
-    router
-}
+     * backend, como en produccion (en dev lo sirve vite). Solo se activa si el
+     * `index.html` existe, asi que en dev el router es exactamente el de antes. */
+    let router = create_router_with_state(state);
+    let dist = PathBuf::from(&config.frontend_dist);
+    if dist.join("index.html").is_file() {
+        tracing::info!("Sirviendo el front estatico de {}", dist.display());
+        router.fallback_service(spa_de(dist))
+    } else {
+        router
+    }
 }
 
 /* Prefijos que NO son rutas del SPA: bajo ellos un 404 se queda en 404.
@@ -414,18 +414,32 @@ mod tests {
         for uri in ["/", "/admin/articulos/1"] {
             let r = get(&router, uri).await;
             assert_eq!(r.status(), StatusCode::OK, "{uri}");
-            let cuerpo = axum::body::to_bytes(r.into_body(), 64 * 1024).await.expect("cuerpo");
-            assert!(String::from_utf8_lossy(&cuerpo).contains("SPA"), "{uri} debe ser el index.html");
+            let cuerpo = axum::body::to_bytes(r.into_body(), 64 * 1024)
+                .await
+                .expect("cuerpo");
+            assert!(
+                String::from_utf8_lossy(&cuerpo).contains("SPA"),
+                "{uri} debe ser el index.html"
+            );
         }
         // Un archivo real del dist se sirve tal cual, con su tipo.
         let r = get(&router, "/app.js").await;
         assert_eq!(r.status(), StatusCode::OK);
-        assert!(r.headers().get("content-type").and_then(|v| v.to_str().ok()).unwrap_or("").contains("javascript"));
+        assert!(r
+            .headers()
+            .get("content-type")
+            .and_then(|v| v.to_str().ok())
+            .unwrap_or("")
+            .contains("javascript"));
 
         // [por que] Sin esto, una imagen ausente o una API inexistente responderian
         // el HTML del SPA con 200: un verde fingido que ademas rompe un test existente.
         for uri in ["/uploads/nope.png", "/api/no-existe"] {
-            assert_eq!(get(&router, uri).await.status(), StatusCode::NOT_FOUND, "{uri}");
+            assert_eq!(
+                get(&router, uri).await.status(),
+                StatusCode::NOT_FOUND,
+                "{uri}"
+            );
         }
         std::fs::remove_dir_all(&dir).ok();
     }
@@ -434,7 +448,10 @@ mod tests {
     async fn sin_dist_el_router_no_sirve_ningun_front() {
         let dir = std::env::temp_dir().join(format!("wandorius-spa-vacio-{}", std::process::id()));
         std::fs::create_dir_all(&dir).expect("carpeta vacia");
-        assert_eq!(get(&router_with_dist(&dir), "/").await.status(), StatusCode::NOT_FOUND);
+        assert_eq!(
+            get(&router_with_dist(&dir), "/").await.status(),
+            StatusCode::NOT_FOUND
+        );
         std::fs::remove_dir_all(&dir).ok();
     }
 }
