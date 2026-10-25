@@ -10,17 +10,20 @@ import { unwrapGeneratedResponse } from '../api/client';
 import {
   login,
   logout,
-  mfaVerify,
   me,
   register,
   requestPasswordReset,
   resetPassword,
+  verifyEmail,
+} from '../api/generated/auth/auth';
+/* [por que] El contrato agrupa los endpoints TOTP y MFA en su propio tag (`auth-totp`); el generador los exporta desde ahí. */
+import {
+  mfaVerify,
   totpConfirm,
   totpDisable,
   totpSetup,
   totpStatus,
-  verifyEmail,
-} from '../api/generated/auth/auth';
+} from '../api/generated/auth-totp/auth-totp';
 import { authStore, type AuthCapability } from '../store';
 import { showToast } from '../components/ui/toast';
 import { clearPreferencesSync, syncPreferencesForUser } from '../features/runtime/preferences-sync';
