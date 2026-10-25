@@ -1,8 +1,13 @@
 import { runProcess } from '../runner.mjs';
 import { readToolReport, toolFailure, writeStageLog } from './common.mjs';
+import { runRemoteTool } from './remoto-vps.mjs';
 
 export async function runStructuredTool(context, definition) {
-  const execution = await runProcess(definition.executable, definition.args, {
+  /* [por que] Con `remote`, la herramienta corre en la 89 (AGENTS §1). Sin 89 disponible
+   * (o si esta máquina ya es la 89) `runRemoteTool` devuelve undefined y se ejecuta en local. */
+  const execution = (definition.remote && await runRemoteTool(context, {
+    tool: definition.name, args: definition.args, outputPath: definition.reportPath, timeoutMs: definition.timeoutMs,
+  })) || await runProcess(definition.executable, definition.args, {
     cwd: definition.cwd ?? context.projectRoot,
     timeoutMs: definition.timeoutMs,
     isCancelled: definition.isCancelled ?? context.isCancelled,

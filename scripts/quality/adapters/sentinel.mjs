@@ -18,7 +18,7 @@ export async function runSentinel(context, scope) {
   if (!(scope.executionFull ?? scope.full) || scope.profileOverride) args.push('--files-from', scope.changedFilesPath);
 
   const result = await runStructuredTool(context, {
-    name: 'sentinel', executable: process.execPath, args, reportPath,
+    name: 'sentinel', executable: process.execPath, args, reportPath, remote: true,
     timeoutMs: context.qualityConfig.timeoutsMs.sentinel,
     expectedSchemaVersion: context.tools.sentinel.outputSchemaVersion,
   });

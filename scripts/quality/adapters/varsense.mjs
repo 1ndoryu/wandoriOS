@@ -5,7 +5,7 @@ import { buildVarsenseInvocation } from './varsense-contract.mjs';
 async function runCommand(context, scope) {
   const invocation = buildVarsenseInvocation(context, scope);
   const result = await runStructuredTool(context, {
-    name: 'varsense', executable: process.execPath, args: invocation.args, reportPath: invocation.reportPath,
+    name: 'varsense', executable: process.execPath, args: invocation.args, reportPath: invocation.reportPath, remote: true,
     timeoutMs: context.qualityConfig.timeoutsMs.varsense,
     expectedSchemaVersion: context.tools.varsense.outputSchemaVersion,
   });
