@@ -14,8 +14,12 @@ const REPO_REMOTO = '$HOME/.local/share/WANDORIUS/repo';
 
 const git = (...args) => execFileSync('git', ['-C', RAIZ, ...args], { encoding: 'utf8' }).trim();
 
+/* [por que] `npm ci` solo si hay package-lock.json en `dir` y cambió (en la 89 es caro). Sin lock, no hay deps. */
+const instalaDeps = dir => `{ [ ! -f ${dir}/package-lock.json ] || { DEPS=$(sha256sum ${dir}/package-lock.json | cut -c1-64) && { [ "$(cat ${dir}/node_modules/.gate-deps 2>/dev/null)" = "$DEPS" ] || { cm-heavy npm --prefix ${dir} ci --no-audit --no-fund && echo "$DEPS" > ${dir}/node_modules/.gate-deps; }; }; }; }`;
+
 function scriptRemoto(taller, origen, sha, args) {
   const q = taller.shQuote;
+  const proyecto = path.basename(RAIZ);
   /* [por que] Herramientas: copia del clon fijado al pin (`gate-tools`), así la comprobación de
    * árbol instalado de sentinel.lock.json ve el mismo commit que en el portátil. */
   /* [por que] `.quality-pin` es marca del aprovisionamiento (remoto-vps.mjs): sin borrarla, sentinel ve el checkout sucio. */
@@ -29,9 +33,12 @@ function scriptRemoto(taller, origen, sha, args) {
     `cd ${REPO_REMOTO}`,
     `git fetch --quiet origin ${sha} || { echo "el commit ${sha.slice(0, 8)} no está en origin: empuja antes del gate" >&2; exit 2; }`,
     `git checkout --quiet -f --detach ${sha}`,
+    /* [por que] El .env no viaja por git ni por Mutagen (AGENTS §2): se toma el de la réplica del taller
+     * en la propia 89, donde ya está por envRemoto. Sin él, `run-with-db` no encuentra DATABASE_URL. */
+    `[ -f .env ] || { [ ! -f $HOME/taller/${proyecto}/.env ] || cp -p $HOME/taller/${proyecto}/.env .env; }`,
     ...herramientas,
-    /* [por que] `npm ci` solo si hay package-lock.json en la raíz y cambió (en la 89 es caro). Sin lock, no hay deps que instalar. */
-    `{ [ ! -f package-lock.json ] || { DEPS=$(sha256sum package-lock.json | cut -c1-64) && { [ "$(cat node_modules/.gate-deps 2>/dev/null)" = "$DEPS" ] || { cm-heavy npm ci --no-audit --no-fund && echo "$DEPS" > node_modules/.gate-deps; }; }; }; }`,
+    instalaDeps('.'),
+    instalaDeps('frontend'),
     `cm-heavy node scripts/quality/gate-check.mjs ${args.map(q).join(' ')}`,
   ].join(' && ');
 }
