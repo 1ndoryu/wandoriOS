@@ -261,7 +261,7 @@ pub fn create_router(pool: sqlx::PgPool, config: crate::config::AppConfig) -> Ro
     let dist = PathBuf::from(&config.frontend_dist);
     if dist.join("index.html").is_file() {
         tracing::info!("Sirviendo el front estatico de {}", dist.display());
-        router.fallback_service(spa_de(dist))
+        router.fallback_service(spa_de(&dist))
     } else {
         router
     }
@@ -282,7 +282,7 @@ async fn no_encontrado() -> StatusCode {
  * cacheo; lo unico propio son los 404 de los prefijos reservados, que van como
  * rutas de este router en vez de envolver el servicio: envolverlo obligaria al
  * future a retener la respuesta de `ServeDir`, que no es `Send`. */
-fn spa_de(dist: PathBuf) -> Router {
+fn spa_de(dist: &std::path::Path) -> Router {
     let mut spa = Router::new();
     for prefijo in RESERVED {
         spa = spa.route(&format!("{prefijo}/*resto"), any(no_encontrado));
@@ -291,7 +291,7 @@ fn spa_de(dist: PathBuf) -> Router {
      * una pagina 404 propia): con el, una ruta del cliente como `/admin/articulos/1` seria el
      * `index.html` con 404. `.fallback` conserva el 200 del `index.html`. */
     spa.fallback_service(
-        ServeDir::new(dist.clone()).fallback(ServeFile::new(dist.join("index.html"))),
+        ServeDir::new(dist).fallback(ServeFile::new(dist.join("index.html"))),
     )
 }
 
