@@ -39,7 +39,8 @@ export function untrustedCheckoutChanges(statusOutput) {
 
 export async function gitArchiveSha256(toolRoot) {
   return new Promise((resolve, reject) => {
-    const child = spawn('git', ['-C', toolRoot, 'archive', '--format=tar', 'HEAD'], {
+    // core.autocrlf=false: el hash debe depender solo del contenido del commit, no de la config del equipo (con true cambia los bytes del tar)
+    const child = spawn('git', ['-c', 'core.autocrlf=false', '-C', toolRoot, 'archive', '--format=tar', 'HEAD'], {
       cwd: toolRoot,
       shell: false,
       windowsHide: true,
