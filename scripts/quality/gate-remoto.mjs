@@ -39,6 +39,9 @@ function scriptRemoto(taller, origen, sha, args) {
     ...herramientas,
     instalaDeps('.'),
     instalaDeps('frontend'),
+    /* [por que] Los clientes generados (`frontend/src/api/generated`) no van a git y el frontend no compila sin ellos:
+     * se regeneran desde el contrato Rust (codegen-local, orval). Incremental tras la primera vez. */
+    'cm-heavy node scripts/codegen-local.mjs',
     `cm-heavy node scripts/quality/gate-check.mjs ${args.map(q).join(' ')}`,
   ].join(' && ');
 }
