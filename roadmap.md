@@ -4,10 +4,15 @@ Blog, portfolio y tienda digital dentro de un OS retro minimalista (Rust/Axum + 
 
 ## Siguiente bloque
 
+Nada en cola.
+
 ## Pendientes
-- [ ] `297A-15` — **Comercio con credenciales reales.** Checkout/refund contra Stripe live y webhook firmado en staging requieren intervención humana; la migración de `/uploads` legacy a storage privado queda fuera de alcance. (El mock fail-closed y el E2E ya se cerraron el 18-ago; ver histórico.)
+
+Nada en cola.
 
 ## Bloqueos
+
+- Bloqueo `297A-15` — **comercio con credenciales reales.** Checkout/refund contra Stripe live y webhook firmado en staging requieren intervención humana (credenciales de Stripe y prueba del webhook en staging); la migración de `/uploads` legacy a storage privado queda fuera de alcance. Se desbloquea con esas credenciales. (El mock fail-closed y el E2E ya se cerraron el 18-ago; ver histórico.)
 
 - **Decisiones de producto (2026-08-12).** Registro (297A-13): registro público habilitado con verificación por email (Resend) + token de un solo uso. Conflictos preferencias/overlay (297A-13): merge por campo + LWW por campo en colisión real, con aviso no bloqueante. MFA (297A-13/297A-17): TOTP (códigos de 6 dígitos, RFC 6238); passkey/WebAuthn queda como mejora posterior. Correo transaccional (297A-13): Resend real solo en producción; en local se mockea (token en log/almacén de dev). Configuración (297A-29 Fase 4): la app Configuración se convierte en el panel de control (fondo de pantalla, fuentes y escala con default y restauración; config por usuario con la del admin como default; ajustes de cuenta), abierto a más ideas.
 
