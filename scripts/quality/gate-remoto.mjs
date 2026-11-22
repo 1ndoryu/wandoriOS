@@ -4,6 +4,8 @@
  * réplica Mutagen no lleva `.git` (14AA-1). Por eso el gate corre en un checkout propio de la 89,
  * fijado al commit empujado. Dentro de la 89 este mismo script ejecuta el gate local. */
 import { execFileSync, spawn } from 'node:child_process';
+import { existsSync } from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { cargarTaller } from './adapters/remoto-vps.mjs';
@@ -11,6 +13,8 @@ import { cargarTaller } from './adapters/remoto-vps.mjs';
 const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 /* [por que] El checkout vive en `~/.local/share` (AGENTS §1): `/var/tmp` lo barre cm-sweep. */
 const REPO_REMOTO = '$HOME/.local/share/WANDORIUS/repo';
+/* La misma ruta, resuelta: dentro de la 89 hay que entrar en ella, no solo citarla. */
+const CHECKOUT_LOCAL = path.join(os.homedir(), '.local', 'share', 'WANDORIUS', 'repo');
 
 const git = (...args) => execFileSync('git', ['-C', RAIZ, ...args], { encoding: 'utf8' }).trim();
 
@@ -57,12 +61,37 @@ async function gateEnVps(taller, args) {
   });
 }
 
+/* Dentro de la 89, `npm run gate:check` puede lanzarse desde la réplica de Mutagen
+ * (`~/taller/WANDORIUS`), que no lleva `.git`: sentinel y stages fallan con
+ * "not a git repository" y el autogate de `Arranque gate --cierre` nunca pasa.
+ * [por que] Se ejecuta el gate en el checkout fijado, que es el mismo que usa la
+ * vía del portátil; la réplica solo aporta el árbol sincronizado. */
+function esperar(hijo) {
+  hijo.on('close', code => { process.exitCode = code ?? 2; });
+}
+
 const args = process.argv.slice(2);
 const taller = await cargarTaller();
 if (taller.esVps()) {
-  // Dentro de la 89 el gate es local: el checkout ya es el de la 89.
-  const hijo = spawn(process.execPath, ['scripts/quality/gate-check.mjs', ...args], { cwd: RAIZ, stdio: 'inherit' });
-  hijo.on('close', code => { process.exitCode = code ?? 2; });
+  const enCheckout = path.resolve(RAIZ) === CHECKOUT_LOCAL;
+  if (!enCheckout && existsSync(path.join(CHECKOUT_LOCAL, '.git'))) {
+    /* Al día con origin: la réplica no dice en qué commit está, así que se valida
+     * `origin/main`, la rama a la que el protocolo integra todo. */
+    const preparar = spawn('git', ['-C', CHECKOUT_LOCAL, 'fetch', '--quiet', 'origin'], { stdio: 'inherit' });
+    preparar.on('close', code => {
+      if (code !== 0) { process.exitCode = 2; return; }
+      const checkout = spawn('git', ['-C', CHECKOUT_LOCAL, 'checkout', '--quiet', '-f', '--detach', 'origin/main'], { stdio: 'inherit' });
+      checkout.on('close', code2 => {
+        if (code2 !== 0) { process.exitCode = 2; return; }
+        const sha = execFileSync('git', ['-C', CHECKOUT_LOCAL, 'rev-parse', '--short', 'HEAD'], { encoding: 'utf8' }).trim();
+        process.stderr.write(`[gate] réplica sin .git: se valida ${CHECKOUT_LOCAL} en ${sha} (origin/main)\n`);
+        esperar(spawn(process.execPath, ['scripts/quality/gate-remoto.mjs', ...args], { cwd: CHECKOUT_LOCAL, stdio: 'inherit' }));
+      });
+    });
+  } else {
+    // Dentro de la 89 el gate es local: el checkout ya es el de la 89.
+    esperar(spawn(process.execPath, ['scripts/quality/gate-check.mjs', ...args], { cwd: RAIZ, stdio: 'inherit' }));
+  }
 } else {
   process.exitCode = await gateEnVps(taller, args);
 }
