@@ -5,7 +5,11 @@
 
 import { authStore } from '../store';
 
-const BASE_URL = import.meta.env.VITE_API_URL || '';
+/* [por que] Ruta relativa siempre: en dev la resuelve el proxy de Vite
+ * (VITE_API_URL es el destino del proxy en el proceso del servidor, no la URL
+ * del navegador; usarla aquí hacía que el navegador llamara a localhost:3104)
+ * y en producción el front lo sirve el propio backend. */
+const BASE_URL = import.meta.env.VITE_API_BASE || '';
 
 export class ApiError extends Error {
   constructor(

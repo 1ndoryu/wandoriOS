@@ -152,9 +152,11 @@ export const redesLayoutStore = createStore<RedesLayout>('inline');
 /* Control de visibilidad del profile header */
 export const showProfile = createStore<boolean>(true);
 
-/* Control de visibilidad del sidebar */
+/* Control de visibilidad del sidebar.
+ * [por que] Oculto por defecto: el escritorio manda y la nav se abre a demanda;
+ * solo una elección explícita previa del usuario lo deja abierto. */
 export const showSidebar = createStore<boolean>(
-  localStorage.getItem('wandorius:sidebar') !== 'hidden',
+  localStorage.getItem('wandorius:sidebar') === 'visible',
 );
 showSidebar.subscribe((visible) => {
   localStorage.setItem('wandorius:sidebar', visible ? 'visible' : 'hidden');

@@ -15,7 +15,10 @@ const STORAGE_KEY = 'wandorius:tema';
 const VALID_MODES: readonly ThemeMode[] = ['system', 'claro', 'oscuro'];
 const DARK_QUERY = '(prefers-color-scheme: dark)';
 
-/** Leer el modo persistido con fallback a 'system'. */
+/** Leer el modo persistido con fallback a 'claro'.
+ * [por que] El OS nace en blanco: seguir a `prefers-color-scheme` pintaba de
+ * negro el escritorio a quien tiene el SO en oscuro. 'system' sigue disponible
+ * como elección explícita desde el panel de control. */
 function readStoredMode(): ThemeMode {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -23,7 +26,7 @@ function readStoredMode(): ThemeMode {
   } catch {
     /* Almacenamiento no disponible: modo por defecto. */
   }
-  return 'system';
+  return 'claro';
 }
 
 export const themeStore = createStore<ThemeMode>(readStoredMode());

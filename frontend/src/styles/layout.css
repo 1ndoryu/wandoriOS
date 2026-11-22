@@ -25,14 +25,15 @@
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
-  padding: var(--espacio-2xl) 0 0 var(--espacio-xl);
+  /* [por que] Relleno simétrico: con 60px a la derecha el ancho efectivo del
+   * menú no cabía en una barra estrecha y el texto quedaba cortado. */
+  padding: var(--espacio-2xl) var(--espacio-md) 0 var(--espacio-lg);
   position: sticky;
   top: 0;
   height: 100vh;
   overflow-y: auto;
   background: var(--color-sidebar-fondo);
   color: var(--color-sidebar-texto);
-  padding-right: 60px;
 }
 
 /* Navegacion del menu */
