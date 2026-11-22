@@ -8,7 +8,6 @@ Nada en cola.
 
 ## Pendientes
 
-- [ ] `UI-2026-11-22` — **Escritorio por defecto: sidebar oculto y estrecho, tema claro.** Sale del roadmap al pasar el gate de cierre; la evidencia queda en `Agente/completados/tareas-2026-11-22.md`.
 - [ ] `ANLT-2026-11-22` — **Arreglar el 422 de `/api/analytics/events`.** El dispatcher manda `target_id` con el slug de la app (`store`, `reader`) y la columna es `uuid`: el lote entero se rechaza y se reintenta en bucle. Decidir el contrato (quitar `target_id` y llevar el slug a `metadata`, o un `target_key` de texto en BD y API) y actualizar `dispatcher.ts`, su test y `analytics_repo.rs`. Hecho cuando la consola no muestre 422 y el panel de analítica siga listando eventos.
 
 ## Bloqueos
